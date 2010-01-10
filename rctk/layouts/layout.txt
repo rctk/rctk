@@ -1,0 +1,82 @@
+A bit of brainstorming about layouts.
+
+inspiration: http://wiki.wxpython.org/Getting%20Started#Working_with_Windows
+
+Implementation of IvoLayout (to be renamed, of course)
+===========================
+
+Based on the number of columns and the number of controls, the size
+of the grid can be calculated (optionally we can support rows and 
+keep the missing controls blank). So say we get R(ows) and C(ols)
+
+Case 1: just use the space that's needed.
+
+There's one exception, cols=0, which means a horizontal list (one row).
+I'm not sure yet if it makes sense to have a multi-row horizontal (infintely
+growing) list.
+
+Find the size (width/height) of the largest control, let's call them W and H. 
+All cells should be sized equally, so the total size required should be
+C*W x R*H. We'll scale the Layoutmanager to this size.
+
+Case 2: use all space available
+
+Assumption: Assume there is enough space available, IOW, the required space
+for Case 1 is less than the space available.
+
+Get the parent container (either a window or a panel) size and divide this
+by the number of rows/cols.
+
+Odd cases:
+
+- there is not enough space available. Should we force the parent container
+  (Panel, Window) to be bigger?
+
+Be aware that there can be a mix. I.e.
+
+A window with 2 rows, 1 column (layoutmanager l1)
+column 1 contains a panel p1 with 3 rows, 2 columns (l2), case 1
+column 2 contains a panel p2 with a single row/col (l3) 
+(a bit redundant, I know), 
+The control in p2 will expand horizontally.
+
+which expands to the available space (case 2).
+
+Panels should expand to the available space by default (but currently don't)
+
+Let's assume that the first row in the window (containing a Panel p1with 6 
+controls) will determine the space available in general. The panel p2 in the 
+second row will expand to fill the same space (by default, eventually) and
+the layoutmanager in it will use all space provided by the panel.
+
+The control will expand horizontally to will the entire width provided by
+the first layoutmanager l1
+
+Laying out
+==========
+
+Step one consists of determining the size of the matrix, either using Case 1
+or Case 2.
+
+Step 2 consists of positioning and scaling the controls within the actually
+available space. This may mean:
+
+- (default) just position it at (0,0)
+- center the control
+- expand the control horizontally, vertically or both
+
+Not yet known
+=============
+
+- Scrolling panels
+
+TabbedLayout
+============
+
+Can't scale directly, individual tabs need to be scaled (or it needs to be
+wrapped in a div)
+
+Should scale to the largest tab or possibly behave like it does, but shouldn't 
+expand to a size larger than it's parent (unless thats desirable. I.e. not
+on the rootwindow, but possibly on in a normal window)
+

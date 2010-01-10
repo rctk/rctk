@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+	
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<title>jwin</title>
+        <link type="text/css" href="../static/jqueryui/themes/base/ui.all.css" rel="stylesheet" />
+        <script type="text/javascript" src="../static/jquery/jquery-1.3.2.min.js"></script>
+        <script type="text/javascript" src="../static/jqueryui/ui/ui.core.js"></script>
+        <script type="text/javascript" src="../static/jqueryui/ui/ui.draggable.js"></script>
+        <script type="text/javascript" src="../static/jqueryui/ui/ui.resizable.js"></script>
+        <script type="text/javascript" src="../static/jqueryui/ui/ui.dialog.js"></script>
+
+        <script type="text/javascript" src="../static/plugins/jquery.sizes.js"></script>
+        <script type="text/javascript" src="../static/plugins/jlayout.grid.js"></script>
+        <script type="text/javascript" src="../static/plugins/jlayout.border.js"></script>
+        <script type="text/javascript" src="../static/plugins/jlayout.flexgrid.js"></script>
+        <script type="text/javascript" src="../static/plugins/jlayout.flow.js"></script>
+        <script type="text/javascript" src="../static/plugins/jquery.jlayout.js"></script>
+
+        <script type="text/javascript" src="../static/jwin.js"></script>
+
+        <style>
+                        html, body {
+				width: 100%;
+				height: 100%;
+				padding: 0;
+				margin: 0;
+				overflow: hidden;
+				font-size: 0.9em;
+				font-family: Verdana, Arial, sans-serif;
+			}
+
+			.c {
+				background-color: #F8F8F8;
+				background-color: rgb(220,220,220);
+				border: 1px solid rgb(200,200,200);
+				text-align: center;
+				display: inline-block;
+			}
+
+        </style>
+        <script type="text/javascript">
+        $(document).ready(function(){
+        //boot_jwin();
+            $("#window").dialog({'autoOpen':true, 'modal':false});
+            function layout() {
+              $("#my-container").layout();
+            }
+            $("#my-container").layout({
+              type: "grid",
+              resize: true
+            });
+            $("#bla").click(function() {
+                $("#my-container").layout({
+                  type: "border",
+                  resize: true
+                });
+            });
+        });
+        </script>
+</head>
+
+<body>
+  <div id="window">
+  <div id="my-container">
+   <div class="c center">
+     <input type="text" size="10">
+   </div>
+   <div class="c south">Two</div>
+   <div class="c north">Three</div>
+   <div class="c west"><div>Input</div></div>
+   <div class="c east"><button>hello</button></div>
+  </div>
+  </div>
+  <button id="bla">Verander</button>
+</body>
+</html>

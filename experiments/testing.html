@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+	
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<title>jwin</title>
+        <link type="text/css" href="http://jqueryui.com/latest/themes/base/ui.all.css" rel="stylesheet" />
+        <script type="text/javascript" src="http://jqueryui.com/latest/jquery-1.3.2.js"></script>
+
+        <script>
+
+
+function Base(a) {
+    this.a = a;
+    this.b = "bla";
+    this.c = "kaas";
+}
+
+Base.prototype.show = function() {
+    $("#root").append("<div>I'm, Base, " + this.a + ", " + this.b + "</div>");
+}
+
+Base.prototype.dothing = function() {
+    $("#root").append("<div>Base dothing! " + this.b + ", " + this.c + "</div>");
+}
+
+function Child(a) {
+  Base.apply(this, arguments);
+  this.b = "burp";
+}
+
+Child.prototype = new Base();
+
+Child.prototype.dothing = function() {
+    Base.prototype.dothing.apply(this);
+    $("#root").append("<div>Child dothing! " + this.b + "</div>");
+}
+
+$(document).ready(function(){
+    a = new Child("hi");
+    a.show();
+    a.dothing();
+});
+
+
+        </script>
+	<link rel="shortcut icon" href="site/0xc0deba5e/favicon.ico" />
+</head>
+
+<body>
+  <div id="root"></div>
+</body>
+</html>

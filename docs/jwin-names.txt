@@ -1,0 +1,23 @@
+The Browser is the Display
+
+application framework
+GUI Toolkit
+GUI library
+Widget toolkit 
+Widget Library
+
+web browser as display
+html as display
+ajax as display
+
+python (maar niet enige serverside)
+
+Niet focussen op webdevelopment maar op GUI Toolkit
+
+Web GUI Application Framework
+
+DOM is Display
+
+Control
+
+ajax controls toolkit - actk

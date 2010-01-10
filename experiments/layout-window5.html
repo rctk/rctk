@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+	
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<title>jwin</title>
+        <link type="text/css" href="../static/jqueryui/themes/base/ui.all.css" rel="stylesheet" />
+        <script type="text/javascript" src="../static/jquery/jquery-1.3.2.min.js"></script>
+        <script type="text/javascript" src="../static/jqueryui/ui/ui.core.js"></script>
+        <script type="text/javascript" src="../static/jqueryui/ui/ui.draggable.js"></script>
+        <script type="text/javascript" src="../static/jqueryui/ui/ui.resizable.js"></script>
+        <script type="text/javascript" src="../static/jqueryui/ui/ui.dialog.js"></script>
+        <script type="text/javascript" src="../static/jqueryui/ui/ui.tabs.js"></script>
+
+        <script type="text/javascript" src="../static/plugins/jquery.sizes.js"></script>
+        <script type="text/javascript" src="../static/plugins/jlayout.grid.js"></script>
+        <script type="text/javascript" src="../static/plugins/jlayout.border.js"></script>
+        <script type="text/javascript" src="../static/plugins/jlayout.flexgrid.js"></script>
+        <script type="text/javascript" src="../static/plugins/jlayout.flow.js"></script>
+        <script type="text/javascript" src="../static/plugins/jquery.jlayout.js"></script>
+
+        <script type="text/javascript" src="../static/layout.js"></script>
+        <script type="text/javascript" src="../static/jwin.js"></script>
+
+        <style>
+
+                        html, body {
+				width: 100%;
+				height: 100%;
+				padding: 0;
+				margin: 0;
+				overflow: hidden;
+				font-size: 0.9em;
+				font-family: Verdana, Arial, sans-serif;
+			}
+
+			.cell {
+                                margin: 0px;
+				background-color: #F8F8F8;
+				background-color: rgb(220,220,220);
+				border: 1px solid rgb(200,200,200);
+				display: inline-block;
+			}
+
+                        .panel-control {
+                                display: inline-block;
+                                white-space: nowrap;
+                        }
+                        .control {
+                                display: inline-block;
+                                white-space: nowrap;
+                        }
+
+                        /*
+                         * Needed to be able to calculate sizes - see
+                         * tabs documentation
+                         */
+                        .ui-tabs .ui-tabs-hide {
+                            position: absolute;
+                            left: -10000px;
+                            display: inline !important;
+                        }
+                        #factory {
+                            position: absolute;
+                            left: -10000px;
+                        }
+
+        </style>
+        <script type="text/javascript">
+        $(document).ready(function(){
+            var fact = $("#factory")
+            var root = $("#root")
+
+            root.layout({'type':'grid'});
+
+            fact.append('<div id="win1" title="test window"></div>');
+            var win = $("#win1");
+            win.dialog({'autoOpen':true, 'modal':false});
+            win.append('<div id="lay0"></div>');
+            var lay0 = $("#lay0");
+            lay0.layout({type:'grid', columns:1});
+
+            // header
+            fact.append('<div class="control" id="ctr0">demo</div>');
+            lay0.append('<div class="cell" id="layctr0"></div>');
+            $("#ctr0").appendTo($("#layctr0"));
+            lay0.layout({type:'grid', columns:1});
+
+            // panel
+            fact.append('<div class="control-panel" id="ctr00"></div>');
+            lay0.append('<div class="cell" id="layctr00"></div>');
+            $("#ctr00").appendTo($("#layctr00"));
+            lay0.layout({type:'grid', columns:1});
+
+            var panel = $("#ctr00");
+
+            var lay = panel;
+            lay.layout({type:'border', resize:true});
+
+            fact.append('<div class="control" id="ctr1">Hello World</div>');
+            lay.append('<div class="cell north" id="layctr1"></div>');
+            $("#ctr1").appendTo($("#layctr1"));
+            lay.layout({type:'border', resize:true});
+
+            fact.append('<div class="control" id="ctr2">Hello World !!!!</div>');
+            lay.append('<div class="cell east" id="layctr2"></div>');
+            $("#ctr2").appendTo($("#layctr2"));
+            lay.layout({type:'border', resize:true});
+            
+            fact.append('<div class="control" id="ctr3">Hello</div>');
+            lay.append('<div class="cell south" id="layctr3"></div>');
+            $("#ctr3").appendTo($("#layctr3"));
+            lay.layout({type:'border', resize:true});
+
+            fact.append('<div class="control" id="ctr4">Hello World !!!!</div>');
+            lay.append('<div class="cell west" id="layctr4"></div>');
+            $("#ctr4").appendTo($("#layctr4"));
+            lay.layout({type:'border', resize:true});
+
+            fact.append('<div class="control" id="ctr5">Hello Waaaaaaaaaaaaaaaaaa</div>');
+            lay.append('<div class="cell center" id="layctr5"></div>');
+            $("#ctr5").appendTo($("#layctr5"));
+            lay.layout({type:'border', resize:true});
+            //lay.css("width", "100%");
+
+            // add window to root
+
+            win.parent().appendTo(root);
+
+        });
+        </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <div id="factory"></div>
+</body>
+</html>

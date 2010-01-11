@@ -190,9 +190,7 @@ Dropdown.prototype.append_item = function(key, label) {
 }
 
 Dropdown.prototype.changed = function() {
-    $.post("sync", {'id':this.controlid, 
-                    'selection':this.control.val()
-                    }, function() {}, "json");
+    this.jwin.sync({'id':this.controlid, 'selection':this.control.val()});
     if(this.handle_click) {
         // find current selection.
         $.post("event", {'type':"click", 'id':this.controlid}, hitch(this.jwin, "handle_tasks"), "json");
@@ -299,8 +297,7 @@ Text.prototype.create = function(data) {
 }
 
 Text.prototype.changed = function() {
-    $.post("sync", {'id':this.controlid, 'value':this.control.val()},
-                   function() {}, "json");
+    this.jwin.sync({'id':this.controlid, 'value':this.control.val()});
     if(this.handle_change) {
         $.post("event", {'type':"change", 'id':this.controlid}, hitch(this.jwin, "handle_tasks"), "json");
     }
@@ -355,9 +352,7 @@ CheckBox.prototype.create = function(data) {
  * guarantee sync will take place before click
  */
 CheckBox.prototype.changed = function() {
-    $.post("sync", {'id':this.controlid, 
-                    'checked':this.control.attr('checked')
-                    }, function() {}, "json");
+    this.jwin.sync({'id':this.controlid, 'checked':this.control.attr('checked')});
 
     if(this.handle_click) {
         $.post("event", {'type':"click", 'id':this.controlid}, hitch(this.jwin, "handle_tasks"), "json");
@@ -391,9 +386,7 @@ RadioButton.prototype.create = function(data) {
 }
 
 RadioButton.prototype.changed = function() {
-    $.post("sync", {'id':this.controlid, 
-                    'checked':this.control.attr('checked')
-                    }, function() {}, "json");
+    this.jwin.sync({'id':this.controlid, 'checked':this.control.attr('checked') });
 
     if(this.handle_click) {
         $.post("event", {'type':"click", 'id':this.controlid}, hitch(this.jwin, "handle_tasks"), "json");

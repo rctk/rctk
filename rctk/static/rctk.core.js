@@ -10,6 +10,15 @@ function JWinClient(){
     this.toplevels = $("#toplevels");
 }
 
+JWinClient.prototype.sync = function(data) {
+    $.ajax({
+        type: "POST",
+        url: "sync",
+        data: data,
+        success: function() {},
+        dataTye: "json",
+        async: false});
+}
 
 JWinClient.prototype.do_work = function(data) {
     jQuery.log("do_work " + data.toSource());

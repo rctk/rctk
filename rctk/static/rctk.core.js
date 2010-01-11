@@ -12,7 +12,7 @@ function JWinClient(){
 
 
 JWinClient.prototype.do_work = function(data) {
-    //console.log("do_work " + data.toSource());
+    jQuery.log("do_work " + data.toSource());
 
     var control_map = {
         "panel":Panel,

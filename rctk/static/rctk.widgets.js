@@ -103,7 +103,7 @@ Panel.prototype.create = function(data) {
     Container.prototype.create.apply(this, arguments);
 
     if(data.scrolling) {
-        console.log("*** scrolling " + this.controlid);
+        jQuery.log("*** scrolling " + this.controlid);
         this.control.css("overflow", "auto");
         this.scrolling = true;
     }
@@ -441,12 +441,12 @@ Frame.prototype.setLayout = function(type, config) {
 
 Frame.prototype.update = function(data) {
     if(data.state) {
-        console.log("Window state update " + data.toSource());
+        jQuery.log("Window state update " + data.toSource());
         if(data.state == "open") {
             this.container.dialog('open');
         }
         else if(data.state == "close") {
-            console.log("Closing");
+            jQuery.log("Closing");
             this.container.dialog('close');
         }
     }

@@ -240,7 +240,7 @@ IvoLayout.prototype.append = function(control, data) {
 }
 
 IvoLayout.prototype.layout = function() {
-    console.log("laying out " + this.parent.controlid);
+    jQuery.log("laying out " + this.parent.controlid);
     this.create(); // create if we haven't done so already
     
     // first layout all children so we know their proper sizes
@@ -262,10 +262,10 @@ IvoLayout.prototype.layout = function() {
             this.maxheight = Math.max(this.maxheight, ctrl.outerHeight());
         }
         else {
-            console.log(" /// ctrl " + ctr.controlid + " is scrolling");
+            jQuery.log(" /// ctrl " + ctr.controlid + " is scrolling");
         }
     }
-    console.log("max width, height " + this.maxwidth + ", " + this.maxheight);
+    jQuery.log("max width, height " + this.maxwidth + ", " + this.maxheight);
 
     // determine the number of actual rows/cols depending on the number 
     // of controls
@@ -334,16 +334,16 @@ IvoLayout.prototype.layout_fase2 = function() {
 
             var layoutdata = selector.data("layout") || {};
             if(current.expand || (layoutdata && layoutdata.expand_horizontal)) {
-                console.log("+++ item " + idx + " expands horizontally");
-                console.log("scaling to " + this.maxwidth);
+                jQuery.log("+++ item " + idx + " expands horizontally");
+                jQuery.log("scaling to " + this.maxwidth);
                 selector.css("width", this.maxwidth + "px");
             }
             if(current.expand || (layoutdata && layoutdata.expand_vertical)) {
-                console.log("+++ item " + idx + " expands vertically");
-                console.log("scaling to " + this.maxheight);
+                jQuery.log("+++ item " + idx + " expands vertically");
+                jQuery.log("scaling to " + this.maxheight);
                 selector.css("height", this.maxheight + "px");
             }
-            console.log("item " + idx + " positioned at " + y + ", " + x);
+            jQuery.log("item " + idx + " positioned at " + y + ", " + x);
         }
     }
 

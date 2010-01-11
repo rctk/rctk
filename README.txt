@@ -99,7 +99,3 @@ browser.
 XML UI - xml ui definition, and possibly a UI builder that produces such a
  definition
 
-Issues
-------
-- allow toolkitoption to poll for work, default nothing
-- ignore / warn if append window on root

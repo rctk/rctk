@@ -207,13 +207,22 @@ function IvoLayout(jwin, parent, config) {
 
     this.controls = [];
 
-    // only specify the number of cols, the number of rows
-    // follows automatically depending on the number of
-    // controls. One exception (the default), cols=0
-    // which means 1 row, infinite growing cols
+    /*
+     * Configure gridsize. All we need to know is either
+     * the number of columns or the number of rows,
+     * the other follows automatically from the number of 
+     * added * controls.
+     *
+     * If neither is defined, default to 1 row
+     */
     this.columns = parseInt(config.columns?config.columns:0);
+    this.rows = parseInt(config.rows?config.rows:1);
     this.expand_horizontal = config.expand_horizontal;
     this.expand_vertical = config.expand_vertical;
+
+    // the actually required columns/rows
+    this.calculatedcols = 0;
+    this.calculatedrows = 0;
 
 }
 
@@ -237,6 +246,16 @@ IvoLayout.prototype.append = function(control, data) {
     if(data.layout) {
         control.control.data("layout", data.layout);
     }
+
+    // update the number of calculated rows/cols
+    if(this.cols) {
+        this.calculatedcols = Math.min(this.columns, this.controls.length);
+        this.calculatedrows = Math.round(this.controls.length / this.calculatedcols);
+    }
+    else {
+        this.calculatedrows = Math.min(this.rows, this.controls.length);
+        this.calculatedcols = Math.round(this.controls.length / this.calculatedcols);
+    }
 }
 
 IvoLayout.prototype.layout = function() {
@@ -246,6 +265,7 @@ IvoLayout.prototype.layout = function() {
     // first layout all children so we know their proper sizes
     for(var i = 0; i < this.controls.length; i++) {
         var ctr = this.controls[i];
+        // only relevant for Panels?
         if(ctr.layout && ctr.layout.layout) {
             ctr.layout.layout();
         }
@@ -267,38 +287,24 @@ IvoLayout.prototype.layout = function() {
     }
     jQuery.log("max width, height " + this.maxwidth + ", " + this.maxheight);
 
-    // determine the number of actual rows/cols depending on the number 
-    // of controls
-
-    this.actualcols = 0;
-    this.actualrows = 0;
-
-    if(this.columns == 0) {
-        this.actualcols = this.controls.length;
-        this.actualrows = 1;
-    }
-    else {
-        this.actualcols = Math.min(this.columns, this.controls.length);
-        this.actualrows = Math.round(this.controls.length / this.actualcols);
-    }
 
     // check if the layout need to expand to fit the parent
     if(this.expand_horizontal) {
-        var exp_width = this.parent.containingparent.container.width() / this.actualcols;
+        var exp_width = this.parent.containingparent.container.width() / this.calculatedcols;
         if(exp_width > this.maxwidth) {
             this.maxwidth = Math.round(exp_width);
         }
     }
     if(this.expand_vertical) {
-        var exp_height = this.parent.containingparent.container.height() / this.actualrows;
+        var exp_height = this.parent.containingparent.container.height() / this.calculatedrows;
         if(exp_height > this.maxheight) {
             this.maxheight = Math.round(exp_height);
         }
     }
 
 
-    var parentwidth = this.actualcols * this.maxwidth;
-    var parentheight = this.actualrows * this.maxheight;
+    var parentwidth = this.calculatedcols * this.maxwidth;
+    var parentheight = this.calculatedrows * this.maxheight;
 
     this.layoutcontrol.css("width", parentwidth + "px");
     this.layoutcontrol.css("height", parentheight + "px");
@@ -309,9 +315,9 @@ IvoLayout.prototype.layout_fase2 = function() {
     // everything has been sized. Now go scale everything that needs to be scaled.
     // shouldn't influence the sizes, so no explicit order is required
     // first layout all children so we know their proper sizes
-    for(var r = 0; r < this.actualrows; r++) {
-        for(var c = 0; c < this.actualcols; c++) {
-            var idx = r*this.actualcols+c
+    for(var r = 0; r < this.calculatedrows; r++) {
+        for(var c = 0; c < this.calculatedcols; c++) {
+            var idx = r*this.calculatedcols+c
 
             // the grid may contain more cells than there are controls!
             if(idx >= this.controls.length) {
@@ -320,6 +326,7 @@ IvoLayout.prototype.layout_fase2 = function() {
 
             var current = this.controls[idx];
 
+            // only panels?
             if(current.layout && current.layout.layout_fase2) {
                 current.layout.layout_fase2();
             }
@@ -348,3 +355,41 @@ IvoLayout.prototype.layout_fase2 = function() {
     }
 
 }
+
+/*
+ * Stuff to keep in mind:
+ *
+ * Controls have a default, initial size but may be resized to to layout
+ * constriants. This will change their "reported" size.
+ * If the layout itself resized, it may do this on wrong control size. This
+ * means we need to keep track of the default/initial/minimal size - it might
+ * be possible/required to actually shrink controls!
+ */
+/*
+ * fase 1 bepaalt de globale cell size (dus static), fase 2 gaat vervolgens de
+ * controls expanden om (indien nodig) de beschikbare size te gebruiken.
+ *
+ * Voor een niet-static variant moet fase 1 dus aangepast worden en per row/
+ * col de size bepaald worden. Er moet:
+ * - een registratie per row en per col komen (row_sizes, col_sizes). Initieel
+ *   is deze 0 (los van padding)
+ * - bij het bepalen van iedere controlsize moet deze rowsize vergroot worden
+ *   indien nodig. Maar niet verkleind! Idem voor colsize
+ * - generiek werken met row_sizes en col_sizes? Er is geen maxwidth/height met
+ *   flexibele cellen!
+ * - support voor rowspan/colspan. Cellen expliciet definieren, koppelen
+ *   aan controls die er in zitten, incl. dimensions (gebaseerd op row/col
+ *   dims?)
+ */
+function IvoGridLayout(jwin, parent, config) {
+    IvoLayout.apply(this, arguments);
+    this.row_sizes = [];
+    this.col_sizes = [];
+}
+
+IvoGridLayout.prototype = new IvoLayout();
+
+IvoGridLayout.layout = function()  { // fase 1
+
+}
+

@@ -266,16 +266,42 @@ IvoLayout.prototype.calculate_dimensions = function() {
         this.calculatedrows = Math.min(Math.max(this.rows, 1), this.controls.length);
         this.calculatedcols = Math.round(this.controls.length / this.calculatedrows);
     }
+
+    this.matrix = new Array(this.calculatedrows);
+    for(var i = 0; i < this.calculatedrows; i++) {
+        this.matrix[i] = new Array(this.calculatedcols);
+    }
+    // cells: row, col (default -1)
+    // rowspan, colspan: default 1
+
+    for(var i = 0; i < this.controls.length; i++) {
+        var c = this.controls[i];
+        var row = c.row;
+        var col = c.col;
+        var rspan = c.rowspan;
+        var cspan = c.colspan;
+        
+        if(row == -1 || col == -1) {
+            // for(var j=0, r=j/iets, c=j%iets; .. ?)
+            for(var j=0; j < this.calcultatedrows * this.calculatedcols; j++) {
+
+            }
+        }
+
+        // if row/col are -1, find first free spot
+        for(var rr = row; rr < row+rspan; rr++) {
+
+        }
+    }
 }
 
 IvoLayout.prototype.append = function(control, data) {
     this.create();
-    this.controls.push(control);
+    var controlinfo = {row:-1, col:-1, rowspan:-1, colspan:-1, control:control, data:data || {}}
+
+    this.controls.push(controlinfo);
     control.control.appendTo(this.layoutcontrol);
     control.containingparent = this.parent;
-    if(data.layout) {
-        control.control.data("layout", data.layout);
-    }
 
 }
 

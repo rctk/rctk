@@ -6,6 +6,9 @@ class Layout(object):
     def config(self):
         return {'type':self.type}
 
+    def add(self, control, **options):
+        pass
+
 class GridLayout(Layout):
     type = "grid"
 
@@ -47,4 +50,13 @@ class IvoLayout(Layout):
 
     def config(self):
         return {'type':self.type, 'columns':self.columns, 'expand_horizontal':self.expand_horizontal, 'expand_vertical':self.expand_vertical}
+
+
+class IvoStaticGridLayout(IvoLayout):
+    """ a layout with equal-sized cells """
+    type = "ivo-static"
+
+class IvoGridLayout(IvoLayout):
+    """ a layout with scaling rows/columns """
+    type = "ivo-grid"
 

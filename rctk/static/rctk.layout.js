@@ -216,7 +216,7 @@ function IvoLayout(jwin, parent, config) {
      * If neither is defined, default to 1 row
      */
     this.columns = parseInt(config.columns?config.columns:0);
-    this.rows = parseInt(config.rows?config.rows:1);
+    this.rows = parseInt(config.rows?config.rows:0);
     this.expand_horizontal = config.expand_horizontal;
     this.expand_vertical = config.expand_vertical;
 
@@ -224,6 +224,10 @@ function IvoLayout(jwin, parent, config) {
     this.calculatedcols = 0;
     this.calculatedrows = 0;
 
+    // fixed cell size or not
+    this.flexcell = false;
+    this.row_sizes = [];
+    this.col_sizes = [];
 }
 
 IvoLayout.prototype = new Layout();
@@ -238,6 +242,32 @@ IvoLayout.prototype.create = function() {
     this.created = true;
 }
 
+IvoLayout.prototype.calculate_dimensions = function() {
+    if(this.cols && this.rows) {
+        // this is how the user wants it. If inproperly configured,
+        // may cause weird behaviour
+        this.calculatedcols = this.cols;
+        this.calculatedrows = this.rows;
+        return;
+    }
+
+    /*
+     * derive from either rows/cols and number of controls
+     * if we ever support it: use rowspans/colspans for dynamic
+     * dimension calculation. Possibly build an actual matrix and
+     * assign controls appropriately (possibly even taking (x,y) into
+     * account)
+     */
+    if(this.cols) {
+        this.calculatedcols = Math.min(this.columns, this.controls.length);
+        this.calculatedrows = Math.round(this.controls.length / this.calculatedcols);
+    }
+    else {
+        this.calculatedrows = Math.min(Math.max(this.rows, 1), this.controls.length);
+        this.calculatedcols = Math.round(this.controls.length / this.calculatedrows);
+    }
+}
+
 IvoLayout.prototype.append = function(control, data) {
     this.create();
     this.controls.push(control);
@@ -247,20 +277,12 @@ IvoLayout.prototype.append = function(control, data) {
         control.control.data("layout", data.layout);
     }
 
-    // update the number of calculated rows/cols
-    if(this.cols) {
-        this.calculatedcols = Math.min(this.columns, this.controls.length);
-        this.calculatedrows = Math.round(this.controls.length / this.calculatedcols);
-    }
-    else {
-        this.calculatedrows = Math.min(this.rows, this.controls.length);
-        this.calculatedcols = Math.round(this.controls.length / this.calculatedcols);
-    }
 }
 
 IvoLayout.prototype.layout = function() {
     jQuery.log("laying out " + this.parent.controlid);
     this.create(); // create if we haven't done so already
+    this.calculate_dimensions();
     
     // first layout all children so we know their proper sizes
     for(var i = 0; i < this.controls.length; i++) {
@@ -360,7 +382,7 @@ IvoLayout.prototype.layout_fase2 = function() {
  * Stuff to keep in mind:
  *
  * Controls have a default, initial size but may be resized to to layout
- * constriants. This will change their "reported" size.
+ * constraints. This will change their "reported" size.
  * If the layout itself resized, it may do this on wrong control size. This
  * means we need to keep track of the default/initial/minimal size - it might
  * be possible/required to actually shrink controls!
@@ -381,15 +403,3 @@ IvoLayout.prototype.layout_fase2 = function() {
  *   aan controls die er in zitten, incl. dimensions (gebaseerd op row/col
  *   dims?)
  */
-function IvoGridLayout(jwin, parent, config) {
-    IvoLayout.apply(this, arguments);
-    this.row_sizes = [];
-    this.col_sizes = [];
-}
-
-IvoGridLayout.prototype = new IvoLayout();
-
-IvoGridLayout.layout = function()  { // fase 1
-
-}
-

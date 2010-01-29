@@ -16,7 +16,7 @@ Layout.prototype.create = function() {
 }
 
 // no-cell version
-Layout.prototype.append = function(control) {
+Layout.prototype.append = function(control, options) {
     this.create();
     control.control.appendTo(this.layoutcontrol);
     control.containingparent = this.parent;
@@ -104,7 +104,7 @@ TabbedLayout.prototype.layout_fase2 = function() {
  * - allow expanding (h/v) of controls within available space
  * - allow layoutmanager to expand to available space (in stead of just using what it needs)
 
- 2 fase:
+ 2 phases:
  - first calculate all sizes and try to layout things
  - then let all controls resize themself to the available space.
  */
@@ -132,7 +132,7 @@ function PowerLayout(jwin, parent, config) {
     this.calculatedrows = 0;
 
     // fixed cell size or not
-    this.flexcell = false;
+    this.flexcell = config.flex;
     this.row_sizes = [];
     this.col_sizes = [];
 }
@@ -202,7 +202,7 @@ PowerLayout.prototype.calculate_dimensions = function() {
         if(row == -1 || col == -1) {
             for(var j=0, row=0, col=0; j < this.calculatedrows*this.calculatedcols; 
                 j++, row=Math.floor(j/this.calculatedcols), col=j%this.calculatedcols) {
-                if(typeof(this.matrix[row][col]) == 'undefined') {
+                if(this.matrix[row][col] === undefined) {
                     break;
                 }
             }
@@ -231,6 +231,19 @@ PowerLayout.prototype.append = function(control, data) {
     // this is alot of control: control.control.control!
     var controlinfo = {row:-1, col:-1, rowspan:1, colspan:1, control:control, data:data || {}}
 
+    if("row" in data) {
+        controlinfo.row = data.row;
+    }
+    if("col" in data) {
+        controlinfo.col = data.col;
+    }
+    if("rowspan" in data) {
+        controlinfo.rowspan = data.rowspan;
+    }
+    if("colspan" in data) {
+        controlinfo.colspan = data.colspan;
+    }
+
     this.controls.push(controlinfo);
     control.control.appendTo(this.layoutcontrol);
     control.containingparent = this.parent;
@@ -242,7 +255,7 @@ PowerLayout.prototype.sumwidth = function(col) {
     // of the entire matrix (col undefined), taking fixed
     // cell size into account or not
     var s = 0;
-    if(typeof(col) == 'undefined') {
+    if(col === undefined) {
         col = this.calculatedcols;
     }
     if(!this.flexcell) {
@@ -259,7 +272,7 @@ PowerLayout.prototype.sumheight = function(row) {
     // of the entire matrix (row undefined), taking fixed
     // cell size into account or not
     var s = 0;
-    if(typeof(row) == 'undefined') {
+    if(row === undefined) {
         row = this.calculatedrows;
     }
     if(!this.flexcell) {
@@ -290,14 +303,15 @@ PowerLayout.prototype.layout = function() {
 
     for(var r = 0; r < this.calculatedrows; r++) {
         for(var c = 0; c < this.calculatedcols; c++) {
-            if(typeof(this.matrix[r][c]) == 'undefined') {
+            if(this.matrix[r][c] === undefined) {
                 continue;
             }
             var ctrinfo = this.matrix[r][c];
+            ctrinfo.laidout = false; // initialize/clear for the actual layout-step
             var ctr = ctrinfo.control;
             var ctrl = ctr.control;
-            var w = ctrl.outerWidth();
-            var h = ctrl.outerHeight();
+            var w = Math.round(ctrl.outerWidth() / ctrinfo.colspan);
+            var h = Math.round(ctrl.outerHeight() / ctrinfo.rowspan);
 
             if(!ctr.scrolling) {
                 this.maxwidth = Math.max(this.maxwidth, w);
@@ -344,10 +358,21 @@ PowerLayout.prototype.layout_fase2 = function() {
     // first layout all children so we know their proper sizes
     for(var r = 0; r < this.calculatedrows; r++) {
         for(var c = 0; c < this.calculatedcols; c++) {
-            if(typeof(this.matrix[r][c]) == 'undefined') {
+            if(this.matrix[r][c] === undefined) {
                 continue;
             }
             var ctrinfo = this.matrix[r][c];
+
+            /*
+             * We're visiting each cell, which means visiting controls
+             * that span multiple rows/columns more than once. Don't
+             * reposition them!
+             */
+            if(ctrinfo.laidout) {
+                continue;
+            }
+            ctrinfo.laidout = true;
+
             var current = ctrinfo.control;
 
             // only panels?
@@ -397,20 +422,6 @@ PowerLayout.prototype.layout_fase2 = function() {
  * If the layout itself resized, it may do this on wrong control size. This
  * means we need to keep track of the default/initial/minimal size - it might
  * be possible/required to actually shrink controls!
- */
-/*
- * fase 1 bepaalt de globale cell size (dus static), fase 2 gaat vervolgens de
- * controls expanden om (indien nodig) de beschikbare size te gebruiken.
  *
- * Voor een niet-static variant moet fase 1 dus aangepast worden en per row/
- * col de size bepaald worden. Er moet:
- * - een registratie per row en per col komen (row_sizes, col_sizes). Initieel
- *   is deze 0 (los van padding)
- * - bij het bepalen van iedere controlsize moet deze rowsize vergroot worden
- *   indien nodig. Maar niet verkleind! Idem voor colsize
- * - generiek werken met row_sizes en col_sizes? Er is geen maxwidth/height met
- *   flexibele cellen!
- * - support voor rowspan/colspan. Cellen expliciet definieren, koppelen
- *   aan controls die er in zitten, incl. dimensions (gebaseerd op row/col
- *   dims?)
+ * Calculate appropriate sizes based on the rowspan/colspan (!)
  */

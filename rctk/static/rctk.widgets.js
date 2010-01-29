@@ -37,7 +37,7 @@ Control.prototype.create = function(data) {
 function Container(jwin, parent, controlid) {
     Control.apply(this, arguments);
     // default layout manager
-    this.layout = new IvoLayout(this.jwin, this);
+    this.layout = new PowerLayout(this.jwin, this);
 }
 
 Container.prototype = new Control();
@@ -56,28 +56,12 @@ Container.prototype.setLayout = function(type, config) {
     // unimplemented options:
     // hgap, vgap, resize (default true)
     switch(type) {
-    case "grid":
-        this.layout = new GridLayout(this.jwin, this, config);
-        this.layout.create();
-        break;
-    case "border":
-        this.layout = new BorderLayout(this.jwin, this, config);
-        this.layout.create();
-        break;
-    case "flex-grid":
-        this.layout = new FlexGridLayout(this.jwin, this, config);
-        this.layout.create();
-        break;
-    case "flow":
-        this.layout = new FlowGridLayout(this.jwin, this, config);
-        this.layout.create();
-        break;
     case 'tabbed':
         this.layout = new TabbedLayout(this.jwin, this, config);
         this.layout.create();
         break;
-    case 'ivo':
-        this.layout = new IvoLayout(this.jwin, this, config);
+    case 'power':
+        this.layout = new PowerLayout(this.jwin, this, config);
         this.layout.create();
         break;
     }

@@ -1,25 +1,3 @@
-/*
- * Layouts manage the positioning of controls in a container. Containers 
- * usually have a default layout that can be overridden before the first
- * control is added. Once a control is added, the layout will be created,
- * no further changes are possible then.
- *
- * This is due to the fact that the div that becomes the layout gets all
- * kinds of styling information set, so changing the layout after creation
- * will result in messed up layouts.
- *
- *
- */
-
-/*
- * Layout is the base Layout. It doesn't implement an actual layout
- * It currently somewhat assumes the layouts are JLayout based (it calls
- * layoutcontrol.layout()), which doesn't work for all layouts. 
- * XXX This needs refactoring!
- *
- * After each modification on JLayout based layouts, the layout() method
- * needs to be called to reorganize the controls.
- */
 function Layout(jwin, parent, config) {
     this.jwin = jwin;
     this.parent = parent;
@@ -52,77 +30,6 @@ Layout.prototype.xappend = function(control) {
     ctr.append(control);
     control.control.appendTo(ctr);
     ctr.addClass("cell");
-    this.layoutcontrol.layout(this.config);
-}
-
-/*
- * A Grid layout can be a single row (columns=1), a single
- * column (rows=1) or an NxM matrix of controls
- */
-function GridLayout(jwin, parent, config) {
-    Layout.apply(this, arguments);
-    if(config) {
-        this.config = {
-            'type':'grid',
-            'columns':config.columns?config.columns:1,
-            'rows':config.rows?config.rows:1
-        };
-    }
-}
-
-GridLayout.prototype = new Layout();
-
-function FlexGridLayout(jwin, parent, config) {
-    Layout.apply(this, arguments);
-    if(config) {
-        this.config = {
-            'type':'flex-grid',
-            'columns':config.columns?config.columns:1,
-            'rows':config.rows?config.rows:1
-        };
-    }
-}
-
-FlexGridLayout.prototype = new Layout();
-
-function FlowLayout(jwin, parent, config) {
-    Layout.apply(this, arguments);
-    if(config) {
-        this.config = {
-            'type':'flow',
-            'columns':config.columns?config.columns:1,
-            'rows':config.rows?config.rows:1,
-            'alignment':config.alignment!=undefined?config.alignment:'left'
-        };
-    }
-}
-
-FlowLayout.prototype = new Layout();
-
-function BorderLayout(jwin, parent, config) {
-    Layout.apply(this, arguments);
-    this.config = {
-        'type':'border',
-    };
-}
-
-BorderLayout.prototype = new Layout();
-
-BorderLayout.prototype.append = function(control, data) {
-    this.create();
-
-    var direction = data.direction;
-
-    if(this[direction] == undefined) {
-        this.layoutcontrol.append("<div id='layoutctr" + control.controlid + "'></div>");
-        this[direction] = $("#layoutctr" + control.controlid);
-        this[direction].addClass(direction);
-        this[direction].addClass("cell");
-    }
-    // XXX remove old!
-    control.control.appendTo(this[direction]);
-    control.containingparent = this.parent;
-    // this[direction].append(control);
     this.layoutcontrol.layout(this.config);
 }
 
@@ -201,7 +108,7 @@ TabbedLayout.prototype.layout_fase2 = function() {
  - first calculate all sizes and try to layout things
  - then let all controls resize themself to the available space.
  */
-function IvoLayout(jwin, parent, config) {
+function PowerLayout(jwin, parent, config) {
     Layout.apply(this, arguments);
     config = config?config:{};
 
@@ -230,9 +137,9 @@ function IvoLayout(jwin, parent, config) {
     this.col_sizes = [];
 }
 
-IvoLayout.prototype = new Layout();
+PowerLayout.prototype = new Layout();
 
-IvoLayout.prototype.create = function() {
+PowerLayout.prototype.create = function() {
     if(this.created) {
         return;
     }
@@ -242,7 +149,7 @@ IvoLayout.prototype.create = function() {
     this.created = true;
 }
 
-IvoLayout.prototype.calculate_dimensions = function() {
+PowerLayout.prototype.calculate_dimensions = function() {
     if(this.cols && this.rows) {
         // this is how the user wants it. If inproperly configured,
         // may cause weird behaviour
@@ -319,7 +226,7 @@ IvoLayout.prototype.calculate_dimensions = function() {
     }
 }
 
-IvoLayout.prototype.append = function(control, data) {
+PowerLayout.prototype.append = function(control, data) {
     this.create();
     // this is alot of control: control.control.control!
     var controlinfo = {row:-1, col:-1, rowspan:1, colspan:1, control:control, data:data || {}}
@@ -330,7 +237,7 @@ IvoLayout.prototype.append = function(control, data) {
 
 }
 
-IvoLayout.prototype.sumwidth = function(col) {
+PowerLayout.prototype.sumwidth = function(col) {
     // calculate the offset of a certain column, or the width
     // of the entire matrix (col undefined), taking fixed
     // cell size into account or not
@@ -347,7 +254,7 @@ IvoLayout.prototype.sumwidth = function(col) {
     return s;
 }
 
-IvoLayout.prototype.sumheight = function(row) {
+PowerLayout.prototype.sumheight = function(row) {
     // calculate the offset of a certain row, or the height
     // of the entire matrix (row undefined), taking fixed
     // cell size into account or not
@@ -364,7 +271,7 @@ IvoLayout.prototype.sumheight = function(row) {
     return s;
 }
 
-IvoLayout.prototype.layout = function() {
+PowerLayout.prototype.layout = function() {
     jQuery.log("laying out " + this.parent.controlid);
     this.create(); // create if we haven't done so already
     this.calculate_dimensions();
@@ -430,7 +337,7 @@ IvoLayout.prototype.layout = function() {
     jQuery.log("Scaling parent to " + parentwidth + ", " + parentheight);
 }
 
-IvoLayout.prototype.layout_fase2 = function() {
+PowerLayout.prototype.layout_fase2 = function() {
     // can't think of a better name.
     // everything has been sized. Now go scale everything that needs to be scaled.
     // shouldn't influence the sizes, so no explicit order is required

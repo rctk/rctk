@@ -338,7 +338,7 @@ IvoLayout.prototype.sumwidth = function(col) {
     if(typeof(col) == 'undefined') {
         col = this.calculatedcols;
     }
-    if(this.flexcell) {
+    if(!this.flexcell) {
         return this.maxwidth * col;
     }
     for(var i = 0; i < col; i++) {
@@ -355,7 +355,7 @@ IvoLayout.prototype.sumheight = function(row) {
     if(typeof(row) == 'undefined') {
         row = this.calculatedrows;
     }
-    if(this.flexcell) {
+    if(!this.flexcell) {
         return this.maxheight * row;
     }
     for(var i = 0; i < row; i++) {
@@ -387,7 +387,7 @@ IvoLayout.prototype.layout = function() {
                 continue;
             }
             var ctrinfo = this.matrix[r][c];
-            var crt = ctrinfo.control;
+            var ctr = ctrinfo.control;
             var ctrl = ctr.control;
             var w = ctrl.outerWidth();
             var h = ctrl.outerHeight();
@@ -397,7 +397,7 @@ IvoLayout.prototype.layout = function() {
                 this.maxheight = Math.max(this.maxheight, h);
 
                 this.row_sizes[r] = Math.max(this.row_sizes[r], h);
-                this.col_sizes[r] = Math.max(this.col_sizes[r], w);
+                this.col_sizes[c] = Math.max(this.col_sizes[c], w);
             }
             else {
                 jQuery.log(" /// ctrl " + ctr.controlid + " is scrolling");
@@ -427,6 +427,7 @@ IvoLayout.prototype.layout = function() {
 
     this.layoutcontrol.css("width", parentwidth + "px");
     this.layoutcontrol.css("height", parentheight + "px");
+    jQuery.log("Scaling parent to " + parentwidth + ", " + parentheight);
 }
 
 IvoLayout.prototype.layout_fase2 = function() {
@@ -448,12 +449,12 @@ IvoLayout.prototype.layout_fase2 = function() {
             }
             var selector = current.control;
 
-            var x = this.sumheight(r);
-            var y = this.sumwidth(c);
+            var x = this.sumwidth(c);
+            var y = this.sumheight(r);
 
             selector.css("position", "absolute");
             selector.css("top", y + "px");
-            selector.css("left", x) + "px";
+            selector.css("left", x + "px");
 
             var layoutdata = ctrinfo.data || {};
             var w = this.col_sizes[c];
@@ -462,6 +463,8 @@ IvoLayout.prototype.layout_fase2 = function() {
                 w = this.maxwidth;
                 h = this.maxheight;
             }
+            jQuery.log("positioning: w, h " + w + "," + h);
+
             if(current.expand || (layoutdata && layoutdata.expand_horizontal)) {
                 // XXX Keep original dimensions!
                 jQuery.log("+++ item (" + r + ", " + c + ") expands horizontally");
@@ -473,7 +476,7 @@ IvoLayout.prototype.layout_fase2 = function() {
                 jQuery.log("scaling to " + h);
                 selector.css("height", h + "px");
             }
-            jQuery.log("item (" + r + ", " + c + ") positioned at " + y + ", " + x);
+            jQuery.log("item (" + r + ", " + c + ") positioned at " + x + ", " + y);
         }
     }
 

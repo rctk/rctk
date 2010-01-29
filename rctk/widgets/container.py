@@ -1,6 +1,6 @@
 from control import Control
 
-from rctk.layouts import IvoLayout, GridLayout, LayoutException
+from rctk.layouts import IvoLayout, LayoutException
 from rctk.task import Task
 
 class Container(Control):

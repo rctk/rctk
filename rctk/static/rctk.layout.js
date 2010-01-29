@@ -215,7 +215,7 @@ function IvoLayout(jwin, parent, config) {
      *
      * If neither is defined, default to 1 row
      */
-    this.columns = parseInt(config.columns?config.columns:0);
+    this.cols = parseInt(config.columns?config.columns:0);
     this.rows = parseInt(config.rows?config.rows:0);
     this.expand_horizontal = config.expand_horizontal;
     this.expand_vertical = config.expand_vertical;
@@ -248,7 +248,6 @@ IvoLayout.prototype.calculate_dimensions = function() {
         // may cause weird behaviour
         this.calculatedcols = this.cols;
         this.calculatedrows = this.rows;
-        return;
     }
 
     /*
@@ -258,13 +257,24 @@ IvoLayout.prototype.calculate_dimensions = function() {
      * assign controls appropriately (possibly even taking (x,y) into
      * account)
      */
-    if(this.cols) {
-        this.calculatedcols = Math.min(this.columns, this.controls.length);
+    else if(this.cols) {
+        this.calculatedcols = Math.min(this.cols, this.controls.length);
         this.calculatedrows = Math.round(this.controls.length / this.calculatedcols);
     }
     else {
         this.calculatedrows = Math.min(Math.max(this.rows, 1), this.controls.length);
         this.calculatedcols = Math.round(this.controls.length / this.calculatedrows);
+    }
+
+    jQuery.log("# calculated rows: " + this.calculatedrows);
+    jQuery.log("# calculated cols: " + this.calculatedcols);
+    this.row_sizes = [];
+    this.col_sizes = [];
+    for(var i = 0; i < this.calculatedrows; i++) {
+        this.row_sizes.push(0);
+    }
+    for(var i = 0; i < this.calculatedcols; i++) {
+        this.col_sizes.push(0);
     }
 
     this.matrix = new Array(this.calculatedrows);
@@ -280,29 +290,78 @@ IvoLayout.prototype.calculate_dimensions = function() {
         var col = c.col;
         var rspan = c.rowspan;
         var cspan = c.colspan;
+        jQuery.log("Positioning " + i + " row, col, rspan, cspan: " + row + ", " + col + ", " + rspan + ", " + cspan);
         
         if(row == -1 || col == -1) {
-            // for(var j=0, r=j/iets, c=j%iets; .. ?)
-            for(var j=0; j < this.calcultatedrows * this.calculatedcols; j++) {
-
+            for(var j=0, row=0, col=0; j < this.calculatedrows*this.calculatedcols; 
+                j++, row=Math.floor(j/this.calculatedcols), col=j%this.calculatedcols) {
+                if(typeof(this.matrix[row][col]) == 'undefined') {
+                    break;
+                }
+            }
+            // no entry found? Then the matrix is full, no need to continue
+            if(j >= this.calculatedrows*this.calculatedcols) {
+                return;
             }
         }
 
-        // if row/col are -1, find first free spot
-        for(var rr = row; rr < row+rspan; rr++) {
 
+        if(row+rspan-1 >= this.calculatedrows || col+cspan-1 >= this.calculatedcols) {
+            continue;
+        }
+        jQuery.log("Found space: " + row + ", " + col);
+        for(var rr = row; rr < row+rspan; rr++) {
+            for(var cc = col; cc < col+cspan; cc++) {
+                //jQuery.log
+                this.matrix[rr][cc] = c;
+            }
         }
     }
 }
 
 IvoLayout.prototype.append = function(control, data) {
     this.create();
-    var controlinfo = {row:-1, col:-1, rowspan:-1, colspan:-1, control:control, data:data || {}}
+    // this is alot of control: control.control.control!
+    var controlinfo = {row:-1, col:-1, rowspan:1, colspan:1, control:control, data:data || {}}
 
     this.controls.push(controlinfo);
     control.control.appendTo(this.layoutcontrol);
     control.containingparent = this.parent;
 
+}
+
+IvoLayout.prototype.sumwidth = function(col) {
+    // calculate the offset of a certain column, or the width
+    // of the entire matrix (col undefined), taking fixed
+    // cell size into account or not
+    var s = 0;
+    if(typeof(col) == 'undefined') {
+        col = this.calculatedcols;
+    }
+    if(this.flexcell) {
+        return this.maxwidth * col;
+    }
+    for(var i = 0; i < col; i++) {
+        s += this.col_sizes[i];
+    }
+    return s;
+}
+
+IvoLayout.prototype.sumheight = function(row) {
+    // calculate the offset of a certain row, or the height
+    // of the entire matrix (row undefined), taking fixed
+    // cell size into account or not
+    var s = 0;
+    if(typeof(row) == 'undefined') {
+        row = this.calculatedrows;
+    }
+    if(this.flexcell) {
+        return this.maxheight * row;
+    }
+    for(var i = 0; i < row; i++) {
+        s += this.row_sizes[i];
+    }
+    return s;
 }
 
 IvoLayout.prototype.layout = function() {
@@ -312,7 +371,7 @@ IvoLayout.prototype.layout = function() {
     
     // first layout all children so we know their proper sizes
     for(var i = 0; i < this.controls.length; i++) {
-        var ctr = this.controls[i];
+        var ctr = this.controls[i].control;
         // only relevant for Panels?
         if(ctr.layout && ctr.layout.layout) {
             ctr.layout.layout();
@@ -322,15 +381,27 @@ IvoLayout.prototype.layout = function() {
     this.maxwidth = 0;
     this.maxheight = 0;
 
-    for(var i = 0; i < this.controls.length; i++) {
-        var ctr = this.controls[i];
-        var ctrl = ctr.control;
-        if(!ctr.scrolling) {
-            this.maxwidth = Math.max(this.maxwidth, ctrl.outerWidth());
-            this.maxheight = Math.max(this.maxheight, ctrl.outerHeight());
-        }
-        else {
-            jQuery.log(" /// ctrl " + ctr.controlid + " is scrolling");
+    for(var r = 0; r < this.calculatedrows; r++) {
+        for(var c = 0; c < this.calculatedcols; c++) {
+            if(typeof(this.matrix[r][c]) == 'undefined') {
+                continue;
+            }
+            var ctrinfo = this.matrix[r][c];
+            var crt = ctrinfo.control;
+            var ctrl = ctr.control;
+            var w = ctrl.outerWidth();
+            var h = ctrl.outerHeight();
+
+            if(!ctr.scrolling) {
+                this.maxwidth = Math.max(this.maxwidth, w);
+                this.maxheight = Math.max(this.maxheight, h);
+
+                this.row_sizes[r] = Math.max(this.row_sizes[r], h);
+                this.col_sizes[r] = Math.max(this.col_sizes[r], w);
+            }
+            else {
+                jQuery.log(" /// ctrl " + ctr.controlid + " is scrolling");
+            }
         }
     }
     jQuery.log("max width, height " + this.maxwidth + ", " + this.maxheight);
@@ -351,8 +422,8 @@ IvoLayout.prototype.layout = function() {
     }
 
 
-    var parentwidth = this.calculatedcols * this.maxwidth;
-    var parentheight = this.calculatedrows * this.maxheight;
+    var parentwidth = this.sumwidth();
+    var parentheight = this.sumheight();
 
     this.layoutcontrol.css("width", parentwidth + "px");
     this.layoutcontrol.css("height", parentheight + "px");
@@ -365,14 +436,11 @@ IvoLayout.prototype.layout_fase2 = function() {
     // first layout all children so we know their proper sizes
     for(var r = 0; r < this.calculatedrows; r++) {
         for(var c = 0; c < this.calculatedcols; c++) {
-            var idx = r*this.calculatedcols+c
-
-            // the grid may contain more cells than there are controls!
-            if(idx >= this.controls.length) {
-                break;
+            if(typeof(this.matrix[r][c]) == 'undefined') {
+                continue;
             }
-
-            var current = this.controls[idx];
+            var ctrinfo = this.matrix[r][c];
+            var current = ctrinfo.control;
 
             // only panels?
             if(current.layout && current.layout.layout_fase2) {
@@ -380,25 +448,32 @@ IvoLayout.prototype.layout_fase2 = function() {
             }
             var selector = current.control;
 
-            var x = r * this.maxheight;
-            var y = c * this.maxwidth;
+            var x = this.sumheight(r);
+            var y = this.sumwidth(c);
 
             selector.css("position", "absolute");
-            selector.css("top", x + "px");
-            selector.css("left", y) + "px";
+            selector.css("top", y + "px");
+            selector.css("left", x) + "px";
 
-            var layoutdata = selector.data("layout") || {};
+            var layoutdata = ctrinfo.data || {};
+            var w = this.col_sizes[c];
+            var h = this.row_sizes[r];
+            if(!this.flexcell) {
+                w = this.maxwidth;
+                h = this.maxheight;
+            }
             if(current.expand || (layoutdata && layoutdata.expand_horizontal)) {
-                jQuery.log("+++ item " + idx + " expands horizontally");
-                jQuery.log("scaling to " + this.maxwidth);
-                selector.css("width", this.maxwidth + "px");
+                // XXX Keep original dimensions!
+                jQuery.log("+++ item (" + r + ", " + c + ") expands horizontally");
+                jQuery.log("scaling to " + w);
+                selector.css("width", w + "px");
             }
             if(current.expand || (layoutdata && layoutdata.expand_vertical)) {
-                jQuery.log("+++ item " + idx + " expands vertically");
-                jQuery.log("scaling to " + this.maxheight);
-                selector.css("height", this.maxheight + "px");
+                jQuery.log("+++ item (" + r + ", " + c + ") expands vertically");
+                jQuery.log("scaling to " + h);
+                selector.css("height", h + "px");
             }
-            jQuery.log("item " + idx + " positioned at " + y + ", " + x);
+            jQuery.log("item (" + r + ", " + c + ") positioned at " + y + ", " + x);
         }
     }
 

@@ -57,5 +57,5 @@ def app(a, *args, **kw):
     return web.application(('/(.*)', 'receiver'), {'receiver':stateful}, autoreload=True)
 
 def serve(a, *args, **kw):
-    app(a).run()
+    app(a, *args, **kw).run()
 

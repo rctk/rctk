@@ -66,7 +66,7 @@ class StaticGridLayout(Power):
     """
     def __init__(self, rows=0, columns=1, expand_horizontal=False, 
                  expand_vertical=False):
-        super(GridLayout, self).__init__(rows, columns, expand_horizontal=expand_horizontal, 
+        super(StaticGridLayout, self).__init__(rows, columns, expand_horizontal=expand_horizontal, 
                                          expand_vertical=expand_vertical, flex=False)
 class HBox(Power):
     """
@@ -76,7 +76,7 @@ class HBox(Power):
         Colspan and absolute positioning are supported
     """
     def __init__(self, expand_horizontal=False, expand_vertical=False):
-        super(GridLayout, self).__init__(rows=1, expand_horizontal=expand_horizontal, 
+        super(HBox, self).__init__(rows=1, expand_horizontal=expand_horizontal, 
                                          expand_vertical=expand_vertical, flex=False)
 
 class StaticHBox(Power):
@@ -98,7 +98,7 @@ class VBox(Power):
         Rowspan and absolute positioning are supported
     """
     def __init__(self, expand_horizontal=False, expand_vertical=False):
-        super(GridLayout, self).__init__(columns=1, expand_horizontal=expand_horizontal, 
+        super(VBox, self).__init__(columns=1, expand_horizontal=expand_horizontal, 
                                          expand_vertical=expand_vertical, flex=False)
 
 class StaticVBox(Power):
@@ -109,5 +109,5 @@ class StaticVBox(Power):
         Rowspan and absolute positioning are supported
     """
     def __init__(self, expand_horizontal=False, expand_vertical=False):
-        super(GridLayout, self).__init__(rows=1, expand_horizontal=expand_horizontal, 
+        super(StaticVBox, self).__init__(rows=1, expand_horizontal=expand_horizontal, 
                                          expand_vertical=expand_vertical, flex=True)

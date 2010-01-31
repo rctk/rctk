@@ -75,8 +75,8 @@ class HBox(Power):
 
         Colspan and absolute positioning are supported
     """
-    def __init__(self, expand_horizontal=False, expand_vertical=False):
-        super(HBox, self).__init__(rows=1, expand_horizontal=expand_horizontal, 
+    def __init__(self, columns=columns, expand_horizontal=False, expand_vertical=False):
+        super(HBox, self).__init__(rows=1, columns=columns, expand_horizontal=expand_horizontal, 
                                          expand_vertical=expand_vertical, flex=False)
 
 class StaticHBox(Power):
@@ -86,8 +86,8 @@ class StaticHBox(Power):
 
         Colspan and absolute positioning are supported
     """
-    def __init__(self, expand_horizontal=False, expand_vertical=False):
-        super(GridLayout, self).__init__(columns=1, expand_horizontal=expand_horizontal, 
+    def __init__(self, columns=columns, expand_horizontal=False, expand_vertical=False):
+        super(GridLayout, self).__init__(rows=1, columns=columns, expand_horizontal=expand_horizontal, 
                                          expand_vertical=expand_vertical, flex=True)
 
 class VBox(Power):
@@ -97,8 +97,8 @@ class VBox(Power):
 
         Rowspan and absolute positioning are supported
     """
-    def __init__(self, expand_horizontal=False, expand_vertical=False):
-        super(VBox, self).__init__(columns=1, expand_horizontal=expand_horizontal, 
+    def __init__(self, rows=0, expand_horizontal=False, expand_vertical=False):
+        super(VBox, self).__init__(columns=1, rows=rows, expand_horizontal=expand_horizontal, 
                                          expand_vertical=expand_vertical, flex=False)
 
 class StaticVBox(Power):
@@ -108,6 +108,6 @@ class StaticVBox(Power):
 
         Rowspan and absolute positioning are supported
     """
-    def __init__(self, expand_horizontal=False, expand_vertical=False):
-        super(StaticVBox, self).__init__(rows=1, expand_horizontal=expand_horizontal, 
+    def __init__(self, rows=0, expand_horizontal=False, expand_vertical=False):
+        super(StaticVBox, self).__init__(columns=1, rows=rows, expand_horizontal=expand_horizontal, 
                                          expand_vertical=expand_vertical, flex=True)

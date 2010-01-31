@@ -1,6 +1,6 @@
 from control import Control
 
-from rctk.layouts import IvoLayout, LayoutException
+from rctk.layouts import GridLayout, LayoutException
 from rctk.task import Task
 
 class Container(Control):
@@ -12,7 +12,7 @@ class Container(Control):
         as long as no controls have been added 
     """
 
-    default_layout = IvoLayout
+    default_layout = GridLayout
 
     def __init__(self, tk):
         super(Container, self).__init__(tk)

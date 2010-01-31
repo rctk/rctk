@@ -12,7 +12,7 @@ class Layout(object):
 class TabbedLayout(Layout):
     type = "tabbed"
 
-class IvoLayout(Layout):
+class PowerLayout(Layout):
     """
         Experimental, new, flexible layoutmanager.
 
@@ -35,12 +35,72 @@ class IvoLayout(Layout):
     def config(self):
         return {'type':self.type, 'columns':self.columns, 'rows':self.rows, 'expand_horizontal':self.expand_horizontal, 'expand_vertical':self.expand_vertical, 'flex':self.flex }
 
+class GridLayout(PowerLayout):
+    """
+        Lays out controls in a grid. Dimensions can be explicitly defined,
+        or derived from the specified number of rows, columns and the number
+        of controls. The cells are sized dynamically (row/column-wise)
 
-class IvoStaticGridLayout(IvoLayout):
-    """ a layout with equal-sized cells """
-    type = "ivo-static"
+        Supports explicit positioning using row/column coordinates and
+        row/colspan.
+    """
+    def __init__(self, rows=0, columns=1, expand_horizontal=False, 
+                 expand_vertical=False):
+        super(GridLayout, self).__init__(rows, columns, expand_horizontal=expand_horizontal, 
+                                         expand_vertical=expand_vertical, flex=True)
+class StaticGridLayout(PowerLayout):
+    """
+        Lays out controls in a grid. Dimensions can be explicitly defined,
+        or derived from the specified number of rows, columns and the number
+        of controls. The cells are fixed size: the size of the largest control.
 
-class IvoGridLayout(IvoLayout):
-    """ a layout with scaling rows/columns """
-    type = "ivo-grid"
+        Supports explicit positioning using row/column coordinates and
+        row/colspan.
+    """
+    def __init__(self, rows=0, columns=1, expand_horizontal=False, 
+                 expand_vertical=False):
+        super(GridLayout, self).__init__(rows, columns, expand_horizontal=expand_horizontal, 
+                                         expand_vertical=expand_vertical, flex=False)
+class HBox(PowerLayout):
+    """
+        Lays out controls in a horizontal box (1 row). The width of
+        individual cells are flexible
 
+        Colspan and absolute positioning are supported
+    """
+    def __init__(self, expand_horizontal=False, expand_vertical=False):
+        super(GridLayout, self).__init__(rows=1, expand_horizontal=expand_horizontal, 
+                                         expand_vertical=expand_vertical, flex=False)
+
+class StaticHBox(PowerLayout):
+    """
+        Lays out controls in a horizontal box (1 row). The width of
+        individual cells are fixed: the width of the largest control.
+
+        Colspan and absolute positioning are supported
+    """
+    def __init__(self, expand_horizontal=False, expand_vertical=False):
+        super(GridLayout, self).__init__(columns=1, expand_horizontal=expand_horizontal, 
+                                         expand_vertical=expand_vertical, flex=True)
+
+class VBox(PowerLayout):
+    """
+        Lays out controls in a vertical box (1 column). The height of
+        individual cells are flexible
+
+        Rowspan and absolute positioning are supported
+    """
+    def __init__(self, expand_horizontal=False, expand_vertical=False):
+        super(GridLayout, self).__init__(columns=1, expand_horizontal=expand_horizontal, 
+                                         expand_vertical=expand_vertical, flex=False)
+
+class StaticVBox(PowerLayout):
+    """
+        Lays out controls in a vertical box (1 column). The height of
+        individual cells are flexible: the height of the largest control
+
+        Rowspan and absolute positioning are supported
+    """
+    def __init__(self, expand_horizontal=False, expand_vertical=False):
+        super(GridLayout, self).__init__(rows=1, expand_horizontal=expand_horizontal, 
+                                         expand_vertical=expand_vertical, flex=True)

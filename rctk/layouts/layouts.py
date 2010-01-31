@@ -1,3 +1,11 @@
+##
+## TODO:
+##
+## - use layout to send the actual append() task. this way the 
+##   LM can properly check the passed constraints and do local
+##   calculations of necessary
+## - support more constraints (top/left/.. alignment, expanding)
+
 class LayoutException(Exception):
     pass
 
@@ -6,20 +14,15 @@ class Layout(object):
     def config(self):
         return {'type':self.type}
 
-    def add(self, control, **options):
-        pass
-
 class TabbedLayout(Layout):
     type = "tabbed"
 
-class PowerLayout(Layout):
+class Power(Layout):
     """
-        Experimental, new, flexible layoutmanager.
-
-        Some issues:
-        - needs proper cascading of layout(), starting at the toplevel/root
-        - all cells are equally sized. This is not always desirable, i.e.
-          when nesting
+        New layoutmanager. Replaces the previous JLayout based 
+        implementations. This is the mega-manager that can do
+        everything, it's easier to use one of the specialized
+        subclasses
     """
 
     type = "power"
@@ -35,7 +38,7 @@ class PowerLayout(Layout):
     def config(self):
         return {'type':self.type, 'columns':self.columns, 'rows':self.rows, 'expand_horizontal':self.expand_horizontal, 'expand_vertical':self.expand_vertical, 'flex':self.flex }
 
-class GridLayout(PowerLayout):
+class Grid(Power):
     """
         Lays out controls in a grid. Dimensions can be explicitly defined,
         or derived from the specified number of rows, columns and the number
@@ -48,7 +51,11 @@ class GridLayout(PowerLayout):
                  expand_vertical=False):
         super(GridLayout, self).__init__(rows, columns, expand_horizontal=expand_horizontal, 
                                          expand_vertical=expand_vertical, flex=True)
-class StaticGridLayout(PowerLayout):
+# the name GridLayout is deprecated. Let's not append Layout everywhere in a
+# module named "layout"
+GridLayout = Grid 
+
+class StaticGridLayout(Power):
     """
         Lays out controls in a grid. Dimensions can be explicitly defined,
         or derived from the specified number of rows, columns and the number
@@ -61,7 +68,7 @@ class StaticGridLayout(PowerLayout):
                  expand_vertical=False):
         super(GridLayout, self).__init__(rows, columns, expand_horizontal=expand_horizontal, 
                                          expand_vertical=expand_vertical, flex=False)
-class HBox(PowerLayout):
+class HBox(Power):
     """
         Lays out controls in a horizontal box (1 row). The width of
         individual cells are flexible
@@ -72,7 +79,7 @@ class HBox(PowerLayout):
         super(GridLayout, self).__init__(rows=1, expand_horizontal=expand_horizontal, 
                                          expand_vertical=expand_vertical, flex=False)
 
-class StaticHBox(PowerLayout):
+class StaticHBox(Power):
     """
         Lays out controls in a horizontal box (1 row). The width of
         individual cells are fixed: the width of the largest control.
@@ -83,7 +90,7 @@ class StaticHBox(PowerLayout):
         super(GridLayout, self).__init__(columns=1, expand_horizontal=expand_horizontal, 
                                          expand_vertical=expand_vertical, flex=True)
 
-class VBox(PowerLayout):
+class VBox(Power):
     """
         Lays out controls in a vertical box (1 column). The height of
         individual cells are flexible
@@ -94,7 +101,7 @@ class VBox(PowerLayout):
         super(GridLayout, self).__init__(columns=1, expand_horizontal=expand_horizontal, 
                                          expand_vertical=expand_vertical, flex=False)
 
-class StaticVBox(PowerLayout):
+class StaticVBox(Power):
     """
         Lays out controls in a vertical box (1 column). The height of
         individual cells are flexible: the height of the largest control

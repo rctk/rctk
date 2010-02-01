@@ -49,7 +49,7 @@ class Grid(Power):
     """
     def __init__(self, rows=0, columns=1, expand_horizontal=False, 
                  expand_vertical=False):
-        super(GridLayout, self).__init__(rows, columns, expand_horizontal=expand_horizontal, 
+        super(Grid, self).__init__(rows, columns, expand_horizontal=expand_horizontal, 
                                          expand_vertical=expand_vertical, flex=True)
 # the name GridLayout is deprecated. Let's not append Layout everywhere in a
 # module named "layout"
@@ -77,7 +77,7 @@ class HBox(Power):
     """
     def __init__(self, columns=0, expand_horizontal=False, expand_vertical=False):
         super(HBox, self).__init__(rows=1, columns=columns, expand_horizontal=expand_horizontal, 
-                                         expand_vertical=expand_vertical, flex=False)
+                                         expand_vertical=expand_vertical, flex=True)
 
 class StaticHBox(Power):
     """
@@ -88,7 +88,7 @@ class StaticHBox(Power):
     """
     def __init__(self, columns=0, expand_horizontal=False, expand_vertical=False):
         super(GridLayout, self).__init__(rows=1, columns=columns, expand_horizontal=expand_horizontal, 
-                                         expand_vertical=expand_vertical, flex=True)
+                                         expand_vertical=expand_vertical, flex=False)
 
 class VBox(Power):
     """
@@ -99,7 +99,7 @@ class VBox(Power):
     """
     def __init__(self, rows=0, expand_horizontal=False, expand_vertical=False):
         super(VBox, self).__init__(columns=1, rows=rows, expand_horizontal=expand_horizontal, 
-                                         expand_vertical=expand_vertical, flex=False)
+                                         expand_vertical=expand_vertical, flex=True)
 
 class StaticVBox(Power):
     """
@@ -110,4 +110,4 @@ class StaticVBox(Power):
     """
     def __init__(self, rows=0, expand_horizontal=False, expand_vertical=False):
         super(StaticVBox, self).__init__(columns=1, rows=rows, expand_horizontal=expand_horizontal, 
-                                         expand_vertical=expand_vertical, flex=True)
+                                         expand_vertical=expand_vertical, flex=False)

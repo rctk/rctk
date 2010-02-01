@@ -76,6 +76,14 @@ JWinClient.prototype.do_work = function(data) {
         var container = this.controls[id];
         container.relayout();
         break;
+    case "timer":
+        jQuery.log("Handling timer " + id + ", " + data.milliseconds);
+        var callback = hitch(this, "handle_tasks");
+        setTimeout(
+          function() { 
+             $.post("event", {"type":"timer", "id":id}, callback, "json")
+           }, data.milliseconds);
+        break;
     }
 
 }

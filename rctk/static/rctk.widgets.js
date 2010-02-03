@@ -22,12 +22,10 @@ Control.prototype.update = function(data) {
      */
 }
 
-Control.prototype.create = function(data) {
-    var controlid = "ctrl"+this.controlid;
-    this.jwin.factory.append('<div id="' + controlid + '"></div>');
-    this.control = $("#"+controlid);
-    this.control.addClass(this.cssclass);
-
+Control.prototype.set_properties = function(data) {
+    if(data === undefined) {
+        return;
+    }
     // handle base properties
     if(data.width) {
         this.control.css("width", data.width + "px");
@@ -36,11 +34,20 @@ Control.prototype.create = function(data) {
         this.control.css("height", data.height + "px");
     }
     if(data.foreground) {
+        jQuery.log("Setting fg to " + data.foreground);
         this.control.css("color", data.foreground);
     }
     if(data.background) {
         this.control.css("background-color", data.background);
     }
+}
+Control.prototype.create = function(data) {
+    var controlid = "ctrl"+this.controlid;
+    this.jwin.factory.append('<div id="' + controlid + '"></div>');
+    this.control = $("#"+controlid);
+    this.control.addClass(this.cssclass);
+    this.set_properties(data);
+
 }
 
 /*
@@ -127,6 +134,7 @@ function Root(jwin) {
 Root.prototype = new Container()
 
 Root.prototype.create = function(data) {
+    this.set_properties(data);
 }
 
 Root.prototype.append = function(control, data) {
@@ -149,6 +157,7 @@ Button.prototype.create = function(data) {
 
     var self=this;
     this.control.click(function() { self.clicked() });
+    this.set_properties(data);
 }
 
 Button.prototype.clicked = function() {
@@ -179,6 +188,7 @@ Dropdown.prototype.create = function(data) {
     }
     var self=this;
     this.control.change(function() { self.changed() });
+    this.set_properties(data);
 }
 
 Dropdown.prototype.append_item = function(key, label) {
@@ -258,6 +268,7 @@ StaticText.prototype.create = function(data) {
     this.jwin.factory.append('<div id="' + controlid + '">' + data.text + "</div>")
     this.control = $("#"+controlid);
     this.control.addClass(this.cssclass);
+    this.set_properties(data);
 }
 
 StaticText.prototype.update = function(data) {
@@ -291,6 +302,7 @@ Text.prototype.create = function(data) {
     this.control.change(function() {
         self.changed();
     });
+    this.set_properties(data);
 }
 
 Text.prototype.changed = function() {
@@ -341,6 +353,7 @@ CheckBox.prototype.create = function(data) {
     this.control.change(
         function() { self.changed() }
     );
+    this.set_properties(data);
 }
 
 /*
@@ -380,6 +393,7 @@ RadioButton.prototype.create = function(data) {
     
     var self=this;
     this.control.change( function() { self.changed() });
+    this.set_properties(data);
 }
 
 RadioButton.prototype.changed = function() {
@@ -421,6 +435,7 @@ Frame.prototype.create = function(data) {
     
     // windows aren't appended, they appear immediately
     this.control.appendTo(this.jwin.toplevels);
+    this.set_properties(data);
 }
 
 Frame.prototype.setLayout = function(type, config) {

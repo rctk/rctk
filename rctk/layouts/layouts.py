@@ -55,7 +55,7 @@ class Grid(Power):
 # module named "layout"
 GridLayout = Grid 
 
-class StaticGridLayout(Power):
+class StaticGrid(Power):
     """
         Lays out controls in a grid. Dimensions can be explicitly defined,
         or derived from the specified number of rows, columns and the number
@@ -66,7 +66,7 @@ class StaticGridLayout(Power):
     """
     def __init__(self, rows=0, columns=1, expand_horizontal=False, 
                  expand_vertical=False):
-        super(StaticGridLayout, self).__init__(rows, columns, expand_horizontal=expand_horizontal, 
+        super(StaticGrid, self).__init__(rows, columns, expand_horizontal=expand_horizontal, 
                                          expand_vertical=expand_vertical, flex=False)
 class HBox(Power):
     """

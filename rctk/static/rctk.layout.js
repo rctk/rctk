@@ -313,16 +313,16 @@ PowerLayout.prototype.layout = function() {
             var w = Math.round(ctrl.outerWidth() / ctrinfo.colspan);
             var h = Math.round(ctrl.outerHeight() / ctrinfo.rowspan);
 
-            if(!ctr.scrolling) {
+            //if(!ctr.scrolling) {
                 this.maxwidth = Math.max(this.maxwidth, w);
                 this.maxheight = Math.max(this.maxheight, h);
 
                 this.row_sizes[r] = Math.max(this.row_sizes[r], h);
                 this.col_sizes[c] = Math.max(this.col_sizes[c], w);
-            }
-            else {
-                jQuery.log(" /// ctrl " + ctr.controlid + " is scrolling");
-            }
+            //}
+            //else {
+            //    jQuery.log(" /// ctrl " + ctr.controlid + " is scrolling");
+            //}
         }
     }
     jQuery.log("max width, height " + this.maxwidth + ", " + this.maxheight);

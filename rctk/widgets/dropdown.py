@@ -28,7 +28,6 @@ class Dropdown(Control, Clickable):
     selection = remote_attribute('selection', None)
 
     def __init__(self, tk, items=()):
-        super(Dropdown, self).__init__(tk)
         self.indexer = 0
 
         self.items = []
@@ -41,11 +40,10 @@ class Dropdown(Control, Clickable):
         else:
             self._selection = None
 
-        self.create()
+        super(Dropdown, self).__init__(tk)
 
     def create(self):
-        self.tk.queue(Task("Dropdown created id %d items '%s'" % (self.id, `self.items`),
-         {'control':self.name, "id":self.id, "action":"create", "items":self._items()}))
+        self.tk.create_control(self, items=self._items())
 
     def add(self, key, value):
         """ this adds a new entry to the bottom. Removing items or selecting
@@ -92,3 +90,5 @@ class Dropdown(Control, Clickable):
          {'control':self.name, "id":self.id, "action":"update", 
           "update":{"clear":True}}))
 
+    def __repr__(self):
+        return '<%s name="%s" id=%d items %s>' % (self.__class__.__name__, self.name, self.id, repr(self.items))

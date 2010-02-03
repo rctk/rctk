@@ -8,5 +8,5 @@ class Root(Container):
         ## prevent id generation: don't call super
         self.tk = tk
         self.id = 0
-        self.tk.add_control(self.id, self)
+        self.tk.add_control(self)
         self._controls_added = False

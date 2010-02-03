@@ -16,5 +16,4 @@ class List(Dropdown): # confusing name - list vs List?
         super(List, self).__init__(tk, items)
 
     def create(self):
-        self.tk.queue(Task("List created id %d items '%s'" % (self.id, `self.items`),
-         {'control':self.name, "id":self.id, "action":"create", "items":self.items, "size":self._size}))
+        self.tk.create_control(self, items=self.items, size=self._size)

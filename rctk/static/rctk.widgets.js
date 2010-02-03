@@ -27,6 +27,20 @@ Control.prototype.create = function(data) {
     this.jwin.factory.append('<div id="' + controlid + '"></div>');
     this.control = $("#"+controlid);
     this.control.addClass(this.cssclass);
+
+    // handle base properties
+    if(data.width) {
+        this.control.css("width", data.width + "px");
+    }
+    if(data.height) {
+        this.control.css("height", data.height + "px");
+    }
+    if(data.foreground) {
+        this.control.css("color", data.foreground);
+    }
+    if(data.background) {
+        this.control.css("background-color", data.background);
+    }
 }
 
 /*
@@ -87,7 +101,6 @@ Panel.prototype.create = function(data) {
     Container.prototype.create.apply(this, arguments);
 
     if(data.scrolling) {
-        jQuery.log("*** scrolling " + this.controlid);
         this.control.css("overflow", "auto");
         this.scrolling = true;
     }

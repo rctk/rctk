@@ -61,8 +61,16 @@ class Toolkit(object):
         self.kw = kw
         self.timers = TimerManager(self)
 
-    def add_control(self, id, control):
-        self._controls[id] = control
+    def add_control(self, control):
+        self._controls[control.id] = control
+
+    def create_control(self, control, **extra):
+        ## assert control.id in self._controls ?
+        taskdata = dict(control=control.name, id=control.id, action='create')
+        taskdata.update(control.getproperties())
+        taskdata.update(extra)
+
+        self.queue(Task("Create " + repr(control), taskdata))
 
     def root(self):
         return self._root

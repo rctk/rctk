@@ -11,22 +11,17 @@ class RadioButton(Control, Clickable):
     checked = remote_attribute('checked', False)
     
     def __init__(self, tk, group="", default=False, value=""):
-        super(RadioButton, self).__init__(tk)
         self._group = group
         self._value = value
         self._checked = default
-        self.tk.queue(Task(
-            "RadioButton created id %d, group %s, value %s, checked %s" % (self.id,
-              self.group, self.value, self.checked),
-            {
-                'control':self.name,
-                'id':self.id,
-                'action':'create',
-                'name':self.group,
-                'value':self.value,
-                'defaultChecked':self.checked,
-            }
-        ))
+        super(RadioButton, self).__init__(tk)
+
+    def create(self):
+        self.tk.create_control(self,
+                name=self.group,
+                value=self.value,
+                defaultChecked=self.checked
+        )
 
     def sync(self, **data):
         if 'checked' in data:
@@ -34,6 +29,10 @@ class RadioButton(Control, Clickable):
     
     def toggle(self):
         self.checked = not self.checked
+
+    def __repr__(self):
+        return '<%s name="%s" id=%d grou"%s" value="%s" checked="%s">' % (self.__class__.__name__, self.name, self.id, self.group, self.value, self.checked)
+
 
 class RadioButtonGroup(Control):
     name = "radiobuttongroup"

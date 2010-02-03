@@ -1,15 +1,41 @@
 from rctk.task import Task
 
-class Control(object):
+class PropertyHolder(object):
+    properties = {}
+
+    def __init__(self, **properties):
+        for (k, v) in self.properties.iteritems():
+            setattr(self, k, properties.get(k, v))
+        for k in properties:
+            if k not in self.properties:
+                raise KeyError("Unknown property %s" % k)
+
+    @classmethod
+    def extend(cls, **update):
+        c = cls.properties.copy()
+        c.update(update)
+        return c
+
+    def getproperties(self):
+        return dict((k, getattr(self, k, self.properties[k])) for k in self.properties)
+
+class Control(PropertyHolder):
     """ any control in the UI, a window, button, text, etc """
     name = "base"
 
     _id = 0
 
-    def __init__(self, tk):
+    properties = PropertyHolder.extend(width=0, height=0, foreground=None, background=None);
+
+    def __init__(self, tk, **properties):
+        super(Control, self).__init__(**properties)
         self.tk = tk
         self.id = self.newid()
-        self.tk.add_control(self.id, self)
+        self.tk.add_control(self)
+        self.create()
+
+    def create(self):
+        self.tk.create_control(self)
 
     @classmethod
     def newid(cls):
@@ -23,6 +49,9 @@ class Control(object):
             on the clientside
         """
         pass
+
+    def __repr__(self):
+        return '<%s name="%s" id=%d>' % (self.__class__.__name__, self.name, self.id)
     
 class remote_attribute(object):
     """

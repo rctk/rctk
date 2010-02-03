@@ -7,11 +7,12 @@ from rctk.event import Clickable
 class StaticText(Control):
     name = "statictext"
 
-    def __init__(self, tk, text):
-        super(StaticText, self).__init__(tk)
+    def __init__(self, tk, text, **options):
         self._text = text
-        self.tk.queue(Task("StaticText created id %d text '%s'" % (self.id, self._text),
-          {'control':self.name, 'id':self.id, 'action':'create', "text":self.text}))
+        super(StaticText, self).__init__(tk, **options)
+
+    def create(self):
+        self.tk.create_control(self, text=self.text)
 
     def _get_text(self):
         return self._text

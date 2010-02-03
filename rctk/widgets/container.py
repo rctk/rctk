@@ -14,11 +14,14 @@ class Container(Control):
 
     default_layout = GridLayout
 
-    def __init__(self, tk):
-        super(Container, self).__init__(tk)
+    def __init__(self, tk, **properties):
+        super(Container, self).__init__(tk, **properties)
         self._layout = self.default_layout()
         self._controls_added = False
 
+    ##
+    ## Can't really be created but we don't want to hide the default
+    ## control behaviour from derived classes
 
     def append(self, control, **args):
         """ adds a control to the window.

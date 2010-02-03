@@ -7,11 +7,8 @@ class Text(Control, Changable):
     name = "text"
 
     def __init__(self, tk):
-        super(Text, self).__init__(tk)
-        self.tk.queue(Task("Text created id %d" % (self.id, ),
-         {'control':self.name, "id":self.id, "action":"create"}))
-
         self._value = ""
+        super(Text, self).__init__(tk)
 
     def _get_value(self):
         return self._value

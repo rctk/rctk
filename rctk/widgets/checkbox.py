@@ -8,11 +8,12 @@ class CheckBox(Control, Clickable):
     """Simple CheckBox control. Keyword argument default sets default checked state."""
     name = "checkbox"
     
-    def __init__(self, tk, default=False):
-        super(CheckBox, self).__init__(tk)
+    def __init__(self, tk, default=False, **properties):
         self._checked = default
-        self.tk.queue(Task("CheckBox created id %d checked '%s'" % (self.id, self.checked),
-          {'control':self.name, 'id':self.id, 'action':'create', 'defaultChecked':self.checked}))
+        super(CheckBox, self).__init__(tk, **properties)
+
+    def create(self):
+        self.tk.create_control(self, defaultChecked=self.checked)
     
     def sync(self, **data):
         if 'checked' in data:
@@ -30,3 +31,7 @@ class CheckBox(Control, Clickable):
     
     def toggle(self):
         self.checked = not self.checked
+
+    def __repr__(self):
+        return '<%s name="%s" id=%d checked=%s>' % (self.__class__.__name__, self.name, self.id, self.checked)
+

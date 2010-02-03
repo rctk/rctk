@@ -6,12 +6,13 @@ from rctk.event import Changable
 class Date(Control, Changable):
     name = "date"
 
-    def __init__(self, tk):
-        super(Date, self).__init__(tk)
-        self.tk.queue(Task("Date created id %d" % (self.id, ),
-         {'control':self.name, "id":self.id, "action":"create", "pickerconfig":{'dateFormat':'yy-mm-dd'}}))
-
+    def __init__(self, tk, **properties):
+        super(Date, self).__init__(tk, **properties)
         self._value = ""
+
+    def create(self):
+        ## XXX this should become a "real" property!
+        self.tk.create_control(self, pickerconfig={'dateFormat':'yy-mm-dd'})
 
     def _get_value(self):
         return self._value

@@ -7,14 +7,5 @@ class Panel(Container):
     """
     name = "panel"
 
-    SCROLL_NONE = 0
-    SCROLL_HORIZONTAL = 1
-    SCROLL_VERTICAL = 2
-    SCROLL_AUTO = 4
-    SCROLL_BOTH = SCROLL_HORIZONTAL | SCROLL_VERTICAL
+    properties = Container.extend(scrolling=False)
 
-    def __init__(self, tk, scrolling=False):
-        super(Panel, self).__init__(tk)
-        self.scrolling = scrolling
-        self.tk.queue(Task("Panel created id %d" % (self.id, ),
-          {'control':self.name, 'id':self.id, 'action':'create', 'scrolling':self.scrolling}))

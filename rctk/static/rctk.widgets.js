@@ -71,6 +71,7 @@ Container.prototype.create = function(data) {
 
 Container.prototype.append = function(control, data) {
     this.layout.append(control, data);
+    this.control.attr("scrollTop", this.control.attr("scrollHeight"));
 }
 
 Container.prototype.setLayout = function(type, config) {
@@ -115,6 +116,11 @@ Panel.prototype.create = function(data) {
         this.scrolling = false;
     }
 
+}
+
+Panel.prototype.append = function(control, data) {
+    Container.prototype.append.apply(this, arguments);
+    this.control.attr("scrollTop", this.control.attr("scrollHeight"));
 }
 
 /*

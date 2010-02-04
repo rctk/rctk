@@ -7,6 +7,8 @@ from rctk.event import Clickable
 class StaticText(Control):
     name = "statictext"
 
+    properties = Control.extend(wrap=False)
+
     def __init__(self, tk, text, **options):
         self._text = text
         super(StaticText, self).__init__(tk, **options)

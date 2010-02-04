@@ -23,3 +23,6 @@ class Text(Control, Changable):
     def sync(self, **data):
         if 'value' in data:
             self._value = data['value']
+
+class Password(Text):
+    name = "password"

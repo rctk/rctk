@@ -33,7 +33,8 @@ JWinClient.prototype.do_work = function(data) {
         "radiobutton":RadioButton,
         "dropdown":Dropdown,
         "list":List,
-        "date":DateText
+        "date":DateText,
+        "password":Password
     }
     var control_class = control_map[data.control];
     var parent = this.controls[data.parentid];

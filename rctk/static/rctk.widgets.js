@@ -71,7 +71,6 @@ Container.prototype.create = function(data) {
 
 Container.prototype.append = function(control, data) {
     this.layout.append(control, data);
-    this.control.attr("scrollTop", this.control.attr("scrollHeight"));
 }
 
 Container.prototype.setLayout = function(type, config) {
@@ -92,7 +91,12 @@ Container.prototype.setLayout = function(type, config) {
 Container.prototype.relayout = function() {
     this.layout.layout();
     this.layout.layout_fase2();
+    this.layout_updated();
 }
+
+Container.prototype.layout_updated = function() {
+}
+
 /*
  * A panel is a simple container-control. Mostly used to
  * nest layoutmanagers
@@ -120,7 +124,14 @@ Panel.prototype.create = function(data) {
 
 Panel.prototype.append = function(control, data) {
     Container.prototype.append.apply(this, arguments);
-    this.control.attr("scrollTop", this.control.attr("scrollHeight"));
+    jQuery.log("scrolling " + this.control.attr("scrollTop") + ", " + this.control.attr("scrollHeight"));
+    this.control.scrollTop(this.control.attr("scrollHeight"));
+    jQuery.log("scrolling " + this.control.attr("scrollTop"));
+}
+
+Panel.prototype.layout_updated = function() {
+    Container.prototype.layout_updated.apply(this, arguments);
+    this.control.scrollTop(this.control.attr("scrollHeight"));
 }
 
 /*
@@ -275,6 +286,13 @@ StaticText.prototype.create = function(data) {
     this.control = $("#"+controlid);
     this.control.addClass(this.cssclass);
     this.set_properties(data);
+
+    if(data.wrap) {
+        this.control.css("white-space", "wrap");
+    }
+    else {
+        this.control.css("white-space", "nowrap");
+    }
 }
 
 StaticText.prototype.update = function(data) {
@@ -326,6 +344,25 @@ Text.prototype.update = function(update) {
     if(update.value != undefined) {
         this.control.val(update.value);
     }
+}
+
+function Password(jwin, parent, controlid) {
+    Text.apply(this, arguments);
+}
+
+Password.prototype = new Text();
+
+Password.prototype.create = function(data) {
+    var controlid = "ctrl"+this.controlid;
+    this.jwin.factory.append('<input type="password" name="' + controlid + '" id="' + controlid + '">');
+    this.control = $("#"+controlid);
+    this.control.addClass(this.cssclass);
+
+    var self = this;
+    this.control.change(function() {
+        self.changed();
+    });
+    this.set_properties(data);
 }
 
 /*

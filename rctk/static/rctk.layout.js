@@ -23,16 +23,6 @@ Layout.prototype.append = function(control, options) {
 
     this.layoutcontrol.layout(this.config);
 }
-Layout.prototype.xappend = function(control) {
-    this.create();
-    this.layoutcontrol.append("<div id='layoutctr" + control.controlid + "'></div>");
-    var ctr = $("#layoutctr" + control.controlid);
-    ctr.append(control);
-    control.control.appendTo(ctr);
-    ctr.addClass("cell");
-    this.layoutcontrol.layout(this.config);
-}
-
 /*
  * The tabbed layout comes from jqueryui. It's not JLayout based, which is
  * why it currently can't use everything from the JLayout baseclass.
@@ -292,8 +282,7 @@ PowerLayout.prototype.layout = function() {
     // first layout all children so we know their proper sizes
     for(var i = 0; i < this.controls.length; i++) {
         var ctr = this.controls[i].control;
-        // only relevant for Panels?
-        if(ctr.layout && ctr.layout.layout) {
+        if(ctr instanceof Container) {
             ctr.layout.layout();
         }
     }
@@ -375,9 +364,9 @@ PowerLayout.prototype.layout_fase2 = function() {
 
             var current = ctrinfo.control;
 
-            // only panels?
-            if(current.layout && current.layout.layout_fase2) {
+            if(current instanceof Container) {
                 current.layout.layout_fase2();
+                current.layout_updated();
             }
             var selector = current.control;
 

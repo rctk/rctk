@@ -108,6 +108,10 @@ class TestDateWidget(BaseNonRootWidgetTest):
 
     # test syncing value
 
+from rctk.widgets.text import Password
+class TestPassword(BaseNonRootWidgetTest):
+    widget = Password
+
 from rctk.widgets.root import Root
 class TestRootCreate(BaseWidgetTest):
     """ 

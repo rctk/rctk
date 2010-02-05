@@ -5,7 +5,7 @@ import os
 import time
 
 from rctk.widgets import Root
-from rctk.event import ClickEvent, ChangeEvent
+from rctk.event import ClickEvent, ChangeEvent, SubmitEvent
 from rctk.task import Task
 
 ##
@@ -95,6 +95,8 @@ class Toolkit(object):
                     control.click(ClickEvent(control))
                 elif args.get('type') == "change":
                     control.change(ChangeEvent(control))
+                elif args.get('type') == "submit":
+                    control.submit(SubmitEvent(control))
         elif method == "sync":
             ## a control needs synchronization
             id = int(args['id'])

@@ -326,6 +326,9 @@ Text.prototype.create = function(data) {
     this.control.change(function() {
         self.changed();
     });
+    this.control.keypress(function(e) {
+        self.keypressed(e);
+    });
     this.set_properties(data);
 }
 
@@ -333,6 +336,17 @@ Text.prototype.changed = function() {
     this.jwin.sync({'id':this.controlid, 'value':this.control.val()});
     if(this.handle_change) {
         $.post("event", {'type':"change", 'id':this.controlid}, hitch(this.jwin, "handle_tasks"), "json");
+    }
+}
+Text.prototype.keypressed = function(e) {
+    // if this.handle_keypress: jwin.sync, post event
+    // could use some optimization
+    if(this.handle_submit) {
+        if(e.which == 13) {
+            this.jwin.sync({'id':this.controlid, 'value':this.control.val()});
+            $.post("event", {'type':"submit", 'id':this.controlid}, hitch(this.jwin, "handle_tasks"), "json");
+            return false;
+        }
     }
 }
 

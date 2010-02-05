@@ -1,9 +1,9 @@
 from control import Control
 
 from rctk.task import Task
-from rctk.event import Changable
+from rctk.event import Changable, Submittable
 
-class Text(Control, Changable):
+class Text(Control, Changable, Submittable):
     name = "text"
 
     def __init__(self, tk):

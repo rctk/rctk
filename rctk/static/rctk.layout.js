@@ -163,8 +163,8 @@ PowerLayout.prototype.calculate_dimensions = function() {
         this.calculatedcols = Math.round(this.controls.length / this.calculatedrows);
     }
 
-    jQuery.log("# calculated rows: " + this.calculatedrows);
-    jQuery.log("# calculated cols: " + this.calculatedcols);
+    //jQuery.log("# calculated rows: " + this.calculatedrows);
+    //jQuery.log("# calculated cols: " + this.calculatedcols);
     this.row_sizes = [];
     this.col_sizes = [];
     for(var i = 0; i < this.calculatedrows; i++) {
@@ -187,7 +187,7 @@ PowerLayout.prototype.calculate_dimensions = function() {
         var col = c.col;
         var rspan = c.rowspan;
         var cspan = c.colspan;
-        jQuery.log("Positioning " + i + " row, col, rspan, cspan: " + row + ", " + col + ", " + rspan + ", " + cspan);
+        //jQuery.log("Positioning " + i + " row, col, rspan, cspan: " + row + ", " + col + ", " + rspan + ", " + cspan);
         
         if(row == -1 || col == -1) {
             for(var j=0, row=0, col=0; j < this.calculatedrows*this.calculatedcols; 
@@ -206,7 +206,7 @@ PowerLayout.prototype.calculate_dimensions = function() {
         if(row+rspan-1 >= this.calculatedrows || col+cspan-1 >= this.calculatedcols) {
             continue;
         }
-        jQuery.log("Found space: " + row + ", " + col);
+        //jQuery.log("Found space: " + row + ", " + col);
         for(var rr = row; rr < row+rspan; rr++) {
             for(var cc = col; cc < col+cspan; cc++) {
                 //jQuery.log
@@ -275,7 +275,7 @@ PowerLayout.prototype.sumheight = function(row) {
 }
 
 PowerLayout.prototype.layout = function() {
-    jQuery.log("laying out " + this.parent.controlid);
+    //jQuery.log("laying out " + this.parent.controlid);
     this.create(); // create if we haven't done so already
     this.calculate_dimensions();
     
@@ -314,7 +314,7 @@ PowerLayout.prototype.layout = function() {
             //}
         }
     }
-    jQuery.log("max width, height " + this.maxwidth + ", " + this.maxheight);
+    //jQuery.log("max width, height " + this.maxwidth + ", " + this.maxheight);
 
 
     // check if the layout need to expand to fit the parent
@@ -337,7 +337,7 @@ PowerLayout.prototype.layout = function() {
 
     this.layoutcontrol.css("width", parentwidth + "px");
     this.layoutcontrol.css("height", parentheight + "px");
-    jQuery.log("Scaling parent to " + parentwidth + ", " + parentheight);
+    //jQuery.log("Scaling parent to " + parentwidth + ", " + parentheight);
 }
 
 PowerLayout.prototype.layout_fase2 = function() {
@@ -384,20 +384,20 @@ PowerLayout.prototype.layout_fase2 = function() {
                 w = this.maxwidth;
                 h = this.maxheight;
             }
-            jQuery.log("positioning: w, h " + w + "," + h);
+            //jQuery.log("positioning: w, h " + w + "," + h);
 
             if(current.expand || (layoutdata && layoutdata.expand_horizontal)) {
                 // XXX Keep original dimensions!
-                jQuery.log("+++ item (" + r + ", " + c + ") expands horizontally");
-                jQuery.log("scaling to " + w);
+                //jQuery.log("+++ item (" + r + ", " + c + ") expands horizontally");
+                //jQuery.log("scaling to " + w);
                 selector.css("width", w + "px");
             }
             if(current.expand || (layoutdata && layoutdata.expand_vertical)) {
-                jQuery.log("+++ item (" + r + ", " + c + ") expands vertically");
-                jQuery.log("scaling to " + h);
+                //jQuery.log("+++ item (" + r + ", " + c + ") expands vertically");
+                //jQuery.log("scaling to " + h);
                 selector.css("height", h + "px");
             }
-            jQuery.log("item (" + r + ", " + c + ") positioned at " + x + ", " + y);
+            //jQuery.log("item (" + r + ", " + c + ") positioned at " + x + ", " + y);
         }
     }
 

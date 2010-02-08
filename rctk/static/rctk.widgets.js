@@ -27,17 +27,16 @@ Control.prototype.set_properties = function(data) {
         return;
     }
     // handle base properties
-    if(data.width) {
+    if('width' in data && data.width) {
         this.control.css("width", data.width + "px");
     }
-    if(data.height) {
+    if('height' in data && data.height) {
         this.control.css("height", data.height + "px");
     }
-    if(data.foreground) {
-        jQuery.log("Setting fg to " + data.foreground);
+    if('foreground' in data && data.foreground) {
         this.control.css("color", data.foreground);
     }
-    if(data.background) {
+    if('background' in data && data.background) {
         this.control.css("background-color", data.background);
     }
 }
@@ -287,12 +286,43 @@ StaticText.prototype.create = function(data) {
     this.control.addClass(this.cssclass);
     this.set_properties(data);
 
-    if(data.wrap) {
-        this.control.css("white-space", "wrap");
+    if('wrap' in data) {
+        if(data.wrap) {
+            this.control.css("white-space", "wrap");
+        }
+        else {
+            this.control.css("white-space", "nowrap");
+        }
     }
-    else {
-        this.control.css("white-space", "nowrap");
+    if('bold' in data) {
+        if(data.bold) {
+            this.control.css("font-weight", "bold");
+        }
+        else {
+            this.control.css("font-weight", "")
+        }
     }
+    if('italic' in data) {
+        if(data.italic) {
+            this.control.css("font-style", "italic");
+        }
+        else {
+            this.control.css("font-style", "");
+        }
+    }
+
+    if('decoration' in data) {
+        if(data.decoration == "underline") {
+            this.control.css("text-decoration", "underline");
+        }
+        else if(data.decoration == "overstrike") {
+            this.control.css("text-decoration", "line-through");
+        }
+        else {
+            this.control.css("text-decoration", "");
+        }
+    }
+        
 }
 
 StaticText.prototype.update = function(data) {

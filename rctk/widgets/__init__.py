@@ -8,6 +8,7 @@ from list import List
 from panel import Panel
 from root import Root
 from statictext import StaticText
+from statictext import StaticHTMLText
 from text import Text
 from text import Password
 from window import Window

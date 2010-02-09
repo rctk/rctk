@@ -87,7 +87,7 @@ class StaticHBox(Power):
         Colspan and absolute positioning are supported
     """
     def __init__(self, columns=0, expand_horizontal=False, expand_vertical=False):
-        super(GridLayout, self).__init__(rows=1, columns=columns, expand_horizontal=expand_horizontal, 
+        super(StaticHBox, self).__init__(rows=1, columns=columns, expand_horizontal=expand_horizontal, 
                                          expand_vertical=expand_vertical, flex=False)
 
 class VBox(Power):

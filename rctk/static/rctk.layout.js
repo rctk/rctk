@@ -15,7 +15,6 @@ Layout.prototype.create = function() {
     this.created = true;
 }
 
-// no-cell version
 Layout.prototype.append = function(control, options) {
     this.create();
     control.control.appendTo(this.layoutcontrol);
@@ -240,35 +239,41 @@ PowerLayout.prototype.append = function(control, data) {
 
 }
 
-PowerLayout.prototype.sumwidth = function(col) {
+PowerLayout.prototype.sumwidth = function(start, end) {
     // calculate the offset of a certain column, or the width
     // of the entire matrix (col undefined), taking fixed
     // cell size into account or not
-    var s = 0;
-    if(col === undefined) {
-        col = this.calculatedcols;
+    if(start === undefined) {
+        start = 0;
+    }
+    if(end === undefined) {
+        end = this.calculatedcols;
     }
     if(!this.flexcell) {
-        return this.maxwidth * col;
+        return this.maxwidth * (end-start);
     }
-    for(var i = 0; i < col; i++) {
+    var s = 0;
+    for(var i = start; i < end; i++) {
         s += this.col_sizes[i];
     }
     return s;
 }
 
-PowerLayout.prototype.sumheight = function(row) {
+PowerLayout.prototype.sumheight = function(start, end) {
     // calculate the offset of a certain row, or the height
     // of the entire matrix (row undefined), taking fixed
     // cell size into account or not
     var s = 0;
-    if(row === undefined) {
-        row = this.calculatedrows;
+    if(start === undefined) {
+        start = 0;
+    }
+    if(end === undefined) {
+        end = this.calculatedrows;
     }
     if(!this.flexcell) {
-        return this.maxheight * row;
+        return this.maxheight * (end-start);
     }
-    for(var i = 0; i < row; i++) {
+    for(var i = start; i < end; i++) {
         s += this.row_sizes[i];
     }
     return s;
@@ -370,20 +375,17 @@ PowerLayout.prototype.layout_fase2 = function() {
             }
             var selector = current.control;
 
-            var x = this.sumwidth(c);
-            var y = this.sumheight(r);
+            var x = this.sumwidth(0, c);
+            var y = this.sumheight(0, r);
 
             selector.css("position", "absolute");
             selector.css("top", y + "px");
             selector.css("left", x + "px");
 
             var layoutdata = ctrinfo.data || {};
-            var w = this.col_sizes[c];
-            var h = this.row_sizes[r];
-            if(!this.flexcell) {
-                w = this.maxwidth;
-                h = this.maxheight;
-            }
+            // get the dimensions of the cell(s) the control spans.
+            var w = this.sumwidth(c, c+ctrinfo.colspan); 
+            var h = this.sumheight(r, r+ctrinfo.rowspan);
             //jQuery.log("positioning: w, h " + w + "," + h);
 
             if(current.expand || (layoutdata && layoutdata.expand_horizontal)) {

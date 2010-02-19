@@ -1,5 +1,6 @@
 import uuid
 import web
+import time
 
 from toolkit import WebPyTK
 
@@ -20,6 +21,22 @@ class StatefulApp(object):
     def __call__(self):
         return self.app
 
+class Session(object):
+    def __init__(self, tk):
+        self.last_access = time.time()
+        self.tk = tk
+
+    def GET(self, data):
+        self.last_access = time.time()
+        return self.tk.GET(data)
+
+    def POST(self, data):
+        self.last_access = time.time()
+        return self.tk.POST(data)
+
+    def expired(self):
+        return time.time() - self.last_access > (24*3600)
+        
 class Receiver(object):
     """ the receiver is the serverside of the RC protocol """
     def __init__(self, app, *args, **kw):
@@ -28,25 +45,45 @@ class Receiver(object):
         self.args = args
         self.kw = kw
 
+    def cleanup_expired(self):
+        expired = []
+        for hash, value in self.sessions.iteritems():
+            if value.expired():
+                expired.append(hash)
+        for hash in expired:
+            print "Cleanup", hash
+            del self.sessions[hash]
+
     def GET(self, data):
         data = data.strip()
         if data == "":
             sessionid = uuid.uuid1().hex
             tk = WebPyTK(self.app(*self.args, **self.kw))
-            self.sessions[sessionid] = tk
+            self.sessions[sessionid] = Session(tk)
             web.seeother('/' + sessionid + '/')
             return
 
         sessionid, rest = data.split('/', 1)
-        session = self.sessions[sessionid]
-        return session.GET(rest)
+        session = self.sessions.get(sessionid)
+        if session is None:
+            web.seeother('/')
+            return
+
+        res = session.GET(rest)
+        self.cleanup_expired()
+        return res
 
     def POST(self, data):
         data = data.strip()
 
         sessionid, rest = data.split('/', 1)
-        session = self.sessions[sessionid]
-        return session.POST(rest)
+        session = self.sessions.get(sessionid)
+        if session is None:
+            web.seeother('/')
+            return
+        res = session.POST(rest)
+        self.cleanup_expired()
+        return res
 
 def app(a, *args, **kw):
     import os

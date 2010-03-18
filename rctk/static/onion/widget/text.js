@@ -57,3 +57,6 @@ Onion.widget.Text.prototype.update = function(update) {
         this.control.val(update.value);
     }
 }
+
+// register
+Onion.widget.register("text", Onion.widget.Text);

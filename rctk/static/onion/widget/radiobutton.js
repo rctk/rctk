@@ -37,3 +37,6 @@ Onion.widget.RadioButton.prototype.update = function(data) {
         this.control.attr('checked', data.checked);
     }
 }
+
+// register
+Onion.widget.register("radiobutton", Onion.widget.RadioButton);

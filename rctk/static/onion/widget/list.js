@@ -36,3 +36,6 @@ Onion.widget.List.prototype.update = function(data) {
         this.setsize();
     }
 }
+
+// register
+Onion.widget.register("list", Onion.widget.List);

@@ -16,3 +16,6 @@ Onion.widget.Password.prototype.create = function(data) {
     });
     this.set_properties(data);
 }
+
+// register
+Onion.widget.register("password", Onion.widget.Password);

@@ -21,3 +21,6 @@ Onion.widget.Button.prototype.clicked = function() {
         $.post("event", {'type':"click", 'id':this.controlid}, Onion.util.hitch(this.jwin, "handle_tasks"), "json");
     }
 }
+
+// register
+Onion.widget.register("button", Onion.widget.Button);

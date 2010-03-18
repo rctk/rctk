@@ -38,3 +38,6 @@ Onion.widget.Frame.prototype.update = function(data) {
         }
     }
 }
+
+// register
+Onion.widget.register("window", Onion.widget.Frame);

@@ -37,3 +37,6 @@ Onion.widget.CheckBox.prototype.update = function(data) {
         this.control.attr('checked', data.checked);
     }
 }
+
+// register
+Onion.widget.register("checkbox", Onion.widget.CheckBox);

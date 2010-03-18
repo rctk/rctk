@@ -11,3 +11,6 @@ Onion.widget.DateText.prototype.create = function(data) {
     Onion.widget.Text.prototype.create.apply(this, arguments);
     this.control.datepicker(data.pickerconfig);
 }
+
+// register
+Onion.widget.register("date", Onion.widget.DateText);

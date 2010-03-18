@@ -48,3 +48,6 @@ Onion.widget.Dropdown.prototype.update = function(data) {
         this.items = []
     }
 }
+
+// register
+Onion.widget.register("dropdown", Onion.widget.Dropdown);

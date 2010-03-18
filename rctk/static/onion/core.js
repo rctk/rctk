@@ -25,21 +25,8 @@ Onion.core.JWinClient.prototype.sync = function(data) {
 
 Onion.core.JWinClient.prototype.do_work = function(data) {
     Onion.util.log("do_work ", data);
-
-    var control_map = {
-        "panel": Onion.widget.Panel,
-        "button": Onion.widget.Button,
-        "text": Onion.widget.Text,
-        "statictext": Onion.widget.StaticText,
-        "window": Onion.widget.Frame,
-        "checkbox": Onion.widget.CheckBox,
-        "radiobutton": Onion.widget.RadioButton,
-        "dropdown": Onion.widget.Dropdown,
-        "list": Onion.widget.List,
-        "date": Onion.widget.DateText,
-        "password": Onion.widget.Password
-    }
-    var control_class = control_map[data.control];
+    
+    var control_class = Onion.widget.map(data.control);
     var parent = this.controls[data.parentid];
     var id = data.id;
                        
@@ -47,7 +34,6 @@ Onion.core.JWinClient.prototype.do_work = function(data) {
     case "append":
         var container = this.controls[data.id];
         var child = this.controls[data.child];
-
         container.append(child, data);
         break;
     case "show":
@@ -57,6 +43,7 @@ Onion.core.JWinClient.prototype.do_work = function(data) {
         }
         break;
     case "create":
+        // TODO?: if this fails 'the other side' is not informed!
         if(control_class) {
            c = new control_class(this, parent, id);
            c.create(data);

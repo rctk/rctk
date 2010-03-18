@@ -55,3 +55,6 @@ Onion.widget.StaticText.prototype.update = function(data) {
         this.control.html(data.text);
     }
 }
+
+// register
+Onion.widget.register("statictext", Onion.widget.StaticText);

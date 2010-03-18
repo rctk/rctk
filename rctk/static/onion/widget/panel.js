@@ -34,3 +34,6 @@ Onion.widget.Panel.prototype.layout_updated = function() {
     Onion.widget.Container.prototype.layout_updated.apply(this, arguments);
     this.control.scrollTop(this.control.attr("scrollHeight"));
 }
+
+// register
+Onion.widget.register("panel", Onion.widget.Panel);

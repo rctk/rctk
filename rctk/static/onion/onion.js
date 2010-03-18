@@ -36,5 +36,5 @@ Onion.log = function() {
 
 /* Declare often used namespaces. */
 (function() {
-    Onion.namespace("core", "layout", "widget");
+    Onion.namespace("core", "layout");
 })();

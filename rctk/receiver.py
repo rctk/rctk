@@ -6,9 +6,12 @@ from toolkit import WebPyTK
 
 
 class StatefulApp(object):
-    """ once created it will reuse the same instance
-        for each request """
-
+    """
+        web.py creates new instances of the class on each 
+        request. We don't want that, so in stead we pretend
+        to create a new instance, but actually just
+        return self
+    """
     def __init__(self, app):
         self.app = app
 
@@ -22,22 +25,22 @@ class StatefulApp(object):
         return self.app
 
 class Session(object):
+    """
+        Different requests from different browsers result in
+        different sessions. Sessions can time out 
+    """
     def __init__(self, tk):
         self.last_access = time.time()
         self.tk = tk
 
-    def GET(self, data):
+    def handle(self, method, **arguments):
         self.last_access = time.time()
-        return self.tk.GET(data)
-
-    def POST(self, data):
-        self.last_access = time.time()
-        return self.tk.POST(data)
+        return self.tk.handle(method, **arguments)
 
     def expired(self):
         return time.time() - self.last_access > (24*3600)
         
-class Receiver(object):
+class WebPyDispatcher(object):
     """ the receiver is the serverside of the RC protocol """
     def __init__(self, app, *args, **kw):
         self.sessions = {}
@@ -51,14 +54,13 @@ class Receiver(object):
             if value.expired():
                 expired.append(hash)
         for hash in expired:
-            print "Cleanup", hash
             del self.sessions[hash]
 
     def GET(self, data):
         data = data.strip()
         if data == "":
             sessionid = uuid.uuid1().hex
-            tk = WebPyTK(self.app(*self.args, **self.kw))
+            tk = Toolkit(self.app(*self.args, **self.kw))
             self.sessions[sessionid] = Session(tk)
             web.seeother('/' + sessionid + '/')
             return
@@ -69,9 +71,9 @@ class Receiver(object):
             web.seeother('/')
             return
 
-        res = session.GET(rest)
         self.cleanup_expired()
-        return res
+        web.header("content-type", "text/html")
+        return open(os.path.join(os.path.dirname(__file__), "main.html"), "r").read()            
 
     def POST(self, data):
         data = data.strip()
@@ -81,16 +83,21 @@ class Receiver(object):
         if session is None:
             web.seeother('/')
             return
-        res = session.POST(rest)
+
+        web.header("content-type", "application/json")
+        method = rest.strip()
+        arguments = web.input()
+
         self.cleanup_expired()
-        return res
+        result = session.handle(method, **arguments)
+        return simplejson.dumps(result)
 
 def app(a, *args, **kw):
     import os
 
     ## required for local static to work
     os.chdir(os.path.dirname(__file__))
-    stateful = StatefulApp(Receiver(a, *args, **kw))
+    stateful = StatefulApp(WebPyDispatcher(a, *args, **kw))
     return web.application(('/(.*)', 'receiver'), {'receiver':stateful}, autoreload=True)
 
 def serve(a, *args, **kw):

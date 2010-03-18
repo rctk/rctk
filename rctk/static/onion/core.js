@@ -1,6 +1,7 @@
 
 Onion.core.JWinClient = function() {
-    this.loopinterval = 1000;
+    this.poll = false; // poll for new tasks
+    this.interval = 1000; // if so, how often
 
     var root = new Onion.widget.Root(this);
     root.create();
@@ -85,6 +86,9 @@ Onion.core.JWinClient.prototype.handle_tasks = function (data, status) {
         this.do_work(data[i]);
       }
     }
+    if(this.poll) {
+        setInterval(Onion.util.hitch(this, 'get_work'), this.interval);
+    }
 }
 
 Onion.core.JWinClient.prototype.get_work = function() {
@@ -93,13 +97,19 @@ Onion.core.JWinClient.prototype.get_work = function() {
 
 Onion.core.JWinClient.prototype.start_work = function () {
     var self = this;
-    var h = function(data, status)
-        {
-            data = data || "{}";
-            if(data) {
+    var h = function(data, status) {
+        data = data || "{}";
+        if('config' in data) {
+            var config = data.config;
+
+            if('poll' in config) {
+                this.poll = config.poll;
             }
-            //setInterval(Onion.util.hitch(self, 'get_work'), self.loopinterval);
-            self.get_work();
-        };
+            if('interval' in config) {
+                this.interval = config.interval;
+            }
+        }
+        self.get_work();
+    };
     $.post('start', {}, h, "json");
 }

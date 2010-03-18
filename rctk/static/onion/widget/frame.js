@@ -1,0 +1,40 @@
+Onion.widget.Frame = function(jwin, parent, controlid) {
+    Onion.widget.Container.apply(this, arguments);
+}
+
+Onion.widget.Frame.prototype = new Onion.widget.Container();
+
+Onion.widget.Frame.prototype.create = function(data) {
+    var controlid = "ctrl"+this.controlid;
+
+    this.jwin.factory.append('<div id="' + controlid + '" title="' + data.title + '"></div>');
+    this.control = $("#"+controlid);
+    this.control.dialog({'autoOpen':true, 'modal':false, 'resize':false}); // width, position, modal, etc.
+    this.control = $("#"+controlid).parent();
+    this.container = $("#"+controlid);
+    // dialogBox class not currently used
+    this.container.addClass(this.cssclass);
+    
+    // windows aren't appended, they appear immediately
+    this.control.appendTo(this.jwin.toplevels);
+    this.set_properties(data);
+}
+
+Onion.widget.Frame.prototype.setLayout = function(type, config) {
+    Onion.widget.Container.prototype.setLayout.apply(this, arguments);
+    // dialogInner class not currently used
+    //this.layout.layoutcontrol.addClass("dialogInner");
+}
+
+Onion.widget.Frame.prototype.update = function(data) {
+    if(data.state) {
+        jQuery.log("Window state update " + data);
+        if(data.state == "open") {
+            this.container.dialog('open');
+        }
+        else if(data.state == "close") {
+            jQuery.log("Closing");
+            this.container.dialog('close');
+        }
+    }
+}

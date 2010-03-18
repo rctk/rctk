@@ -1,0 +1,59 @@
+/*
+ * Text is a simple text input. The serverside needs to be informed
+ * of changes so we need to regularly submit changes, esp. for actions
+ * that depend on it. An explicit <enter> is not sufficient, eventhandlers
+ * may want to read the current value at any moment
+ *
+ * For now, use onchange to submit changes.
+ */
+
+Onion.widget.Text = function(jwin, parent, controlid) {
+    Onion.widget.Control.apply(this, arguments);
+}
+
+Onion.widget.Text.prototype = new Onion.widget.Control();
+
+Onion.widget.Text.prototype.create = function(data) {
+    var controlid = "ctrl"+this.controlid;
+    this.jwin.factory.append('<input type="text" name="' + controlid + '" id="' + controlid + '">');
+    this.control = $("#"+controlid);
+    this.control.addClass(this.cssclass);
+
+    var self = this;
+    this.control.change(function() {
+        self.changed();
+    });
+    this.control.keypress(function(e) {
+        self.keypressed(e);
+    });
+    this.set_properties(data);
+}
+
+Onion.widget.Text.prototype.changed = function() {
+    this.jwin.sync({'id':this.controlid, 'value':this.control.val()});
+    if(this.handle_change) {
+        $.post("event", {'type':"change", 'id':this.controlid}, hitch(this.jwin, "handle_tasks"), "json");
+    }
+}
+
+Onion.widget.Text.prototype.keypressed = function(e) {
+    // if this.handle_keypress: jwin.sync, post event
+    // could use some optimization
+    if(this.handle_submit) {
+        if(e.which == 13) {
+            this.jwin.sync({'id':this.controlid, 'value':this.control.val()});
+            $.post("event", {'type':"submit", 'id':this.controlid}, hitch(this.jwin, "handle_tasks"), "json");
+            return false;
+        }
+    }
+}
+
+Onion.widget.Text.prototype.val = function() {
+    return this.control.val();
+}
+
+Onion.widget.Text.prototype.update = function(update) {
+    if(update.value != undefined) {
+        this.control.val(update.value);
+    }
+}

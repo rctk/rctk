@@ -13,15 +13,36 @@
         <script type="text/javascript" src="/static/jqueryui/ui/ui.tabs.js"></script>
         <script type="text/javascript" src="/static/jqueryui/ui/ui.datepicker.js"></script>
 
-        <script type="text/javascript" src="/static/rctk.utils.js"></script>
+        <!--<script type="text/javascript" src="/static/rctk.utils.js"></script>
         <script type="text/javascript" src="/static/rctk.layout.js"></script>
         <script type="text/javascript" src="/static/rctk.widgets.js"></script>
-        <script type="text/javascript" src="/static/rctk.core.js"></script>
-
+        <script type="text/javascript" src="/static/rctk.core.js"></script>-->
+        
+        <script type="text/javascript" src="/static/onion/onion.js"></script>
+        <script type="text/javascript" src="/static/onion/core.js"></script>
+        <script type="text/javascript" src="/static/onion/util.js"></script>
+        <script type="text/javascript" src="/static/onion/layout/layout.js"></script>
+        <script type="text/javascript" src="/static/onion/layout/power.js"></script>
+        <script type="text/javascript" src="/static/onion/layout/tabbed.js"></script>
+        <script type="text/javascript" src="/static/onion/widget/base.js"></script>
+        <script type="text/javascript" src="/static/onion/widget/button.js"></script>
+        <script type="text/javascript" src="/static/onion/widget/checkbox.js"></script>
+        <script type="text/javascript" src="/static/onion/widget/dropdown.js"></script>
+        <script type="text/javascript" src="/static/onion/widget/frame.js"></script>
+        <script type="text/javascript" src="/static/onion/widget/list.js"></script>
+        <script type="text/javascript" src="/static/onion/widget/panel.js"></script>
+        <script type="text/javascript" src="/static/onion/widget/radiobutton.js"></script>
+        <script type="text/javascript" src="/static/onion/widget/statictext.js"></script>
+        <script type="text/javascript" src="/static/onion/widget/text.js"></script>
+        <script type="text/javascript" src="/static/onion/widget/statictext.js"></script>
+        <script type="text/javascript" src="/static/onion/widget/password.js"></script>
+        <script type="text/javascript" src="/static/onion/widget/datetext.js"></script>
+        <script type="text/javascript" src="/static/onion/jquery.js"></script>
         <script type="text/javascript">
-        $(document).ready(function(){
-        boot_rctk();
-        });
+            $(document).ready(function() {
+                Onion.util.log('booting...');
+                new Onion.core.JWinClient().start_work();
+            });
         </script>
         <style>
                         html, body {

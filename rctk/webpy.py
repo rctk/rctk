@@ -1,28 +1,11 @@
+import os
 import uuid
 import web
 import time
 
-from toolkit import WebPyTK
+import simplejson
 
-
-class StatefulApp(object):
-    """
-        web.py creates new instances of the class on each 
-        request. We don't want that, so in stead we pretend
-        to create a new instance, but actually just
-        return self
-    """
-    def __init__(self, app):
-        self.app = app
-
-    def GET(self, data):
-        return self.app.GET(data)
-
-    def POST(self, data):
-        return self.app.POST(data)
-
-    def __call__(self):
-        return self.app
+from toolkit import Toolkit
 
 class Session(object):
     """
@@ -92,12 +75,21 @@ class WebPyDispatcher(object):
         result = session.handle(method, **arguments)
         return simplejson.dumps(result)
 
+    def __call__(self):
+        """
+            web.py creates new instances of the class on each 
+            request. We don't want that, so in stead we pretend
+            to create a new instance, but actually just
+            return self
+        """
+        return self
+
 def app(a, *args, **kw):
     import os
 
     ## required for local static to work
     os.chdir(os.path.dirname(__file__))
-    stateful = StatefulApp(WebPyDispatcher(a, *args, **kw))
+    stateful = WebPyDispatcher(a, *args, **kw)
     return web.application(('/(.*)', 'receiver'), {'receiver':stateful}, autoreload=True)
 
 def serve(a, *args, **kw):

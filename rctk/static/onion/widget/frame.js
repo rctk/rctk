@@ -28,12 +28,12 @@ Onion.widget.Frame.prototype.setLayout = function(type, config) {
 
 Onion.widget.Frame.prototype.update = function(data) {
     if(data.state) {
-        jQuery.log("Window state update " + data);
+        Onion.util.log("Window state update", data);
         if(data.state == "open") {
             this.container.dialog('open');
         }
         else if(data.state == "close") {
-            jQuery.log("Closing");
+            Onion.util.log("Closing");
             this.container.dialog('close');
         }
     }

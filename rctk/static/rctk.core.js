@@ -21,7 +21,7 @@ JWinClient.prototype.sync = function(data) {
 }
 
 JWinClient.prototype.do_work = function(data) {
-    jQuery.log("do_work " + data.toSource());
+    jQuery.log("do_work ", data);
 
     var control_map = {
         "panel":Panel,

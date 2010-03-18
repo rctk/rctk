@@ -1,16 +1,21 @@
 // more goodies: http://getfirebug.com/console.html
 
-jQuery.log = function() {
-        if (typeof window.console != 'undefined') {
-                window.console.log.apply(this, arguments);
+(function($) {
+    $.extend({
+        "log":function() {
+            if (typeof window.console != 'undefined') {
+                    window.console.log.apply(window.console, arguments);
+            }
+        },
+        "debug":function() {
+            if (typeof window.console != 'undefined') {
+                    window.console.debug.apply(window.console, arguments);
+            }
         }
-}
-jQuery.debug = function() {
-        if (typeof window.console != 'undefined') {
-                window.console.debug.apply(this, arguments);
-        }
-}
-
+    });
+    // $.fn.extend... ?
+})(jQuery);
+    
 jQuery.fn.log = function(msg) {
         msg = msg || "log";
         jQuery.log("%s: %o", msg, this);

@@ -533,7 +533,7 @@ Frame.prototype.setLayout = function(type, config) {
 
 Frame.prototype.update = function(data) {
     if(data.state) {
-        jQuery.log("Window state update " + data.toSource());
+        jQuery.log("Window state update ", data);
         if(data.state == "open") {
             this.container.dialog('open');
         }

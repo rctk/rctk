@@ -28,7 +28,7 @@ Onion.namespace = function() {
 
 Onion.log = function() {
     if (Onion.util.log) {
-        Onion.util.log(arguments);
+        return Onion.util.log.apply(Onion.util, arguments);
     } else {
         return false;
     }

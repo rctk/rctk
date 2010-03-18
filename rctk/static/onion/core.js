@@ -24,7 +24,7 @@ Onion.core.JWinClient.prototype.sync = function(data) {
 }
 
 Onion.core.JWinClient.prototype.do_work = function(data) {
-    Onion.util.log("do_work " + data);
+    Onion.util.log("do_work ", data);
 
     var control_map = {
         "panel": Onion.widget.Panel,

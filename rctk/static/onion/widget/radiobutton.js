@@ -14,7 +14,7 @@ Onion.widget.RadioButton.prototype.create = function(data) {
     this.handle_click = false;
     
     var self=this;
-    this.control.change( function() { self.changed() });
+    this.control.change( function() { self.changed(); self.jwin.flush() });
     this.set_properties(data);
 }
 

@@ -12,7 +12,7 @@ Onion.widget.Button.prototype.create = function(data) {
     this.handle_click = false;
 
     var self=this;
-    this.control.click(function() { self.clicked() });
+    this.control.click(function() { self.clicked(); self.jwin.flush(); });
     this.set_properties(data);
 }
 

@@ -22,9 +22,11 @@ Onion.widget.Text.prototype.create = function(data) {
     var self = this;
     this.control.change(function() {
         self.changed();
+        self.jwin.flush();
     });
     this.control.keypress(function(e) {
         self.keypressed(e);
+        self.jwin.flush();
     });
     this.set_properties(data);
 }

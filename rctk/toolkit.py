@@ -79,25 +79,28 @@ class Toolkit(object):
         if method == "start":
             self.app.run(self)
             return {"state":"started", "config":self.config}
-        elif method == "event":
-            ## data gets submitted as form, not as json
-            id = int(args['id'])
-            if args.get('type') == "timer":
-                self.timers.fire(id)
-            else:
-                control = self._controls[id]
+        if method == "task" and 'queue' in args:
+            queue = simplejson.loads(args['queue'])
+            for task in queue:
+                tasktype = task['method']
+                id = int(task['id'])
+                if tasktype == "event":
+                    eventtype = task.get('type')
+                    if eventtype == "timer":
+                        self.timers.fire(id)
+                    else:
+                        control = self._controls[id]
 
-                if args.get('type') == "click":
-                    control.click(ClickEvent(control))
-                elif args.get('type') == "change":
-                    control.change(ChangeEvent(control))
-                elif args.get('type') == "submit":
-                    control.submit(SubmitEvent(control))
-        elif method == "sync":
-            ## a control needs synchronization
-            id = int(args['id'])
-            control = self._controls[id]
-            control.sync(**args)
+                        if eventtype == "click":
+                            control.click(ClickEvent(control))
+                        elif eventtype == "change":
+                            control.change(ChangeEvent(control))
+                        elif eventtype == "submit":
+                            control.submit(SubmitEvent(control))
+                elif tasktype == "sync":
+                    ## a control needs synchronization
+                    control = self._controls[id]
+                    control.sync(**task)
 
         ## any other case, including "pop" which is not handled explicitly
         ## right now.

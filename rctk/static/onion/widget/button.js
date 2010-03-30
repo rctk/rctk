@@ -18,7 +18,7 @@ Onion.widget.Button.prototype.create = function(data) {
 
 Onion.widget.Button.prototype.clicked = function() {
     if(this.handle_click) {
-        $.post("event", {'type':"click", 'id':this.controlid}, Onion.util.hitch(this.jwin, "handle_tasks"), "json");
+        this.jwin.add_task("event", "click", this.controlid);
     }
 }
 

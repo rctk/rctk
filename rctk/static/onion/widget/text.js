@@ -32,7 +32,7 @@ Onion.widget.Text.prototype.create = function(data) {
 Onion.widget.Text.prototype.changed = function() {
     this.jwin.sync({'id':this.controlid, 'value':this.control.val()});
     if(this.handle_change) {
-        $.post("event", {'type':"change", 'id':this.controlid}, hitch(this.jwin, "handle_tasks"), "json");
+        this.jwin.add_handler("event", "change", this.controlid);
     }
 }
 
@@ -41,8 +41,8 @@ Onion.widget.Text.prototype.keypressed = function(e) {
     // could use some optimization
     if(this.handle_submit) {
         if(e.which == 13) {
-            this.jwin.sync({'id':this.controlid, 'value':this.control.val()});
-            $.post("event", {'type':"submit", 'id':this.controlid}, hitch(this.jwin, "handle_tasks"), "json");
+            this.jwin.add_task("sync", "sync", this.controlid, {'value':this.control.val()});
+            this.jwin.add_task("event", "submit", this.controlid);
             return false;
         }
     }

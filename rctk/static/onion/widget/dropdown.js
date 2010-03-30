@@ -31,7 +31,7 @@ Onion.widget.Dropdown.prototype.changed = function() {
     this.jwin.sync({'id':this.controlid, 'selection':this.control.val()});
     if(this.handle_click) {
         // find current selection.
-        $.post("event", {'type':"click", 'id':this.controlid}, hitch(this.jwin, "handle_tasks"), "json");
+        this.jwin.add_handler("event", "click", this.controlid);
     }
         
 }

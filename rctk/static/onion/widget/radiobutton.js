@@ -22,7 +22,7 @@ Onion.widget.RadioButton.prototype.changed = function() {
     this.jwin.sync({'id':this.controlid, 'checked':this.control.attr('checked') });
 
     if(this.handle_click) {
-        $.post("event", {'type':"click", 'id':this.controlid}, hitch(this.jwin, "handle_tasks"), "json");
+        this.jwin.add_task("event", "click", this.controlid);
     }
 }
 

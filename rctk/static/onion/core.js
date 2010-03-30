@@ -11,7 +11,7 @@ Onion.core.JWinClient = function() {
     this.root = $("#root");
     this.factory = $("#factory");
     this.toplevels = $("#toplevels");
-    
+    this.queue = []
 }
 
 Onion.core.JWinClient.prototype.sync = function(data) {
@@ -86,6 +86,13 @@ Onion.core.JWinClient.prototype.handle_tasks = function (data, status) {
         this.do_work(data[i]);
       }
     }
+
+    if(this.queue.length > 0) {
+        Onion.util.log("tasks: ", $.param(this.queue));
+        $.post("task", {'queue':$.param(this.queue)}, Onion.util.hitch(this, "handle_tasks"), "json");
+        this.queue = []
+    }
+
     if(this.poll) {
         setInterval(Onion.util.hitch(this, 'get_work'), this.interval);
     }
@@ -112,4 +119,14 @@ Onion.core.JWinClient.prototype.start_work = function () {
         self.get_work();
     };
     $.post('start', {}, h, "json");
+}
+
+Onion.core.JWinClient.prototype.add_task = function(method, type, id) {
+    this.queue.push({'method':method, 'type':type, 'id':id});
+    // HACK
+    if(this.queue.length > 0) {
+        Onion.util.log("tasks: ", $.param(this.queue));
+        $.post("task", {'queue':JSON.stringify(this.queue)}, Onion.util.hitch(this, "handle_tasks"), "json");
+        this.queue = []
+    }
 }

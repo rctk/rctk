@@ -71,9 +71,11 @@ Onion.core.JWinClient.prototype.do_work = function(data) {
     case "timer":
         Onion.util.log("Handling timer " + id + ", " + data.milliseconds);
         var callback = Onion.util.hitch(this, "handle_tasks");
+        var self=this;
         setTimeout(
           function() { 
-             $.post("event", {"type":"timer", "id":id}, callback, "json")
+             self.add_task("event", "timer", id);
+             self.flush();
            }, data.milliseconds);
         break;
     }

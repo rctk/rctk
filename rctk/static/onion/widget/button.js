@@ -22,5 +22,11 @@ Onion.widget.Button.prototype.clicked = function() {
     }
 }
 
+Onion.widget.Button.prototype.update = function(data) {
+    if(data.text) {
+        this.control.html(data.text);
+    }
+}
+
 // register
 Onion.widget.register("button", Onion.widget.Button);

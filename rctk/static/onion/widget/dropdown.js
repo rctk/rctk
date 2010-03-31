@@ -28,7 +28,7 @@ Onion.widget.Dropdown.prototype.append_item = function(key, label) {
 }
 
 Onion.widget.Dropdown.prototype.changed = function() {
-    this.jwin.sync({'id':this.controlid, 'selection':this.control.val()});
+    this.jwin.add_task("sync", "sync", this.controlid, {'selection':this.control.val()});
     if(this.handle_click) {
         // find current selection.
         this.jwin.add_handler("event", "click", this.controlid);

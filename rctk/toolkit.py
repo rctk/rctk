@@ -98,9 +98,11 @@ class Toolkit(object):
                         elif eventtype == "submit":
                             control.submit(SubmitEvent(control))
                 elif tasktype == "sync":
-                    ## a control needs synchronization
+                    def un_unicode(d):
+                        """ transform unicode keys to normal """
+                        return dict((str(k), v) for (k,v) in d.iteritems())
                     control = self._controls[id]
-                    control.sync(**task)
+                    control.sync(**un_unicode(task.get('data', {})))
 
         ## any other case, including "pop" which is not handled explicitly
         ## right now.

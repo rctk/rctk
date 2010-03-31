@@ -32,7 +32,7 @@ Onion.widget.Text.prototype.create = function(data) {
 }
 
 Onion.widget.Text.prototype.changed = function() {
-    this.jwin.sync({'id':this.controlid, 'value':this.control.val()});
+    this.jwin.add_task("sync", "sync", this.controlid, {'value':this.control.val()});
     if(this.handle_change) {
         this.jwin.add_handler("event", "change", this.controlid);
     }

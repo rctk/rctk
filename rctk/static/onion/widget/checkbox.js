@@ -24,7 +24,7 @@ Onion.widget.CheckBox.prototype.create = function(data) {
  * guarantee sync will take place before click
  */
 Onion.widget.CheckBox.prototype.changed = function() {
-    this.jwin.sync({'id':this.controlid, 'checked':this.control.attr('checked')});
+    this.jwin.add_task("sync", "sync", this.controlid, {'checked':this.control.attr('checked')});
 
     if(this.handle_click) {
         this.jwin.add_task("event", "click", this.controlid);

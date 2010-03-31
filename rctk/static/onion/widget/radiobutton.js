@@ -19,7 +19,7 @@ Onion.widget.RadioButton.prototype.create = function(data) {
 }
 
 Onion.widget.RadioButton.prototype.changed = function() {
-    this.jwin.sync({'id':this.controlid, 'checked':this.control.attr('checked') });
+    this.jwin.add_task("sync", "sync", this.controlid, {'checked':this.control.attr('checked') });
 
     if(this.handle_click) {
         this.jwin.add_task("event", "click", this.controlid);

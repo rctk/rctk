@@ -14,16 +14,6 @@ Onion.core.JWinClient = function() {
     this.queue = []
 }
 
-Onion.core.JWinClient.prototype.sync = function(data) {
-    $.ajax({
-        type: "POST",
-        url: "sync",
-        data: data,
-        success: function() {},
-        dataTye: "json",
-        async: false});
-}
-
 Onion.core.JWinClient.prototype.do_work = function(data) {
     Onion.util.log("do_work ", data);
     
@@ -126,6 +116,6 @@ Onion.core.JWinClient.prototype.flush = function() {
     }
 }
 
-Onion.core.JWinClient.prototype.add_task = function(method, type, id) {
-    this.queue.push({'method':method, 'type':type, 'id':id});
+Onion.core.JWinClient.prototype.add_task = function(method, type, id, data) {
+    this.queue.push({'method':method, 'type':type, 'id':id, 'data':data});
 }

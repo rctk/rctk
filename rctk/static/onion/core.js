@@ -121,7 +121,6 @@ Onion.core.JWinClient.prototype.start_work = function () {
 
 Onion.core.JWinClient.prototype.flush = function() {
     if(this.queue.length > 0) {
-        Onion.util.log("tasks: ", $.param(this.queue));
         $.post("task", {'queue':JSON.stringify(this.queue)}, Onion.util.hitch(this, "handle_tasks"), "json");
         this.queue = []
     }

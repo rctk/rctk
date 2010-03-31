@@ -7,7 +7,7 @@ def main():
     import os
 
     args = sys.argv
-    if len(args) != 2:
+    if len(args) < 2:
         print >> sys.stderr, "Usage: serve_webpy.py module.class"
         sys.exit(-1)
     if '.' not in args[1]:

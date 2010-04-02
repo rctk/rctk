@@ -25,9 +25,9 @@ Onion.widget.Panel.prototype.create = function(data) {
 
 Onion.widget.Panel.prototype.append = function(control, data) {
     Onion.widget.Container.prototype.append.apply(this, arguments);
-    Onion.util.log("scrolling " + this.control.attr("scrollTop") + ", " + this.control.attr("scrollHeight"));
+    //Onion.util.log("scrolling " + this.control.attr("scrollTop") + ", " + this.control.attr("scrollHeight"));
     this.control.scrollTop(this.control.attr("scrollHeight"));
-    Onion.util.log("scrolling " + this.control.attr("scrollTop"));
+    //Onion.util.log("scrolling " + this.control.attr("scrollTop"));
 }
 
 Onion.widget.Panel.prototype.layout_updated = function() {

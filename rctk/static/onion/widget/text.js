@@ -17,6 +17,7 @@ Onion.widget.Text.prototype.create = function(data) {
     var controlid = "ctrl"+this.controlid;
     this.jwin.factory.append('<input type="text" name="' + controlid + '" id="' + controlid + '">');
     this.control = $("#"+controlid);
+    this.control.val(data.value);
     this.control.addClass(this.cssclass);
 
     var self = this;

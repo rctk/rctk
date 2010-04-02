@@ -1,4 +1,4 @@
-from control import Control
+from control import Control, remote_attribute
 
 from rctk.task import Task
 from rctk.event import Changable, Submittable
@@ -6,23 +6,19 @@ from rctk.event import Changable, Submittable
 class Text(Control, Changable, Submittable):
     name = "text"
 
-    def __init__(self, tk):
-        self._value = ""
-        super(Text, self).__init__(tk)
+    value = remote_attribute('value', "")
 
-    def _get_value(self):
-        return self._value
-
-    def _set_value(self, value):
+    def __init__(self, tk, value=""):
         self._value = value
-        self.tk.queue(Task("Text id %d value changed to '%s'" % (self.id, value),
-         {'control':self.name, "id":self.id, "action":"update", "update":{'value':value}}))
-
-    value = property(_get_value, _set_value)
+        super(Text, self).__init__(tk)
+        
+    def create(self):
+        self.tk.create_control(self, value=self._value)
 
     def sync(self, **data):
         if 'value' in data:
             self._value = data['value']
+    
 
 class Password(Text):
     name = "password"

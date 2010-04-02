@@ -9,4 +9,4 @@ class Root(Container):
         self.tk = tk
         self.id = 0
         self.tk.add_control(self)
-        self._controls_added = False
+        self._controls = []

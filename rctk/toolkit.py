@@ -77,7 +77,12 @@ class Toolkit(object):
 
     def handle(self, method, **args):
         if method == "start":
-            self.app.run(self)
+            if len(self._controls) > 1:
+                # app is already running, resume session by restoring UI
+                for id, c in self._controls.items():
+                    c.restore()
+            else:
+                self.app.run(self)
             return {"state":"started", "config":self.config}
         if method == "task" and 'queue' in args:
             queue = simplejson.loads(args['queue'])

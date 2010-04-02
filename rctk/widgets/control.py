@@ -31,6 +31,8 @@ class Control(PropertyHolder):
         super(Control, self).__init__(**properties)
         self.tk = tk
         self.id = self.newid()
+        self._parent = None
+        self._append_args = None
         self.tk.add_control(self)
         self.create()
 
@@ -49,7 +51,10 @@ class Control(PropertyHolder):
             on the clientside
         """
         pass
-
+        
+    def restore(self):
+        pass
+    
     def __repr__(self):
         return '<%s name="%s" id=%d>' % (self.__class__.__name__, self.name, self.id)
     

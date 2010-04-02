@@ -1,5 +1,5 @@
 from button import Button
-from checkbox import CheckBox
+from checkbox import CheckBox, CheckBoxGroup
 from container import Container
 from control import Control
 from date import Date

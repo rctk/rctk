@@ -6,7 +6,12 @@ Onion.widget.CheckBox.prototype = new Onion.widget.Control();
 
 Onion.widget.CheckBox.prototype.create = function(data) {
     var controlid = "ctrl" + this.controlid;
-    this.jwin.factory.append('<input type="checkbox" id="' + controlid + '"></input>')
+    if (data.group) {
+        var groupid = "ctrl" + data.group;
+        this.jwin.factory.append('<input type="radio" id="' + controlid + '" name="' + groupid + '"></input>');
+    } else {
+        this.jwin.factory.append('<input type="checkbox" id="' + controlid + '"></input>');
+    }
     this.control = $("#" + controlid);
     this.control.attr('defaultChecked', data.defaultChecked);
     this.handle_click = false;

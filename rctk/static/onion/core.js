@@ -15,7 +15,7 @@ Onion.core.JWinClient = function() {
 }
 
 Onion.core.JWinClient.prototype.do_work = function(data) {
-    Onion.util.log("do_work ", data);
+    //Onion.util.log("do_work ", data);
     
     var control_class = Onion.widget.map(data.control);
     var parent = this.controls[data.parentid];

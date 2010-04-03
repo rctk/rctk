@@ -44,7 +44,7 @@ class Container(Control):
         self._add_layout_task(self._layout)
         if self.id > 0:
             print str(self._append_args)
-            self._parent.append(self, self._append_args)
+            self._parent.append(self, **self._append_args)
     
     def _add_layout_task(self, layout):
         self.tk.queue(Task("Set layout %s on id %d" % (layout.type, self.id),

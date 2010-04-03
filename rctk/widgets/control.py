@@ -32,7 +32,7 @@ class Control(PropertyHolder):
         self.tk = tk
         self.id = self.newid()
         self._parent = None
-        self._append_args = None
+        self._append_args = {}
         self.tk.add_control(self)
         self.create()
 

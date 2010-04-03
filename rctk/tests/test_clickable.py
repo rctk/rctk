@@ -1,4 +1,4 @@
-from rctk.tests.base import BaseTest
+from rctk.tests.base import BaseTest, build_task_queue
 
 class ClickCounter(object):
     def __init__(self):
@@ -40,7 +40,7 @@ class BaseClickableTest(BaseTest):
         assert c.count == 0
 
         ## simulate a remote click event
-        self.tk.handle("event", id=w.id, type="click")
+        self.tk.handle("task", queue=build_task_queue("event", type="click", id=w.id))
 
         assert c.count == 1
         assert c.lastcontrol == w

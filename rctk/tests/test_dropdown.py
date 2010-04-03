@@ -1,4 +1,4 @@
-from rctk.tests.base import BaseTest
+from rctk.tests.base import BaseTest, build_task_queue
 
 from rctk.widgets import Dropdown
 
@@ -20,7 +20,7 @@ class TestDropdown(BaseTest):
 
     def test_selectionmade(self):
         w = Dropdown(self.tk, (('1', 'a'), ('2', 'b')))
-        self.tk.handle("sync", id=w.id, selection=1)
+        self.tk.handle("task", queue=build_task_queue("sync", type="sync", id=w.id, selection=1))
         assert w._selection == 1
         assert w.value == '2'
 

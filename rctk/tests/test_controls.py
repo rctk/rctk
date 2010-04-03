@@ -78,11 +78,11 @@ class TestCheckBoxWidget(BaseNonRootWidgetTest):
 
     # test syncing value
 
-from rctk.widgets.radiobutton import RadioButton
-class TestRadioButtonWidget(BaseNonRootWidgetTest):
-    widget = RadioButton
-
-    # test setting group
+# from rctk.widgets.radiobutton import RadioButton
+# class TestRadioButtonWidget(BaseNonRootWidgetTest):
+#     widget = RadioButton
+# 
+#     # test setting group
 
 from rctk.widgets.dropdown import Dropdown
 class TestDropdownWidget(BaseNonRootWidgetTest):

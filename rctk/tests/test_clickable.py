@@ -59,11 +59,11 @@ from rctk.widgets.checkbox import CheckBox
 class TestClickableCheckBox(BaseClickableTest):
     widget = CheckBox
 
-from rctk.widgets.radiobutton import RadioButton
-class TestClickableRadioButton(BaseClickableTest):
-    widget = RadioButton
-    def create_widget(self):
-        return self.widget(self.tk, "hi")
+#from rctk.widgets.radiobutton import RadioButton
+#class TestClickableRadioButton(BaseClickableTest):
+#    widget = RadioButton
+#    def create_widget(self):
+#        return self.widget(self.tk, "hi")
 
 from rctk.widgets.dropdown import Dropdown
 class TestClickableDropdown(BaseClickableTest):

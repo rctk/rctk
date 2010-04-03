@@ -19,6 +19,8 @@ class Container(Control):
         self._layout = self.default_layout()
         self._controls = []
 
+        self._controls_args = {} ## for restoration
+
     ##
     ## Can't really be created but we don't want to hide the default
     ## control behaviour from derived classes
@@ -38,13 +40,20 @@ class Container(Control):
             control._parent = self
             control._append_args = t
             self._add_append_task(control, t)
+            ## restoration
+            self._controls_args[control] = t
     
     def restore(self):
         self.create()
         self._add_layout_task(self._layout)
-        if self.id > 0:
-            print str(self._append_args)
-            self._parent.append(self, **self._append_args)
+        ## Not root and not a toplevel
+        #if self.id > 0 and self._parent is not None:
+        #    print str(self._append_args)
+        #    self._parent.append(self, **self._append_args)
+
+        for c in self._controls:
+            c.restore()
+            self._add_append_task(c, self._controls_args.get(c, {})) # add args XXX
     
     def _add_layout_task(self, layout):
         self.tk.queue(Task("Set layout %s on id %d" % (layout.type, self.id),

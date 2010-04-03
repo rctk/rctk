@@ -10,3 +10,5 @@ class Root(Container):
         self.id = 0
         self.tk.add_control(self)
         self._controls = []
+        self._layout = self.default_layout()
+        self._controls_args = {}## argh. 

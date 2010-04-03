@@ -53,7 +53,7 @@ class Control(PropertyHolder):
         pass
         
     def restore(self):
-        pass
+        self.create()
     
     def __repr__(self):
         return '<%s name="%s" id=%d>' % (self.__class__.__name__, self.name, self.id)

@@ -79,8 +79,12 @@ class Toolkit(object):
         if method == "start":
             if len(self._controls) > 1:
                 # app is already running, resume session by restoring UI
-                for id, c in self._controls.items():
-                    c.restore()
+                ## restore is a recursive process, start with the root
+                ## and toplevels
+                self._root.restore()
+                ## iterate over toplevels 
+                #for id, c in self._controls.items():
+                #    c.restore()
             else:
                 self.app.run(self)
             return {"state":"started", "config":self.config}

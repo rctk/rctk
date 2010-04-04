@@ -45,6 +45,18 @@ class BaseClickableTest(BaseTest):
         assert c.count == 1
         assert c.lastcontrol == w
 
+    def test_disabled(self):
+        """ assert that disabled controls don't handle clicks """
+        c = ClickCounter()
+        w = self.create_widget()
+        w.click = c
+        w.state = w.DISABLED
+        assert c.count == 0
+
+        ## simulate a remote click event
+        self.tk.handle("task", queue=build_task_queue("event", type="click", id=w.id))
+        assert c.count == 0
+
 
 ##
 ## Slight overlap with test_controls

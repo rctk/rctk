@@ -11,10 +11,12 @@ def build_task_queue(method, type, id, **data):
 class DummyApp(object):
     pass
 
-class TestToolkit(Toolkit):
+class DummyToolkit(Toolkit):
+    """ it's not a dummy toolkit, it's pretty full-fledged.
+        But "TestToolkit" is misleading """
     def clear(self):
         self._queue = []
 
 class BaseTest(object):
     def setup_method(self, method):
-        self.tk = TestToolkit(DummyApp)
+        self.tk = DummyToolkit(DummyApp)

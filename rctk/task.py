@@ -15,5 +15,8 @@ class Task(object):
     def __str__(self):
         return "Task: %s" % self.msg
 
+    def __repr__(self):
+        return "<Task: %s>" % self.msg
+
     def task(self):
         return self._task

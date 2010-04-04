@@ -53,7 +53,7 @@ class Container(Control):
 
         for c in self._controls:
             c.restore()
-            self._add_append_task(c, self._controls_args.get(c, {})) # add args XXX
+            self._add_append_task(c, self._controls_args.get(c, {})) 
     
     def _add_layout_task(self, layout):
         self.tk.queue(Task("Set layout %s on id %d" % (layout.type, self.id),

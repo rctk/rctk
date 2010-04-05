@@ -75,6 +75,6 @@ class StandaloneRCTK():
         self.server.handle_request()
         return True
 
-if __name__ == '__main__':
+def main():
     s = StandaloneRCTK()
     gtk.main()

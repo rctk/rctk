@@ -25,6 +25,7 @@ A Dektop widget library that uses a browser to render widgets""",
       entry_points={
         "console_scripts": [
           "test=rctk.runtests:runall",
-          "serve_webpy=rctk.serve_webpy:main"
+          "serve_webpy=rctk.serve_webpy:main",
+          "serve_mozilla:rctk.serve_mozilla:main"
         ]}
       )

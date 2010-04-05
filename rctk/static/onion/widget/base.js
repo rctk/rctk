@@ -11,7 +11,16 @@ Onion.widget.Control = function(jwin, parent, controlid) {
  * "sync" may be more consistent, controls on the serverside
  * implement a sync() method for changes from the clientside
  */
-Onion.widget.Control.prototype.update = function(data) {}
+Onion.widget.Control.prototype.update = function(data) {
+    if('state' in data) {
+        if(data.state == 0) { // ENABLED
+            this.control.removeAttr("disabled");
+        }
+        else if(data.state == 1) { // DISABLE
+            this.control.attr("disabled", "disabled");
+        }
+    }
+}
 
 Onion.widget.Control.prototype.set_properties = function(data) {
     if(data === undefined) {
@@ -31,6 +40,7 @@ Onion.widget.Control.prototype.set_properties = function(data) {
         this.control.css("background-color", data.background);
     }
 }
+
 Onion.widget.Control.prototype.create = function(data) {
     var controlid = "ctrl"+this.controlid;
     this.jwin.factory.append('<div id="' + controlid + '"></div>');

@@ -27,6 +27,7 @@ Onion.widget.Frame.prototype.setLayout = function(type, config) {
 }
 
 Onion.widget.Frame.prototype.update = function(data) {
+    Onion.widget.Container.prototype.update.apply(this, arguments);
     if(data.state) {
         Onion.util.log("Window state update", data);
         if(data.state == "open") {

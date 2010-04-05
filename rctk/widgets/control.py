@@ -1,5 +1,36 @@
 from rctk.task import Task
 
+class remote_attribute(object):
+    """
+        This descriptor class implements an easier way to
+        sync specific attributes remotely.
+
+        You need to pass it a name, the actual value will be
+        stored on the context object under the same name prefixed
+        with a '_'. This way you can safely bypass the descriptor
+        if you don't want any tasks to be sent.
+    """
+    def __init__(self, name, default, filter=lambda control, x: x):
+        """ setting a default does not set it remotely! """
+        self.name = name
+        self.default = default
+        self.filter = filter
+
+    def __get__(self, control, type):
+        return getattr(control, '_'+self.name, self.default)
+
+    def __set__(self, control, value):
+        setattr(control, '_'+self.name, value)
+        control.tk.queue(Task("%s id %d attr %s update to '%s'" % 
+                              (control.name, control.id, self.name, value),
+            {
+                'control':control.name,
+                'id':control.id,
+                'action':'update',
+                'update':{self.name:self.filter(control, value)}
+            }
+        ))
+
 class PropertyHolder(object):
     properties = {}
 
@@ -58,32 +89,7 @@ class Control(PropertyHolder):
     def __repr__(self):
         return '<%s name="%s" id=%d>' % (self.__class__.__name__, self.name, self.id)
     
-class remote_attribute(object):
-    """
-        This descriptor class implements an easier way to
-        sync specific attributes remotely.
+    ENABLED = 0
+    DISABLED = 1
+    state = remote_attribute("state", ENABLED)
 
-        You need to pass it a name, the actual value will be
-        stored on the context object under the same name prefixed
-        with a '_'. This way you can safely bypass the descriptor
-        if you don't want any tasks to be sent.
-    """
-    def __init__(self, name, default):
-        """ setting a default does not set it remotely! """
-        self.name = name
-        self.default = default
-
-    def __get__(self, control, type):
-        return getattr(control, '_'+self.name, self.default)
-
-    def __set__(self, control, value):
-        setattr(control, '_'+self.name, value)
-        control.tk.queue(Task("%s id %d attr %s update to '%s'" % 
-                              (control.name, control.id, self.name, value),
-            {
-                'control':control.name,
-                'id':control.id,
-                'action':'update',
-                'update':{self.name:value}
-            }
-        ))

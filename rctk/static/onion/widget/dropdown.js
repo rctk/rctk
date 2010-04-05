@@ -37,6 +37,7 @@ Onion.widget.Dropdown.prototype.changed = function() {
 }
 
 Onion.widget.Dropdown.prototype.update = function(data) {
+    Onion.widget.Control.prototype.update.apply(this, arguments);
     if(data.item) {
         this.append_item(data.item[0], data.item[1]);
     }

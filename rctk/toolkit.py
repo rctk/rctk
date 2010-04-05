@@ -100,6 +100,10 @@ class Toolkit(object):
                     else:
                         control = self._controls[id]
 
+                        ## A disabled control shouldn't receive events
+                        if control.state == control.DISABLED:
+                            continue
+
                         if eventtype == "click":
                             control.click(ClickEvent(control))
                         elif eventtype == "change":

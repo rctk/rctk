@@ -1,4 +1,4 @@
-from control import Control
+from control import Control, remote_attribute
 
 from rctk.task import Task
 from rctk.event import Clickable
@@ -28,15 +28,16 @@ class StaticText(Control):
         """ perform filtering/escaping if necessary """
         return cgi.escape(s)
 
-    def _get_text(self):
-        return self._text
+    text = remote_attribute("text", "", _escape)
+    #def _get_text(self):
+    #    return self._text
 
-    def _set_text(self, text):
-        self._text = text
-        self.tk.queue(Task("StaticText update id %d text '%s'" % (self.id, self._text),
-          {'control':self.name, 'id':self.id, 'action':'update', "update":{"text":self._escape(self.text)}}))
+    #def _set_text(self, text):
+    #    self._text = text
+    #    self.tk.queue(Task("StaticText update id %d text '%s'" % (self.id, self._text),
+    #      {'control':self.name, 'id':self.id, 'action':'update', "update":{"text":self._escape(self.text)}}))
 
-    text = property(_get_text, _set_text)
+    #text = property(_get_text, _set_text)
 
 class StaticHTMLText(StaticText):
     def _escape(self, s):

@@ -6,7 +6,9 @@ Onion.widget.StaticText.prototype = new Onion.widget.Control();
 
 Onion.widget.StaticText.prototype.create = function(data) {
     var controlid = "ctrl"+this.controlid;
-    this.jwin.factory.append('<div id="' + controlid + '">' + data.text + "</div>")
+    this.ui = new Onion.ui.StaticText(this.jwin.factory);
+    this.ui.create(controlid, data.text);
+
     this.control = $("#"+controlid);
     this.control.addClass(this.cssclass);
     this.set_properties(data);
@@ -53,7 +55,7 @@ Onion.widget.StaticText.prototype.create = function(data) {
 Onion.widget.StaticText.prototype.update = function(data) {
     Onion.widget.Control.prototype.update.apply(this, arguments);
     if(data.text) {
-        this.control.html(data.text);
+        this.ui.setText(data.text);
     }
 }
 

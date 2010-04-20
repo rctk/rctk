@@ -12,20 +12,32 @@ Onion.widget.Grid.prototype.create = function(data) {
     this.container.addClass(this.cssclass);
     // this.set_properties(data);
     this.container.jqGrid({
-    datatype: 'clientSide',
-    colNames:data.colNames,
-    colModel :data.colModel,
-    rowNum:10,
-    rowList:[10,20,30],
-    sortname: 'invid',
-    sortorder: 'desc',
-    viewrecords: true,
-    caption: '',
-    loadui: 'disabled',
-    scroll: true
+        datatype: 'local',
+        colNames:data.colNames,
+        colModel :data.colModel,
+        // rowNum:10,
+        //rowList:[10,20,30],
+        //sortname: 'invid',
+        //sortorder: 'desc',
+        viewrecords: false,
+        caption: '',
+        loadui: 'disabled',
+        scroll: false // see remark below
     }); 
+    // setting scroll to 1 will allow dynamic loading of batches of
+    // rows. I.e. "static" vs "virtual". 
+    // However, this currently has odd side effects on firefox, perhaps
+    // we need some handler to feed / restore data. Actual deletion takes
+    // place in grid.base.js, line 300 (populateVisible)
     this.control = $("#gbox_"+controlid);
 
+}
+
+Onion.widget.Grid.prototype.update = function(data) {
+    Onion.widget.Control.prototype.update.apply(this, arguments);
+    if(data && 'addrow' in data) {
+        this.container.addRowData(data.addrow.id, data.addrow.data, data.addrow.position);
+    }
 }
 
 // register

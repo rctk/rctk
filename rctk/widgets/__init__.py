@@ -13,3 +13,4 @@ from text import Text
 from text import Password
 from window import Window
 
+from grid import Grid

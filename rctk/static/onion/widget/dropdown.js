@@ -31,7 +31,7 @@ Onion.widget.Dropdown.prototype.changed = function() {
     this.jwin.add_task("sync", "sync", this.controlid, {'selection':this.control.val()});
     if(this.handle_click) {
         // find current selection.
-        this.jwin.add_handler("event", "click", this.controlid);
+        this.jwin.add_task("event", "click", this.controlid);
     }
         
 }

@@ -21,9 +21,6 @@ def main():
     ## web.py scans the arguments as well
     del args[1]
 
-    ## so /static works
-    os.chdir(os.path.dirname(__file__))
-
     serve(klass)
 
 if __name__ == '__main__':

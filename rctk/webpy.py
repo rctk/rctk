@@ -85,7 +85,6 @@ class WebPyDispatcher(object):
         return self
 
 def app(a, *args, **kw):
-    import os
 
     ## required for local static to work
     os.chdir(os.path.dirname(__file__))
@@ -93,5 +92,11 @@ def app(a, *args, **kw):
     return web.application(('/(.*)', 'receiver'), {'receiver':stateful}, autoreload=True)
 
 def serve(a, *args, **kw):
-    app(a, *args, **kw).run()
+    ## This is a bit of a hack for the VCR app, to be able to do some
+    ## pre-run initialization
+    cwd = os.getcwd()
+    _a = app(a, *args, **kw)
+    if hasattr(a, 'before_run_hook') and callable(a.before_run_hook):
+        a.before_run_hook(_a, cwd)
+    _a.run()
 

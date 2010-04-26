@@ -18,7 +18,7 @@ Onion.widget.Dropdown.prototype.create = function(data) {
         }
     }
     var self=this;
-    this.control.change(function() { self.changed() });
+    this.control.change(function() { self.changed(); self.jwin.flush(); });
     this.set_properties(data);
 }
 
@@ -33,7 +33,6 @@ Onion.widget.Dropdown.prototype.changed = function() {
         // find current selection.
         this.jwin.add_task("event", "click", this.controlid);
     }
-        
 }
 
 Onion.widget.Dropdown.prototype.update = function(data) {

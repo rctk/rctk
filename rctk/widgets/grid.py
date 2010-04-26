@@ -69,11 +69,11 @@ class Grid(Control):
     AFTER = "after"
 
     def __init__(self, tk, cols):
-       self.cols = cols
-       self.rowcounter = 1
-       super(Grid, self).__init__(tk)
-       self.rows = []
-       self.rowmap = {}
+        self.cols = cols
+        self.rowcounter = 1
+        super(Grid, self).__init__(tk)
+        self.rows = []
+        self.rowmap = {}
 
     def create(self):
         self.tk.create_control(self, 
@@ -106,7 +106,6 @@ class Grid(Control):
         self.rowmap[rowid] = row
 
         datadict = dict(zip((c.id for c in self.cols), data))
-        print datadict
 
         self.tk.queue(Task("Grid update (add row) id %d rowid %s" % 
                        (self.id, rowid),
@@ -123,3 +122,13 @@ class Grid(Control):
                         }))
         return rowid
 
+    def clear(self):
+        """ clear the entire grid """
+        ## leave rowcounter untouched, regard those id's as invalid
+        self.rows = []
+        self.rowmap = {}
+        self.tk.queue(Task("Grid cleared id %d" % self.id,
+          {'control':self.name,
+           'id':self.id,
+           'action':'update',
+           'update':{'clear':True}}))

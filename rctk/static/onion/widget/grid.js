@@ -38,6 +38,9 @@ Onion.widget.Grid.prototype.update = function(data) {
     if(data && 'addrow' in data) {
         this.container.addRowData(data.addrow.id, data.addrow.data, data.addrow.position);
     }
+    if('clear' in data && data.clear) {
+        this.container.clearGridData(true); 
+    }
 }
 
 // register

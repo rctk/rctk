@@ -40,10 +40,10 @@ Onion.widget.Dropdown.prototype.update = function(data) {
     if(data.item) {
         this.append_item(data.item[0], data.item[1]);
     }
-    if(data.selection) {
+    if('selection' in data) {
         this.control.val(data.selection);
     }
-    if(data.clear) {
+    if('clear' in data && data.clear) {
         this.control.empty(); // doesn't work on google chrome?
         this.items = []
     }

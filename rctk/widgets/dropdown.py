@@ -78,9 +78,14 @@ class Dropdown(Control, Clickable):
             if v == key:
                 self.selection = idx
                 return
-        raise KeyError, `search`
+        raise KeyError, v
 
     value = property(_get_value, _set_value)
+
+    def reset(self):
+        """ set the selection to the first value """
+        if self.items:
+            self.selection = self.items[0][0]
 
     def clear(self):
         self._items = []

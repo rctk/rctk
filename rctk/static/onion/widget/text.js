@@ -15,9 +15,15 @@ Onion.widget.Text.prototype = new Onion.widget.Control();
 
 Onion.widget.Text.prototype.create = function(data) {
     var controlid = "ctrl"+this.controlid;
-    this.jwin.factory.append('<input type="text" name="' + controlid + '" id="' + controlid + '">');
+    var html = '<input type="text" name="' + controlid + '" id="' + controlid + '">';
+    if (data.rows > 1) {
+        html = '<textarea name="' + controlid + '" id="' + controlid + '"></textarea>';
+    }
+    this.jwin.factory.append(html);
     this.control = $("#"+controlid);
     this.control.val(data.value);
+    this.control.attr('rows', data.rows);
+    this.control.attr('cols', data.columns);
     this.control.addClass(this.cssclass);
 
     var self = this;

@@ -1,0 +1,30 @@
+/* Basic code - don't modify */
+ 
+ul.droppy { display: block; margin: 0; padding: 0; position: relative; }
+ul.droppy li { display: block; list-style: none; margin: 0; padding: 0; float: left; position: relative; }
+ul.droppy a { display: block; }
+ul.droppy ul { display: none; position: absolute; left: 0; margin: 0; padding: 0; }
+* html ul.droppy ul { line-height: 0; } /* IE6 "fix" */
+ul.droppy ul a { zoom: 1; } /* IE6/7 fix */
+ul.droppy ul li { float: none; }
+ul.droppy ul ul { top: 0; }
+    
+/* Essentials - configure this */
+
+ul.droppy ul { width: 130px; }
+ul.droppy ul ul { left: 131px; }
+
+/* Everything else is theming */
+ 
+ul.droppy { background-color: #30A8C3; height: 24px; }
+/*ul.droppy *:hover { background-color: none; }*/
+ul.droppy li { border-right: 1px solid white; color: white; font-size: 12px; padding: 6px; line-height: 1; }
+ul.droppy li { background-color: #30A8C3; }
+ul.droppy li.hover { background-color: #5E5A5A; }
+ul.droppy ul li { background-color: #30A8C3; }
+ul.droppy li.hover { background-color: #5E5A5A; }
+ul.droppy ul { top: 25px; }
+ul.droppy ul li a { background-color: #5E5A5A; }
+ul.droppy ul a { border-bottom: 1px solid white; border-right: none; opacity: 0.9; filter: alpha(opacity=90); }
+/* ul.droppy ul a { border-bottom: none; } - I also needed this for IE6/7 */
+

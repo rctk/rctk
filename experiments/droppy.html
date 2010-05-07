@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>droppy</title>
+	<meta name="generator" content="TextMate http://macromates.com/">
+	<meta name="author" content="Arjen Roodselaar">
+	<link type="text/css" href="../rctk/static/plugins/droppy/droppy.css" rel="stylesheet" />
+	<script type="text/javascript" src="../rctk/static/jquery/jquery-1.3.2.min.js"></script>
+    <script type="text/javascript" src="../rctk/static/plugins/droppy/jquery.droppy.js"></script>
+    <script type='text/javascript'>
+      $(function() {
+        $('.droppy').droppy();
+      });
+    </script>
+</head>
+<body>
+    <ul class="droppy">
+      <li>Top level 1</li>
+      <li>Top level 2
+        <ul>
+          <li>Sub 2 - 1</li>
+          <li>
+            Sub 2 - 2
+            <ul>
+              <li>
+                Sub 2 - 2 - 1
+                <ul>
+                  <li>Sub 2 - 2 - 1 - 1</li>
+                  <li>Sub 2 - 2 - 1 - 2</li>
+                  <li>Sub 2 - 2 - 1 - 3</li>
+                  <li>Sub 2 - 2 - 1 - 4</li>
+                </ul>
+              </li>
+              <li>Sub 2 - 2 - 2</li>
+              <li>
+                Sub 2 - 2 - 3
+                <ul>
+                  <li>Sub 2 - 2 - 3 - 1</li>
+                  <li>Sub 2 - 2 - 3 - 2</li>
+                  <li>Sub 2 - 2 - 3 - 3</li>
+                  <li>Sub 2 - 2 - 3 - 4</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>Sub 2 - 3</li>
+        </ul>
+      </li>
+    </ul>
+</body>
+</html>

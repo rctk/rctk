@@ -3,9 +3,15 @@ import simplejson
 import os
 import time
 
+from resourceregistry import getResourceRegistry, addResource, CSSResource, JSResource
+
+import resources
+
 from rctk.widgets import Root
 from rctk.event import ClickEvent, ChangeEvent, SubmitEvent
 from rctk.task import Task
+
+
 
 class Timer(object):
     def __init__(self, millis, handler, continuous=False):
@@ -46,8 +52,26 @@ class TimerManager(object):
             if not t.continuous:
                 del self.timers[id]
             
-class Toolkit(object):
+class ResourceManager(object):
+    def __init__(self):
+        self.rr = getResourceRegistry()
+
+    def serve(self, name):
+        if name == "":
+            ## insert RR magic
+            header = self.rr.header()
+
+            tpl = open(os.path.join(os.path.dirname(__file__), 'main.html')).read()
+            rendered = tpl.replace('<!-- rctk-header -->', header)
+            return ('text/html', rendered)
+        elif name.startswith('resources'):
+            elements = name.split('/')
+            return self.rr.get_resource(elements[-1])
+        raise KeyError, name
+
+class Toolkit(ResourceManager):
     def __init__(self, app, *args, **kw):
+        super(Toolkit, self).__init__()
         self.app = app
         self._queue = []
         self._controls = {}
@@ -56,6 +80,7 @@ class Toolkit(object):
         self.kw = kw
         self.timers = TimerManager(self)
         self.config = {}
+
 
     def add_control(self, control):
         self._controls[control.id] = control

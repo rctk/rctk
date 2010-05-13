@@ -1,3 +1,5 @@
+import resources
+
 from button import Button
 from checkbox import CheckBox, CheckBoxGroup
 from container import Container

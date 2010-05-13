@@ -17,8 +17,17 @@ class Session(object):
         self.tk = tk
 
     def handle(self, method, **arguments):
+        """ handle means handling tasks. the result is always json """
         self.last_access = time.time()
         return self.tk.handle(method, **arguments)
+
+    def serve(self, name):
+        """ serve means serving (static) content. Resources or html """
+        type, data = self.tk.serve(name)
+        web.header("content-type", type)
+        return data
+
+        # return open(os.path.join(os.path.dirname(__file__), "main.html"), "r").read()            
 
     def expired(self):
         return time.time() - self.last_access > (24*3600)
@@ -54,9 +63,10 @@ class WebPyDispatcher(object):
             web.seeother('/')
             return
 
+        res = session.serve(rest)
         self.cleanup_expired()
-        web.header("content-type", "text/html")
-        return open(os.path.join(os.path.dirname(__file__), "main.html"), "r").read()            
+        return res
+
 
     def POST(self, data):
         data = data.strip()

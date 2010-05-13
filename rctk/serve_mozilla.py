@@ -32,16 +32,19 @@ class StandaloneHTTPServer(BaseHTTPServer.BaseHTTPRequestHandler):
         BaseHTTPServer.BaseHTTPRequestHandler.__init__(self, *args)
 
     def do_GET(self):
-        print "GET", self.path
-        if self.path == '/':
-            main = os.path.join(basedir, 'main.html')
-            print >> self.wfile,  open(main, "r").read()
-        elif self.path.startswith("/static"):
+        if self.path.startswith("/static"):
             data = open(os.path.join(basedir, self.path[1:]), "r").read()
+            print >> self.wfile, data
+        else: ## main.html or resources
+            type, data = self.tk.serve(self.path[1:])
+            self.send_response(200, "Ok")
+            self.send_header("content-type", type)
+            self.send_header("content-length", len(data))
+            self.end_headers()
+
             print >> self.wfile, data
 
     def do_POST(self):
-        print "POST", self.path
         method = self.path[1:]
         length = self.headers.get('content-length', -1)
         q = self.rfile.read(int(length))
@@ -62,7 +65,6 @@ class StandaloneHTTPServer(BaseHTTPServer.BaseHTTPRequestHandler):
 
 
         print >> self.wfile, res
-        # print "RES", res
 
 
 import socket

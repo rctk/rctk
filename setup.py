@@ -3,6 +3,25 @@ import sys, os
 
 version = '0.1'
 
+if sys.version_info[0] == 3: # python 3
+    install_requires = []
+    entry_points={
+        "console_scripts": [
+          "serve_py3=rctk.serve_py3:main",
+    ]}
+else:
+    install_requires=[
+          'py',
+          'web.py',
+          'simplejson'
+    ]
+    entry_points={
+        "console_scripts": [
+          "test=rctk.runtests:runall",
+          "serve_webpy=rctk.serve_webpy:main",
+          "serve_mozilla=rctk.serve_mozilla:main"
+    ]}
+    
 setup(name='rctk',
       version=version,
       description="RemoteControl Toolkit",
@@ -17,15 +36,6 @@ A Dektop widget library that uses a browser to render widgets""",
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       include_package_data=True,
       zip_safe=False,
-      install_requires=[
-          'py',
-          'web.py',
-          'simplejson'
-      ],
-      entry_points={
-        "console_scripts": [
-          "test=rctk.runtests:runall",
-          "serve_webpy=rctk.serve_webpy:main",
-          "serve_mozilla=rctk.serve_mozilla:main"
-        ]}
+      install_requires=install_requires,
+      entry_points=entry_points,
       )

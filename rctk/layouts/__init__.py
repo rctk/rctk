@@ -1,2 +1,1 @@
-import resources
-from layouts import *
+from rctk.layouts.layouts import *

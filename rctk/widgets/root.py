@@ -1,4 +1,4 @@
-from container import Container
+from rctk.widgets.container import Container
 
 class Root(Container):
     """ the root window. Unique, id 0 """

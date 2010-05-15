@@ -1,4 +1,4 @@
-from control import Control
+from rctk.widgets.control import Control
 
 from rctk.task import Task
 from rctk.event import Changable

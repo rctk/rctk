@@ -35,7 +35,7 @@ class PropertyHolder(object):
     properties = {}
 
     def __init__(self, **properties):
-        for (k, v) in self.properties.iteritems():
+        for (k, v) in self.properties.items():
             setattr(self, k, properties.get(k, v))
         for k in properties:
             if k not in self.properties:

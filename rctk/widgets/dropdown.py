@@ -1,4 +1,4 @@
-from control import Control, remote_attribute
+from rctk.widgets.control import Control, remote_attribute
 
 from rctk.task import Task
 from rctk.event import Clickable
@@ -55,7 +55,7 @@ class Dropdown(Control, Clickable):
         self.items.append((self.indexer, (key, value)))
 
         self.tk.queue(Task("Dropdown update id %d items '%s'" % 
-          (self.id, `self.items`),
+          (self.id, repr(self.items)),
          {'control':self.name, "id":self.id, "action":"update", 
           "update":{"item":(self.indexer, value)}}))
         self.indexer += 1
@@ -78,7 +78,7 @@ class Dropdown(Control, Clickable):
             if v == key:
                 self.selection = idx
                 return
-        raise KeyError, v
+        raise KeyError(v)
 
     value = property(_get_value, _set_value)
 

@@ -1,4 +1,4 @@
-from control import Control, remote_attribute
+from rctk.widgets.control import Control, remote_attribute
 
 from rctk.task import Task
 from rctk.event import Changable, Submittable

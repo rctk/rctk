@@ -1,7 +1,7 @@
 import os
 import sys
 
-from rctk.util import OrderedDict
+from rctk.compat import OrderedDict
 
 class BaseResource(object):
     def __init__(self, path, name=None):
@@ -59,12 +59,12 @@ class ResourceRegistry(object):
     def css_resources(self):
         """ return references to css resources. They may be merged so it
             may be just a single resource """
-        return [k for (k,v) in self.resources.iteritems() if isinstance(v, CSSResource)]
+        return [k for (k,v) in self.resources.items() if isinstance(v, CSSResource)]
 
     def js_resources(self):
         """ return references to css resources. They may be merged so it
             may be just a single resource """
-        return [k for (k,v) in self.resources.iteritems() if isinstance(v, JSResource)]
+        return [k for (k,v) in self.resources.items() if isinstance(v, JSResource)]
 
     def get_resource(self, name):
         """ return a (type, data) tuple containing the mimetype and resource data """

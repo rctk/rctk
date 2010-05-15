@@ -1,5 +1,5 @@
 from rctk.task import Task
-from container import Container
+from rctk.widgets.container import Container
 
 
 class Window(Container):

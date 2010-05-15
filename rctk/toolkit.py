@@ -1,11 +1,11 @@
-import simplejson
+from rctk.compat import json
 
 import os
 import time
 
-from resourceregistry import getResourceRegistry, addResource, CSSResource, JSResource
+from rctk.resourceregistry import getResourceRegistry, addResource, CSSResource, JSResource
 
-import resources
+import rctk.resources
 
 from rctk.widgets import Root
 from rctk.event import ClickEvent, ChangeEvent, SubmitEvent
@@ -67,7 +67,7 @@ class ResourceManager(object):
         elif name.startswith('resources'):
             elements = name.split('/')
             return self.rr.get_resource(elements[-1])
-        raise KeyError, name
+        raise KeyError(name)
 
 class Toolkit(ResourceManager):
     def __init__(self, app, *args, **kw):
@@ -114,7 +114,7 @@ class Toolkit(ResourceManager):
                 self.app.run(self)
             return {"state":"started", "config":self.config}
         if method == "task" and 'queue' in args:
-            queue = simplejson.loads(args['queue'])
+            queue = json.loads(args['queue'])
             for task in queue:
                 tasktype = task['method']
                 id = int(task['id'])
@@ -138,7 +138,7 @@ class Toolkit(ResourceManager):
                 elif tasktype == "sync":
                     def un_unicode(d):
                         """ transform unicode keys to normal """
-                        return dict((str(k), v) for (k,v) in d.iteritems())
+                        return dict((str(k), v) for (k,v) in d.items())
                     control = self._controls[id]
                     control.sync(**un_unicode(task.get('data', {})))
 

@@ -1,4 +1,4 @@
-from control import Control
+from rctk.widgets.control import Control
 
 from rctk.task import Task
 
@@ -99,7 +99,7 @@ class Grid(Control):
         rowid = str(rowid)
 
         if position in (Grid.BEFORE, Grid.AFTER) and srcrowid == -1:
-            raise ValueError, "Grid.BEFORE or Grid.AFTER used but no srcrowid specified"
+            raise ValueError("Grid.BEFORE or Grid.AFTER used but no srcrowid specified")
 
         row = Row(rowid, data)
         self.rows.append(row)

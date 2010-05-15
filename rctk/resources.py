@@ -7,6 +7,6 @@ addResource(JSResource('static/onion/util.js'))
 addResource(JSResource('static/onion/jquery.js'))
 addResource(JSResource('static/json2.js'))
 
-import layouts.resources
-import widgets.resources
+import rctk.layouts.resources
+import rctk.widgets.resources
 

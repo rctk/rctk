@@ -1,4 +1,4 @@
-from control import Control
+from rctk.widgets.control import Control
 
 from rctk.layouts import GridLayout, LayoutException
 from rctk.task import Task

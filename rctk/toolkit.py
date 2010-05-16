@@ -80,6 +80,7 @@ class Toolkit(ResourceManager):
         self.kw = kw
         self.timers = TimerManager(self)
         self.config = {}
+        self.startupdir = os.getcwd() 
 
 
     def add_control(self, control):

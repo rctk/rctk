@@ -34,11 +34,12 @@ class Session(object):
         
 class WebPyDispatcher(object):
     """ the receiver is the serverside of the RC protocol """
-    def __init__(self, app, *args, **kw):
+    def __init__(self, app, startupdir, *args, **kw):
         self.sessions = {}
         self.app = app
         self.args = args
         self.kw = kw
+        self.startupdir = startupdir
 
     def cleanup_expired(self):
         expired = []
@@ -53,6 +54,8 @@ class WebPyDispatcher(object):
         if data == "":
             sessionid = uuid.uuid1().hex
             tk = Toolkit(self.app(*self.args, **self.kw))
+            tk.startupdir = self.startupdir
+
             self.sessions[sessionid] = Session(tk)
             web.seeother('/' + sessionid + '/')
             return
@@ -95,18 +98,12 @@ class WebPyDispatcher(object):
         return self
 
 def app(a, *args, **kw):
-
-    ## required for local static to work
+    ## required for local static to work, keep startupdir for later use
+    cwd = os.getcwd()
     os.chdir(os.path.dirname(__file__))
-    stateful = WebPyDispatcher(a, *args, **kw)
+    stateful = WebPyDispatcher(a, startupdir, *args, **kw)
     return web.application(('/(.*)', 'receiver'), {'receiver':stateful}, autoreload=True)
 
 def serve(a, *args, **kw):
-    ## This is a bit of a hack for the VCR app, to be able to do some
-    ## pre-run initialization
-    cwd = os.getcwd()
-    _a = app(a, *args, **kw)
-    if hasattr(a, 'before_run_hook') and callable(a.before_run_hook):
-        a.before_run_hook(_a, cwd)
-    _a.run()
+    app(a, *args, **kw).run()
 

@@ -28,6 +28,8 @@ class Session(object):
     def expired(self):
         return time.time() - self.last_access > (24*3600)
         
+    def cleanup(self):
+        pass
 
 class SpawnedSession(object):
     """
@@ -72,6 +74,9 @@ class SpawnedSession(object):
         data = res['data']
         return type, data
 
-
     def expired(self):
         return time.time() - self.last_access > (24*3600)
+
+    def cleanup(self):
+        """ kill process, close proc stuff, etc """
+        pass

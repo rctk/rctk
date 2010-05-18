@@ -22,6 +22,7 @@ class WebPyGateway(object):
             if value.expired():
                 expired.append(hash)
         for hash in expired:
+            self.sessions[hash].cleanup()
             del self.sessions[hash]
 
     def GET(self, data):
@@ -82,5 +83,6 @@ def app(classid, *args, **kw):
     return web.application(('/(.*)', 'receiver'), {'receiver':stateful}, autoreload=True)
 
 def serve(classid, *args, **kw):
+    """ create the (webpy) app and run it """
     app(classid, *args, **kw).run()
 

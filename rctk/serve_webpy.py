@@ -14,14 +14,12 @@ def main():
         print >> sys.stderr, "Usage: serve_webpy.py module.class"
         sys.exit(-1)
 
-    m, k = args[1].rsplit(".", 1)
-    mod = __import__(m, fromlist=[k])
-    klass = getattr(mod, k)
+    classid = args[1]
 
     ## web.py scans the arguments as well
     del args[1]
 
-    serve(klass)
+    serve(classid)
 
 if __name__ == '__main__':
     main()

@@ -6,7 +6,7 @@ import simplejson
 
 from rctk.sessions import Session, SpawnedSession
     
-class WebPyDispatcher(object):
+class WebPyGateway(object):
     """ the receiver is the serverside of the RC protocol """
     def __init__(self, classid, startupdir, sessionclass, *args, **kw):
         self.sessions = {}
@@ -29,7 +29,8 @@ class WebPyDispatcher(object):
         if data == "":
             sessionid = uuid.uuid1().hex
 
-            self.sessions[sessionid] = self.sessionclass(self.classid, self.args, self.kw, self.startupdir)
+            self.sessions[sessionid] = self.sessionclass(self.classid, 
+                                          self.args, self.kw, self.startupdir)
             web.seeother('/' + sessionid + '/')
             return
 
@@ -77,7 +78,7 @@ def app(classid, *args, **kw):
     ## required for local static to work, keep startupdir for later use
     cwd = os.getcwd()
     os.chdir(os.path.dirname(__file__))
-    stateful = WebPyDispatcher(classid, cwd, default_session, *args, **kw)
+    stateful = WebPyGateway(classid, cwd, default_session, *args, **kw)
     return web.application(('/(.*)', 'receiver'), {'receiver':stateful}, autoreload=True)
 
 def serve(classid, *args, **kw):

@@ -6,6 +6,7 @@ import os
 
 import simplejson
 from rctk.toolkit import Toolkit
+from rctk.util import un_unicode
 
 class ProcessWrapper(object):
     def __init__(self, klass):
@@ -14,9 +15,8 @@ class ProcessWrapper(object):
         self.stdin = sys.stdin
         self.stdout = sys.stdout
 
-        print >> sys.stderr, "Hello world"
         sys.stdin = open("/dev/null", "r")
-        sys.stdout = open("/dev/null", "w")
+        sys.stdout = sys.stderr = open("/tmp/out.txt", "w")
 
     def run(self):
         while True:
@@ -29,7 +29,9 @@ class ProcessWrapper(object):
                 result = {'type':type, 'data':data}
             elif type == "HANDLE":
                 method, args_str = rest.split(" ", 1)
-                args = simplejson.loads(args_str)
+                ## make sure we're not passing unicode keys as keyword
+                ## arguments
+                args = un_unicode(simplejson.loads(args_str))
                 result = self.tk.handle(method, **args)
             else:
                 ## wtf?

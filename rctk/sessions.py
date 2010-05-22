@@ -1,7 +1,7 @@
 import time
 import simplejson
 import subprocess
-from rctk.toolkit import Toolkit
+from rctk.toolkit import Toolkit, State, globalstate
 from rctk.util import resolveclass
 
 class Session(object):
@@ -11,17 +11,25 @@ class Session(object):
     """
     def __init__(self, classid, args, kw, startupdir):
         self.last_access = time.time()
+        self.state = State()
+        self.set_global_state()
         self.app = resolveclass(classid)
         self.tk = Toolkit(self.app(*args, **kw))
         self.tk.startupdir = startupdir
 
+    def set_global_state(self):
+        """ make sure the global state is initialized """
+        globalstate.setState(self.state)
+
     def handle(self, method, **arguments):
         """ handle means handling tasks. the result is always json """
+        self.set_global_state()
         self.last_access = time.time()
         return self.tk.handle(method, **arguments)
 
     def serve(self, name):
         """ serve means serving (static) content. Resources or html """
+        self.set_global_state()
         type, data = self.tk.serve(name)
         return type, data
 
@@ -42,6 +50,11 @@ class SpawnedSession(object):
     """
     def __init__(self, classid, args, kw, startupdir):
         self.last_access = time.time()
+        ## provide state for completeness sake, but it won't be accessible
+        ## in the spawned application, which will create its own state
+        self.state = State()
+        ## no need to make it available during the current execution
+
         ## startupdir and args currently not supported. 
         server = os.path.join(startupdir, "bin", "serve_process")
         self.proc = subprocess.Popen([server, classid],

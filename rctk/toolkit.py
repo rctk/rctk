@@ -11,7 +11,36 @@ from rctk.widgets import Root
 from rctk.event import ClickEvent, ChangeEvent, SubmitEvent
 from rctk.task import Task
 
+class State(object):
+    pass
 
+import threading ## even if we're not really threading
+
+class GlobalStateManager(threading.local):
+    """
+        The global state manager wraps a piece of state
+        as thread local data. This allows us to set the
+        state per thread per request in a thread local 
+        manner.
+
+        This will also work in a single threaded setup
+    """
+    def __init__(self):
+        self.setState(State())
+
+    def setState(self, state):
+        threading.local.__setattr__(self, 'state', state)
+
+    def __getattr__(self, k):
+        return getattr(self.state, k)
+
+    def __setattr__(self, k, v):
+        return setattr(self.state, k, v)
+
+    def __delattr__(self, k):
+        self.state.__delattr__(k)
+
+globalstate = GlobalStateManager()
 
 class Timer(object):
     def __init__(self, millis, handler, continuous=False):

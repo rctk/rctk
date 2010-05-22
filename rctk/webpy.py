@@ -5,9 +5,10 @@ import web
 import simplejson
 
 from rctk.sessions import Session, SpawnedSession
-    
+
 class WebPyGateway(object):
-    """ the receiver is the serverside of the RC protocol """
+    """ A gateway mediates between user/browser and RCTK application.
+        This gateway is built on the web.py application server """
     def __init__(self, classid, startupdir, sessionclass, *args, **kw):
         self.sessions = {}
         self.classid = classid

@@ -1,3 +1,4 @@
+import os
 import time
 import simplejson
 import subprocess
@@ -39,6 +40,8 @@ class Session(object):
     def cleanup(self):
         pass
 
+import threading
+
 class SpawnedSession(object):
     """
         Spawn an rctk app in a separate process and proxy between the process
@@ -47,6 +50,11 @@ class SpawnedSession(object):
         - passing of args and startupdir (not sure if we need the latter)
         - processmanagement. Handle dead/killed childprocesses
         - cleanup. i.e. session timeout
+
+        The communication with the spawned process is not thread safe,
+        so we need to make sure only one message is sent to it at a time,
+        hence the locking around write/reads to it. The lock is session-level
+        so it should not block other threads/sessions
     """
     def __init__(self, classid, args, kw, startupdir):
         self.last_access = time.time()
@@ -60,29 +68,39 @@ class SpawnedSession(object):
         self.proc = subprocess.Popen([server, classid],
                       stdin=subprocess.PIPE, 
                       stdout=subprocess.PIPE)
+        self.lock = threading.Lock()
 
     def handle(self, method, **arguments):
         """ handle means handling tasks. the result is always json """
         self.last_access = time.time()
         message = "HANDLE %s %s\n" % (method, simplejson.dumps(arguments))
+
+        ## empty messages mean child closed connection (iow, dead)
+        self.lock.acquire()
         self.proc.stdin.write("%d\n%s" % (len(message), message))
         self.proc.stdin.flush()
 
         size = int(self.proc.stdout.readline().strip())
         message = self.proc.stdout.read(size)
+        self.lock.release()
+
         return simplejson.loads(message)
 
 
     def serve(self, name):
         """ serve means serving (static) content. Resources or html """
         message = "SERVE " + name 
+
+        ## empty messages mean child closed connection (iow, dead)
+        self.lock.acquire()
         self.proc.stdin.write("%d\n%s" % (len(message), message))
         self.proc.stdin.flush()
 
         size = int(self.proc.stdout.readline().strip())
         message = self.proc.stdout.read(size)
-        res = message
-        res = simplejson.loads(res)
+        self.lock.release()
+
+        res = simplejson.loads(message)
         type = res['type']
         data = res['data']
         return type, data

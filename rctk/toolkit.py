@@ -10,6 +10,7 @@ import rctk.resources
 from rctk.widgets import Root
 from rctk.event import ClickEvent, ChangeEvent, SubmitEvent
 from rctk.task import Task
+from rctk.util import un_unicode
 
 class State(object):
     pass
@@ -166,9 +167,6 @@ class Toolkit(ResourceManager):
                         elif eventtype == "submit":
                             control.submit(SubmitEvent(control))
                 elif tasktype == "sync":
-                    def un_unicode(d):
-                        """ transform unicode keys to normal """
-                        return dict((str(k), v) for (k,v) in d.items())
                     control = self._controls[id]
                     control.sync(**un_unicode(task.get('data', {})))
 

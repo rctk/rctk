@@ -4,4 +4,7 @@ def resolveclass(classid):
     klass = getattr(mod, k)
     return klass
 
+def un_unicode(d):
+    """ transform unicode keys to normal """
+    return dict((str(k), v) for (k,v) in d.items())
 

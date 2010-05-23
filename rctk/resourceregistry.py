@@ -46,7 +46,7 @@ class FileResource(BaseResource):
         super(FileResource, self).__init__(data, name, type, timestamp)
 
     def __eq__(self, other):
-        if instance(other, FileResource):
+        if isinstance(other, FileResource):
             ## again, what about timestamp? or name?
             return self.path == other.path
 

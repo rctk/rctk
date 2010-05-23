@@ -1,4 +1,5 @@
 import os
+import stat
 import sys
 import time
 
@@ -28,7 +29,7 @@ class BaseResource(object):
                (self.__class__.__name__, self.name, self.path)
 
 class FileResource(BaseResource):
-    def __init__(self, path, name=None, type=None, timestamp=None):
+    def __init__(self, path, name=None, type=None):
         if name is None:
             name = os.path.basename(path)
 
@@ -40,6 +41,7 @@ class FileResource(BaseResource):
         else:
             self.path = os.path.join(base, path)
         data = open(self.path, "r").read()
+        timestamp = os.stat(self.path)[stat.ST_MTIME]
 
         super(FileResource, self).__init__(data, name, type, timestamp)
 

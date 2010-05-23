@@ -1,5 +1,5 @@
-from rctk.resourceregistry import addResource, JSResource
+from rctk.resourceregistry import addResource, JSFileResource
 
-addResource(JSResource('resources/layout.js'))
-addResource(JSResource('resources/power.js'))
-addResource(JSResource('resources/tabbed.js'))
+addResource(JSFileResource('resources/layout.js'))
+addResource(JSFileResource('resources/power.js'))
+addResource(JSFileResource('resources/tabbed.js'))

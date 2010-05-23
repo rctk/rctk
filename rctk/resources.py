@@ -1,11 +1,11 @@
-from rctk.resourceregistry import addResource, JSResource
+from rctk.resourceregistry import addResource, JSFileResource
 
-addResource(JSResource('static/onion/onion.js'))
-addResource(JSResource('static/onion/widget.js'))
-addResource(JSResource('static/onion/core.js'))
-addResource(JSResource('static/onion/util.js'))
-addResource(JSResource('static/onion/jquery.js'))
-addResource(JSResource('static/json2.js'))
+addResource(JSFileResource('static/onion/onion.js'))
+addResource(JSFileResource('static/onion/widget.js'))
+addResource(JSFileResource('static/onion/core.js'))
+addResource(JSFileResource('static/onion/util.js'))
+addResource(JSFileResource('static/onion/jquery.js'))
+addResource(JSFileResource('static/json2.js'))
 
 import rctk.layouts.resources
 import rctk.widgets.resources

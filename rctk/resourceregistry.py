@@ -1,14 +1,37 @@
 import os
 import sys
+import time
 
 from rctk.compat import OrderedDict
 
 class BaseResource(object):
-    def __init__(self, path, name=None):
+    type = "application/data"
+
+    counter = 0
+    def __init__(self, data, name=None, type=None, timestamp=None):
+        self.data = data
+        if type is not None:
+            self.type = type
+
+        self.timestamp = timestamp or time.time()
+        self.name = name
+        if self.name is None:
+            self.name = "resource%d" % self.counter
+            self.counter += 1 ## class attribute!
+
+    def __eq__(self, other):
+        ## what if timestamp differs?
+        return self.data == other.data and self.type == other.type
+
+    def __repr__(self):
+        return '<%s name="%s" path="%s">' % \
+               (self.__class__.__name__, self.name, self.path)
+
+class FileResource(BaseResource):
+    def __init__(self, path, name=None, type=None, timestamp=None):
         if name is None:
-            self.name = os.path.basename(path)
-        else:
-            self.name = name
+            name = os.path.basename(path)
+
         ## some magic to allow paths relative to calling module
         frame = sys._getframe(1)
         base = os.path.dirname(frame.f_globals['__file__'])
@@ -16,15 +39,28 @@ class BaseResource(object):
             self.path = path
         else:
             self.path = os.path.join(base, path)
-        self.data = open(self.path, "r").read()
+        data = open(self.path, "r").read()
 
-    def __repr__(self):
-        return '<%s name="%s" path="%s">' % (self.__class__.__name__, self.name, self.path)
+        super(FileResource, self).__init__(data, name, type, timestamp)
+
+    def __eq__(self, other):
+        if instance(other, FileResource):
+            ## again, what about timestamp? or name?
+            return self.path == other.path
+
+        return False
+
 class JSResource(BaseResource):
-    pass
+    type = "text/javascript"
 
 class CSSResource(BaseResource):
-    pass
+    type = "text/css"
+
+class JSFileResource(FileResource):
+    type = "text/javascript"
+
+class CSSFileResource(FileResource):
+    type = "text/css"
 
 class ResourceRegistry(object):
     """ The resource registry is used to register javascript and
@@ -42,47 +78,54 @@ class ResourceRegistry(object):
         the imported css into the registry itself, possibly renaming the css in
         the process.
 
-        At this point, this is only an issue with jqueryui, which we'll keep as a static
-        dependency for now.
+        At this point, this is only an issue with jqueryui, which we'll keep 
+        as a static dependency for now.
     """
     def __init__(self):
         self.resources = OrderedDict()
 
     def add(self, resource):
+        ## avoid duplicates
+        if resource in self.resources.values():
+            return None
+
         name = resource.name
         counter = 1
         while name in self.resources:
             name = "%s%d" % (resource.name, counter)
             counter += 1
         self.resources[name] = resource
+        return name
 
     def css_resources(self):
         """ return references to css resources. They may be merged so it
             may be just a single resource """
-        return [k for (k,v) in self.resources.items() if isinstance(v, CSSResource)]
+        return [k for (k,v) in self.resources.items() 
+                if isinstance(v, CSSResource)]
 
     def js_resources(self):
         """ return references to css resources. They may be merged so it
             may be just a single resource """
-        return [k for (k,v) in self.resources.items() if isinstance(v, JSResource)]
+        return [k for (k,v) in self.resources.items() 
+                if isinstance(v, JSResource)]
 
     def get_resource(self, name):
-        """ return a (type, data) tuple containing the mimetype and resource data """
+        """ 
+            return a (type, data) tuple containing the mimetype and resource 
+            data 
+        """
         r = self.resources[name]
-        type = 'application/data'
-        if isinstance(r, CSSResource):
-            type = 'text/css'
-        elif isinstance(r, JSResource):
-            type = 'text/javascript'
-        return (type, r.data)
+        return (r.type, r.data)
 
     def header(self):
         """ return html usable for injection into <head></head> """
         res = []
         for css in self.css_resources():
-            res.append('<link type="text/css" href="resources/%s" rel="stylesheet" />' % css)
+            res.append('<link type="text/css" href="resources/%s"'
+                       'rel="stylesheet" />' % css)
         for js in self.js_resources():
-            res.append('<script type="text/javascript" src="resources/%s"></script>' % js)
+            res.append('<script type="text/javascript"'
+                       'src="resources/%s"></script>' % js)
 
         return '<!-- dynamic resources -->\n%s\n<!-- end dynamic resources -->' % '\n'.join(res)
 

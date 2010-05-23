@@ -3,7 +3,7 @@ from rctk.compat import json
 import os
 import time
 
-from rctk.resourceregistry import getResourceRegistry, addResource, CSSResource, JSResource
+from rctk.resourceregistry import getResourceRegistry
 
 import rctk.resources
 

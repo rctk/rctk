@@ -17,16 +17,17 @@ class BaseResource(object):
         self.timestamp = timestamp or time.time()
         self.name = name
         if self.name is None:
-            self.name = "resource%d" % self.counter
-            self.counter += 1 ## class attribute!
+            self.name = "resource%d" % BaseResource.counter
+            BaseResource.counter += 1 ## class attribute!
 
     def __eq__(self, other):
         ## what if timestamp differs?
         return self.data == other.data and self.type == other.type
 
     def __repr__(self):
-        return '<%s name="%s" path="%s">' % \
-               (self.__class__.__name__, self.name, self.path)
+        return '<%s name="%s" type="%s" ts="%s" len=%d bytes>' % \
+               (self.__class__.__name__, self.name, self.type, self.timestamp, 
+                len(self.data))
 
 class FileResource(BaseResource):
     def __init__(self, path, name=None, type=None):
@@ -51,6 +52,11 @@ class FileResource(BaseResource):
             return self.path == other.path
 
         return False
+
+    def __repr__(self):
+        return '<%s name="%s" type="%s" ts="%s" path="%s">' % \
+               (self.__class__.__name__, self.name, self.type, self.timestamp, 
+                self.path)
 
 class JSResource(BaseResource):
     type = "text/javascript"
@@ -99,17 +105,23 @@ class ResourceRegistry(object):
         self.resources[name] = resource
         return name
 
+    ##
+    ## (also) provide a way to filter on mimetype, allow matching against
+    ## image/* as well.
+    def names(self):
+        return self.resources.keys()
+
     def css_resources(self):
         """ return references to css resources. They may be merged so it
             may be just a single resource """
         return [k for (k,v) in self.resources.items() 
-                if isinstance(v, CSSResource)]
+                if isinstance(v, (CSSFileResource, CSSResource))]
 
     def js_resources(self):
         """ return references to css resources. They may be merged so it
             may be just a single resource """
         return [k for (k,v) in self.resources.items() 
-                if isinstance(v, JSResource)]
+                if isinstance(v, (JSFileResource, JSResource))]
 
     def get_resource(self, name):
         """ 

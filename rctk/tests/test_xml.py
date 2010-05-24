@@ -1,9 +1,5 @@
 from rctk.tests.base import BaseTest
 
-#
-# - test events, etc?
-# - test clickable generically. Mixin with button, etc?
-
 xml_skeleton = """<?xml version="1.0"?>
 <!-- let's pretend, for now, that we accept valid wxxrc -->
 <resource xmlns="http://www.wxwidgets.org/wxxrc" version="2.5.3.0">
@@ -115,9 +111,9 @@ class BaseContainerTestXML(BaseControlTest):
         return self.build_xml('<object class="%s" name="hello"><object class="Button" name="foo"><text>Foo Bar</text></object></object>' % self.type)
 
     def test_subobjects(self):
-        # import pdb; pdb.set_trace()
         self.builder.fromString(self.sub_xml)
         
+        # verify the subobject is accessible through storage
         assert hasattr(self.storage, "foo")
         container = self.storage.hello
         button = self.storage.foo

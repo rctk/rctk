@@ -35,11 +35,11 @@ class FileResource(BaseResource):
             name = os.path.basename(path)
 
         ## some magic to allow paths relative to calling module
-        frame = sys._getframe(1)
-        base = os.path.dirname(frame.f_globals['__file__'])
         if path.startswith('/'):
             self.path = path
         else:
+            frame = sys._getframe(1)
+            base = os.path.dirname(frame.f_globals['__file__'])
             self.path = os.path.join(base, path)
         data = open(self.path, "r").read()
         timestamp = os.stat(self.path)[stat.ST_MTIME]

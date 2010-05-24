@@ -64,10 +64,9 @@ class BaseControlTest(BaseXMLBuilderTest):
 class TestButtonXML(BaseControlTest):
     type = "Button"
     
+    ## Button (and StaticText) require a text parameter
     @property
     def xml(self):
-        ## Button (and StaticText) require a text parameter, so it also needs
-        ## to be in the XML
         return self.build_xml('<object class="%s" name="hello"><text>Hello World</text></object>' % self.type)
 
     def test_textnode(self):
@@ -97,11 +96,25 @@ class TestListXML(BaseControlTest):
 class TestDropdownXML(BaseControlTest):
     type = "Dropdown"
 
-# requires column definitions and probably special xml handling
-#class TestGridXML(BaseControlTest):
-#    type = "Grid"
+class TestGridXML(BaseControlTest):
+    type = "Grid"
 
-## Panel, Window
+    ## Grids requires columns
+    @property
+    def xml(self):
+        return self.build_xml('<object class="%s" name="hello"><cols><col><name>c1</name></col></cols></object>' % self.type)
+
+    def test_columns(self):
+        """ verify column actually gets passed """
+        self.builder.fromString(self.xml)
+        
+        grid = self.storage.hello
+
+        assert len(self.tk._queue) == 2
+        assert self.tk._queue[0]._task['action'] == 'create'
+        assert self.tk._queue[1]._task['action'] == 'append'
+        assert len(self.tk._queue[0]._task['colModel']) == 1
+        assert self.tk._queue[0]._task['colNames'] == ['c1']
 
 class BaseContainerTestXML(BaseControlTest):
     type = None

@@ -83,6 +83,47 @@ class ControlImporter(object):
             klass = c.attrib['class']
             XMLControlRegistry[klass](tk, storage, control, c)
 
+class GridImporter(ControlImporter):
+    """ 
+        Grids have nested column definitions
+    """
+    def __call__(self, tk, storage, parent, object): 
+        properties = {}
+        flags = {}
+        sub = []
+        cols = []
+
+        for c in object.getchildren():
+            if c.tag == NS("object"):
+                sub.append(c)
+            elif c.tag == NS("flags"):
+                for f in c.getchildren():
+                    ## how to handle int vs string?
+                    flags[NONS(f.tag)] = f.text.strip()
+            elif c.tag == NS("cols"):
+                for col in c.getchildren():
+                    colprops = {}
+                    ## only handle col
+                    if col.tag == NS("col"):
+                        ## again, how to handle bool, int?
+                        for prop in col.getchildren():
+                            colprops[NONS(prop.tag)] = prop.text.strip()
+                cols.append(colprops)
+            else:
+                properties[NONS(c.tag)] = c.text
+
+        from rctk.widgets.grid import Column
+
+        columns = [Column(**p) for p in cols]
+
+        name = object.attrib['name']
+
+        control = self.control_class(tk, columns)
+        setattr(storage, name, control)
+        parent.append(control, **flags)
+
+        ## we're not handling the subs, grid's don't have any
+
 XMLControlRegistry = {}
 XMLControlRegistry["Button"] = ControlImporter("rctk.widgets.button.Button")
 XMLControlRegistry["StaticText"] = ControlImporter("rctk.widgets.statictext.StaticText")
@@ -94,7 +135,7 @@ XMLControlRegistry["List"] = ControlImporter("rctk.widgets.list.List")
 XMLControlRegistry["Dropdown"] = ControlImporter("rctk.widgets.dropdown.Dropdown")
 XMLControlRegistry["Panel"] = ControlImporter("rctk.widgets.panel.Panel")
 XMLControlRegistry["Window"] = ControlImporter("rctk.widgets.window.Window")
-XMLControlRegistry["Grid"] = ControlImporter("rctk.widgets.grid.Grid")
+XMLControlRegistry["Grid"] = GridImporter("rctk.widgets.grid.Grid")
 
 
 if __name__ == '__main__':

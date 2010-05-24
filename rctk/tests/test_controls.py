@@ -112,6 +112,13 @@ from rctk.widgets.text import Password
 class TestPassword(BaseNonRootWidgetTest):
     widget = Password
 
+from rctk.widgets.grid import Grid, Column
+class TestWidget(BaseNonRootWidgetTest):
+    widget = Grid
+
+    def create_widget(self):
+        return self.widget(self.tk, [Column('foo'), Column('bar')])
+
 from rctk.widgets.root import Root
 class TestRootCreate(BaseWidgetTest):
     """ 

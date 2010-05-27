@@ -2,6 +2,7 @@ import os
 import stat
 import sys
 import time
+import mimetypes
 
 from rctk.compat import OrderedDict
 
@@ -64,11 +65,20 @@ class JSResource(BaseResource):
 class CSSResource(BaseResource):
     type = "text/css"
 
+class ImgResource(BaseResource):
+    type = "application/octet-stream"
+
 class JSFileResource(FileResource):
     type = "text/javascript"
 
 class CSSFileResource(FileResource):
     type = "text/css"
+
+class ImgFileResource(FileResource):
+    def __init__(self, path, name=None, type=None):
+        if type is None:
+            type, encoding = mimetypes.guess_type(path)
+        super(ImgFileResource, self).__init__(path, name, type)
 
 class ResourceRegistry(object):
     """ The resource registry is used to register javascript and
@@ -150,6 +160,7 @@ def getResourceRegistry():
     global _instance
     if _instance is None:
         _instance = ResourceRegistry()
+        mimetypes.init()
     return _instance
 
 def addResource(r):

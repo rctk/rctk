@@ -18,3 +18,4 @@ addResource(JSFileResource('resources/jgrid/js/jquery.jqGrid.min.js'))
 addResource(CSSFileResource('resources/jgrid/css/ui.jqgrid.css'))
 
 addResource(JSFileResource('resources/grid.js'))
+addResource(JSFileResource('resources/image.js'))

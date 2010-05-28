@@ -59,3 +59,5 @@ Onion.layout.Tabbed.prototype.layout_fase2 = function() {
     }
 
 }
+
+Onion.layout.register('tabbed', Onion.layout.Tabbed);

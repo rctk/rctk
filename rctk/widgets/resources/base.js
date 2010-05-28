@@ -75,16 +75,21 @@ Onion.widget.Container.prototype.append = function(control, data) {
 Onion.widget.Container.prototype.setLayout = function(type, config) {
     // unimplemented options:
     // hgap, vgap, resize (default true)
-    switch(type) {
+    var layout_class = Onion.widget.map(type);
+    if (layout_class) {
+        this.layout = new layout_class(this.jwin, this, config);
+        this.layout.create();
+    }
+    /*switch(type) {
     case 'tabbed':
         this.layout = new Onion.layout.Tabbed(this.jwin, this, config);
         this.layout.create();
         break;
     case 'power':
         this.layout = new Onion.layout.Power(this.jwin, this, config);
-        this.layout.create();
+        
         break;
-    }
+    }*/
 }
 
 Onion.widget.Container.prototype.relayout = function() {

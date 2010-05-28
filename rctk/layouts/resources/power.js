@@ -319,6 +319,8 @@ Onion.layout.Power.prototype.layout_fase2 = function() {
 
 }
 
+Onion.layout.register('power', Onion.layout.Power);
+
 /*
  * Stuff to keep in mind:
  *

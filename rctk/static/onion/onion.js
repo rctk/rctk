@@ -34,7 +34,26 @@ Onion.log = function() {
     }
 };
 
-/* Declare often used namespaces. */
+function registry() {
+    var map = [];
+    
+    return {
+        /* Register a class with a name */
+        register: function(name, class) {
+            if (!map[name]) {
+                map[name] = class;
+            }
+        },
+        /* Lookup the class using a name */
+        map: function(name) {
+            return map[name] || null;
+        }
+    }
+};
+
 (function() {
-    Onion.namespace("core", "layout");
+    /* declare neccesary namespaces, setup registries. */
+    Onion.namespace('core');
+    Onion.widget = registry();
+    Onion.layout = registry();    
 })();

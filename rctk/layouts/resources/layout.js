@@ -1,5 +1,3 @@
-Onion.log(Onion.layout);
-
 Onion.layout.Layout = function(jwin, parent, config) {
     this.jwin = jwin;
     this.parent = parent;

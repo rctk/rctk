@@ -1,8 +1,6 @@
 from rctk.resourceregistry import addResource, JSFileResource
 
 addResource(JSFileResource('static/onion/onion.js'))
-addResource(JSFileResource('static/onion/widget.js'))
-addResource(JSFileResource('static/onion/layout.js'))
 addResource(JSFileResource('static/onion/core.js'))
 addResource(JSFileResource('static/onion/util.js'))
 addResource(JSFileResource('static/onion/jquery.js'))

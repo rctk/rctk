@@ -28,6 +28,7 @@ Onion.core.JWinClient.prototype.do_work = function(data) {
         container.append(child, data);
         break;
     case "show":
+        // Can this be removed? Doesn't seem to be a show task anymore.
         // show all - hack!
         for(var i = 0; i < this.controls.length; i++) {
             this.controls[i].css("display", "inline");

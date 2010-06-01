@@ -10,6 +10,33 @@ from xml.etree import ElementTree
 
 from rctk.util import resolveclass
 
+import inspect
+
+def getRequired(c):
+    """ determine required arguments from a callable 'c'. Handle
+        the case where c is actually a class or a generic callable
+    
+        This may not work with decorated functions or descriptors.
+    """
+    skipself = False
+    f = c
+
+    if not inspect.isfunction(c):
+        if inspect.isclass(c):
+            f = c.__init__
+            skipself = True
+        elif isinstance(c, (types.ObjectType, types.InstanceType)):
+            f = c.__call__
+            skipself = True
+        # else? Just hope and try it works.    
+    args, varargs, varkw, defaults = inspect.getargspec(f)
+    if defaults:
+        args = args[:-len(defaults)]
+
+    if skipself and args[0] == "self":
+        args.pop(0)
+    return args 
+
 def NS(s): 
     """ add NS """
     return "{http://www.wxwidgets.org/wxxrc}" + s
@@ -17,6 +44,9 @@ def NS(s):
 def NONS(s):
     """ strip NS """
     return s[32:]
+
+class ParseError(Exception):
+    pass
 
 class SimpleXMLBuilder(object):
     def __init__(self, container, storage=None):
@@ -42,22 +72,25 @@ class SimpleXMLBuilder(object):
         ## only accept objects, for now
         for c in root.getchildren():
             if c.tag == NS("object"):
-                self.handle_control(c, self.container)
-
-    def handle_control(self, object, parent):
-        klass = object.attrib['class']
-        XMLControlRegistry[klass](self.tk, self.storage, parent, object)
+                klass = c.attrib['class']
+                XMLControlRegistry[klass](self.tk, self.storage, 
+                                          self.container, c, klass)
         
 
 class ControlImporter(object):
-    def __init__(self, classid):
-        self.control_class = resolveclass(classid)
+    def __init__(self, class_or_classid):
+        import types
+
+        if isinstance(class_or_classid, types.StringTypes):
+            self.control_class = resolveclass(class_or_classid)
+        else:
+            self.control_class = class_or_classid
 
     @property
     def name(self):
         return self.control_class.name
 
-    def __call__(self, tk, storage, parent, object): 
+    def __call__(self, tk, storage, parent, object, classname): 
         properties = {}
         flags = {}
         sub = []
@@ -74,6 +107,11 @@ class ControlImporter(object):
 
         name = object.attrib['name']
 
+        missing = set(getRequired(self.control_class)).difference(properties.keys()) - set(["tk"])
+        if missing:
+            ## It would be nice to get the tags linenumber
+            raise ParseError, "Missing required properties on <object class=\"%s\">: %s" % (classname, ", ".join(missing))
+
         control = self.control_class(tk, **properties)
         setattr(storage, name, control)
         parent.append(control, **flags)
@@ -81,13 +119,42 @@ class ControlImporter(object):
         ## add subobjects to it, if it has any
         for c in sub:
             klass = c.attrib['class']
-            XMLControlRegistry[klass](tk, storage, control, c)
+            XMLControlRegistry[klass](tk, storage, control, c, klass)
+
+class GridLayoutImporter(ControlImporter):
+    """ A gridlayout isn't a new control, it's actually a pluggable
+        configuration on the parent container. This means no actual
+        new control should be created
+
+        Also, the GridLayout is actually called "Grid" in python, which
+        clashes with the Grid control
+    """
+    def __call__(self, tk, storage, parent, object, classname): 
+        properties = {}
+        flags = {}
+        sub = []
+
+        for c in object.getchildren():
+            if c.tag == NS("object"):
+                sub.append(c)
+            else:
+                properties[NONS(c.tag)] = c.text
+
+        ## expand_horizontal, expand_vertical, rows, columns
+        layout = self.control_class(**properties)
+        parent.setLayout(layout)
+
+        ## handle subobjects. They're created on the parent,
+        ## Not on the layout!
+        for c in sub:
+            klass = c.attrib['class']
+            XMLControlRegistry[klass](tk, storage, parent, c, klass)
 
 class GridImporter(ControlImporter):
     """ 
         Grids have nested column definitions
     """
-    def __call__(self, tk, storage, parent, object): 
+    def __call__(self, tk, storage, parent, object, classname): 
         properties = {}
         flags = {}
         sub = []
@@ -137,10 +204,12 @@ XMLControlRegistry["Panel"] = ControlImporter("rctk.widgets.panel.Panel")
 XMLControlRegistry["Window"] = ControlImporter("rctk.widgets.window.Window")
 XMLControlRegistry["Grid"] = GridImporter("rctk.widgets.grid.Grid")
 
+XMLControlRegistry["GridLayout"] = GridLayoutImporter("rctk.layouts.layouts.Grid")
+
 
 if __name__ == '__main__':
     class dummy(object):
-        tk = {}
+        tk = Toolkit()
 
     s = SimpleXMLBuilder(dummy())
     s.fromPath('/home/ivo/m3r/projects/rctk/tsjilp/tsjilp/tsjilp.xml')

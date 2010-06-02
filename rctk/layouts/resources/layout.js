@@ -19,6 +19,11 @@ Onion.layout.Layout.prototype.append = function(control, options) {
     this.create();
     control.control.appendTo(this.layoutcontrol);
     control.containingparent = this.parent;
-
     this.layoutcontrol.layout(this.config);
+}
+
+Onion.layout.Layout.prototype.remove = function(control, options) {
+    var factory = $("#factory");
+    control.control.appendTo(factory);
+    control.containingparent = null;
 }

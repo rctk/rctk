@@ -18,7 +18,6 @@ class Container(Control):
         super(Container, self).__init__(tk, **properties)
         self._layout = self.default_layout()
         self._controls = []
-
         self._controls_args = {} ## for restoration
 
     ##
@@ -26,7 +25,7 @@ class Container(Control):
     ## control behaviour from derived classes
 
     def _add_append_task(self, control, args):
-        self.tk.queue(Task("Append %d to %d"  % (control.id, self.id), args));
+        self.tk.queue(Task("Append %d to %d"  % (control.id, self.id), args))
 
     def append(self, control, **args):
         """ adds a control to the window.
@@ -42,6 +41,18 @@ class Container(Control):
             self._add_append_task(control, t)
             ## restoration
             self._controls_args[control] = t
+    
+    def remove(self, control):
+        """ Removes a control from the window and moves it back into
+            this factory.
+        """
+        if control in self._controls and self.id != control.id:
+            t = {'id':self.id, 'child':control.id, 'action':'remove'}
+            control._parent = None
+            control._append_args = None
+            self.tk.queue(Task('Remove %d from %d' % (control.id, self.id), t))
+            del self._controls_args[control]
+            self._controls.remove(control)
     
     def restore(self):
         self.create()

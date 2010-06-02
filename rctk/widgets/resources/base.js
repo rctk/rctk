@@ -79,6 +79,10 @@ Onion.widget.Container.prototype.append = function(control, data) {
     this.layout.append(control, data);
 }
 
+Onion.widget.Container.prototype.remove = function(control, data) {
+    this.layout.remove(control, data);
+}
+
 Onion.widget.Container.prototype.setLayout = function(type, config) {
     // unimplemented options:
     // hgap, vgap, resize (default true)

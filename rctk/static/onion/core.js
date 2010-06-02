@@ -27,6 +27,11 @@ Onion.core.JWinClient.prototype.do_work = function(data) {
         var child = this.controls[data.child];
         container.append(child, data);
         break;
+    case "remove":
+        var container = this.controls[data.id];
+        var child = this.controls[data.child];
+        container.remove(child, data);
+        break;
     case "show":
         // Can this be removed? Doesn't seem to be a show task anymore.
         // show all - hack!

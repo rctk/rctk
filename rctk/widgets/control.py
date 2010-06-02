@@ -92,4 +92,6 @@ class Control(PropertyHolder):
     ENABLED = 0
     DISABLED = 1
     state = remote_attribute("state", ENABLED)
+    
+    visible = remote_attribute("visible", True)
 

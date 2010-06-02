@@ -20,6 +20,13 @@ Onion.widget.Control.prototype.update = function(data) {
             this.control.attr("disabled", "disabled");
         }
     }
+    if ('visible' in data) {
+        if (data.visible) {
+            this.control.show();
+        } else {
+            this.control.hide();
+        }
+    }
 }
 
 Onion.widget.Control.prototype.set_properties = function(data) {

@@ -5,6 +5,36 @@ import subprocess
 from rctk.toolkit import Toolkit, State, globalstate
 from rctk.util import resolveclass
 
+import uuid
+
+class Manager(object):
+    """ session manager """
+    def __init__(self, sessionclass):
+        self.sessionclass = sessionclass
+        self.sessions = {}
+
+    def cleanup_expired(self):
+        expired = []
+        for hash, value in self.sessions.iteritems():
+            if value.expired():
+                expired.append(hash)
+        for hash in expired:
+            self.sessions[hash].cleanup()
+            del self.sessions[hash]
+
+    def create(self, classid, args, kw, startupdir):
+        """ create a new session """
+        sessionid = uuid.uuid1().hex
+
+        self.sessions[sessionid] = self.sessionclass(classid, 
+                                      args, kw, startupdir)
+
+        return sessionid
+
+    def get(self, id):
+        """ find a session """
+        return self.sessions.get(id)
+
 class Session(object):
     """
         Different requests from different browsers result in

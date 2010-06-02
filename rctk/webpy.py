@@ -1,50 +1,37 @@
 import os
-import uuid
 import web
 
 import simplejson
 
-from rctk.sessions import Session, SpawnedSession
+from rctk.sessions import Manager, Session, SpawnedSession
 
 class WebPyGateway(object):
     """ A gateway mediates between user/browser and RCTK application.
         This gateway is built on the web.py application server """
-    def __init__(self, classid, startupdir, sessionclass, *args, **kw):
-        self.sessions = {}
+    def __init__(self, classid, startupdir, manager, *args, **kw):
         self.classid = classid
         self.args = args
         self.kw = kw
         self.startupdir = startupdir
-        self.sessionclass = sessionclass
+        self.manager = manager
 
-    def cleanup_expired(self):
-        expired = []
-        for hash, value in self.sessions.iteritems():
-            if value.expired():
-                expired.append(hash)
-        for hash in expired:
-            self.sessions[hash].cleanup()
-            del self.sessions[hash]
 
     def GET(self, data):
         data = data.strip()
         if data == "":
-            sessionid = uuid.uuid1().hex
-
-            self.sessions[sessionid] = self.sessionclass(self.classid, 
-                                          self.args, self.kw, self.startupdir)
+            sessionid = self.manager.create(self.classid, self.args, self.kw, self.startupdir)
             web.seeother('/' + sessionid + '/')
             return
 
         sessionid, rest = data.split('/', 1)
-        session = self.sessions.get(sessionid)
+        session = self.manager.get(sessionid)
         if session is None:
             web.seeother('/')
             return
 
         type, data = session.serve(rest)
         web.header("content-type", type)
-        self.cleanup_expired()
+        self.manager.cleanup_expired()
         return data
 
 
@@ -52,7 +39,7 @@ class WebPyGateway(object):
         data = data.strip()
 
         sessionid, rest = data.split('/', 1)
-        session = self.sessions.get(sessionid)
+        session = self.manager.get(sessionid)
         if session is None:
             web.seeother('/')
             return
@@ -61,7 +48,7 @@ class WebPyGateway(object):
         method = rest.strip()
         arguments = web.input()
 
-        self.cleanup_expired()
+        self.manager.cleanup_expired()
         result = session.handle(method, **arguments)
         return simplejson.dumps(result)
 
@@ -76,14 +63,14 @@ class WebPyGateway(object):
 
 default_session = Session
 
-def app(classid, *args, **kw):
+def app(classid, manager, *args, **kw):
     ## required for local static to work, keep startupdir for later use
     cwd = os.getcwd()
     os.chdir(os.path.dirname(__file__))
-    stateful = WebPyGateway(classid, cwd, default_session, *args, **kw)
+    stateful = WebPyGateway(classid, cwd, manager(default_session), *args, **kw)
     return web.application(('/(.*)', 'receiver'), {'receiver':stateful}, autoreload=True)
 
-def serve(classid, *args, **kw):
+def serve(classid, manager=Manager, *args, **kw):
     """ create the (webpy) app and run it """
-    app(classid, *args, **kw).run()
+    app(classid, manager, *args, **kw).run()
 

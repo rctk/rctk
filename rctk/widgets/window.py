@@ -7,7 +7,7 @@ class Window(Container):
 
     properties = Container.extend(title="Window", modal=False)
 
-    def __init__(self, tk, title, **properties):
+    def __init__(self, tk, title="", **properties):
         super(Window, self).__init__(tk, title=title, **properties)
 
     ## keep track of state (open/closed), both ways! So not just methods to open/close remotely

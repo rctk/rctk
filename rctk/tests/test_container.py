@@ -62,6 +62,14 @@ class BaseContainerTest(BaseTest):
     
 
 from rctk.widgets.panel import Panel
-class TestPanelWidget(BaseContainerTest):
+class TestPanelContainer(BaseContainerTest):
     container = Panel
+
+from rctk.widgets.window import Window
+class TestWindowContainer(BaseContainerTest):
+    container = Window
+
+from rctk.widgets.root import Root
+class TestRootContainer(BaseContainerTest):
+    container = Root
 

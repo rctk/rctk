@@ -33,6 +33,8 @@ class Container(Control):
             layoutmanager
         """
         if self.id != control.id:
+            if control._parent:
+                control._parent.remove(control)
             t = {'id':self.id, 'child':control.id, 'action':'append'}
             t.update(args)
             self._controls.append(control)

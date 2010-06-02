@@ -1,5 +1,6 @@
 from rctk.tests.base import BaseTest
-
+from rctk.task import Task
+from rctk.widgets import StaticText
 
 class BaseContainerTest(BaseTest):
     """
@@ -9,7 +10,7 @@ class BaseContainerTest(BaseTest):
     
     def create_widgets(self):
         c = self.container(self.tk)
-        w = self.container(self.tk)
+        w = StaticText(self.tk, 'Hello World')
         self.tk.clear()
         return (c, w)
     
@@ -17,20 +18,19 @@ class BaseContainerTest(BaseTest):
         c, w = self.create_widgets()
         c.append(w)
         task = self.tk._queue.pop()
-        assert task._task['action'] == 'append'
-        assert task._task['id'] == c.id
-        assert task._task['child'] == w.id
+        assert task == Task('Append %d to %d' % (w.id, c.id),
+            {'action': 'append', 'id': c.id, 'child': w.id})
         assert w in c._controls
     
     def test_remove(self):
+        print dir(self)
         c, w = self.create_widgets()
         c.append(w)
         self.tk.clear() # ignore append task
         c.remove(w)
         task = self.tk._queue.pop()
-        assert task._task['action'] == 'remove'
-        assert task._task['id'] == c.id
-        assert task._task['child'] == w.id
+        assert task == Task('Remove %d from %d' % (w.id, c.id),
+            {'action': 'remove', 'id': c.id, 'child': w.id})
         assert w not in c._controls
     
     def test_do_not_append_self(self):
@@ -46,7 +46,20 @@ class BaseContainerTest(BaseTest):
         assert len(self.tk._queue) == 0
         assert w not in c._controls
     
-
+    def test_remove_before_reappending(self):
+        c1, w = self.create_widgets()
+        c2 = self.container(self.tk)
+        self.tk.clear()
+        c1.append(w)
+        self.tk._queue.pop() # ignore first append task
+        c2.append(w)
+        remove_task = self.tk._queue.pop(0)
+        append_task = self.tk._queue.pop()
+        assert remove_task == Task('Remove %d from %d' % (w.id, c1.id),
+            {'action': 'remove', 'id': c1.id, 'child': w.id})
+        assert append_task == Task('Append %d to %d' % (w.id, c2.id),
+            {'action': 'append', 'id': c2.id, 'child': w.id})
+    
 
 from rctk.widgets.panel import Panel
 class TestPanelWidget(BaseContainerTest):

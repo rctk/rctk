@@ -44,7 +44,7 @@ class Container(Control):
     
     def remove(self, control):
         """ Removes a control from the window and moves it back into
-            this factory.
+            the factory.
         """
         if control in self._controls and self.id != control.id:
             t = {'id':self.id, 'child':control.id, 'action':'remove'}

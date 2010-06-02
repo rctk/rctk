@@ -12,6 +12,9 @@ class Task(object):
         ## which may get updated through a subsequent add()
         self._task = copy.deepcopy(task)
 
+    def __eq__(self, other):
+        return self.msg == other.msg and self._task == other._task
+
     def __str__(self):
         return "Task: %s" % self.msg
 

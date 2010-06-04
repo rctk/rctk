@@ -8,18 +8,13 @@ from rctk.sessions import Manager, Session, SpawnedSession
 class WebPyGateway(object):
     """ A gateway mediates between user/browser and RCTK application.
         This gateway is built on the web.py application server """
-    def __init__(self, classid, startupdir, manager, *args, **kw):
-        self.classid = classid
-        self.args = args
-        self.kw = kw
-        self.startupdir = startupdir
+    def __init__(self, manager):
         self.manager = manager
-
 
     def GET(self, data):
         data = data.strip()
         if data == "":
-            sessionid = self.manager.create(self.classid, self.args, self.kw, self.startupdir)
+            sessionid = self.manager.create()
             web.seeother('/' + sessionid + '/')
             return
 
@@ -61,16 +56,13 @@ class WebPyGateway(object):
         """
         return self
 
-default_session = Session
-
-def app(classid, manager, *args, **kw):
-    ## required for local static to work, keep startupdir for later use
-    cwd = os.getcwd()
+def app(manager):
+    ## required for local static to work
     os.chdir(os.path.dirname(__file__))
-    stateful = WebPyGateway(classid, cwd, manager(default_session), *args, **kw)
-    return web.application(('/(.*)', 'receiver'), {'receiver':stateful}, autoreload=True)
+    gw = WebPyGateway(manager)
+    return web.application(('/(.*)', 'gateway'), {'gateway':gw}, autoreload=True)
 
-def serve(classid, manager=Manager, *args, **kw):
+def serve(manager=Manager):
     """ create the (webpy) app and run it """
-    app(classid, manager, *args, **kw).run()
+    app(manager).run()
 

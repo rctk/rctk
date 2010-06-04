@@ -9,8 +9,13 @@ import uuid
 
 class Manager(object):
     """ session manager """
-    def __init__(self, sessionclass):
+    def __init__(self, sessionclass, classid, startupdir, *args, **kw):
         self.sessionclass = sessionclass
+        self.classid = classid
+        self.startupdir = startupdir
+        self.args = args
+        self.kw = kw
+
         self.sessions = {}
 
     def cleanup_expired(self):
@@ -22,12 +27,12 @@ class Manager(object):
             self.sessions[hash].cleanup()
             del self.sessions[hash]
 
-    def create(self, classid, args, kw, startupdir):
+    def create(self):
         """ create a new session """
         sessionid = uuid.uuid1().hex
 
-        self.sessions[sessionid] = self.sessionclass(classid, 
-                                      args, kw, startupdir)
+        self.sessions[sessionid] = self.sessionclass(self.classid, 
+                                      self.args, self.kw, self.startupdir)
 
         return sessionid
 

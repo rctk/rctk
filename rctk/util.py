@@ -1,4 +1,10 @@
+import types
+
 def resolveclass(classid):
+    ## if it's not a string, assume it won't need resolving
+    if not isinstance(classid, types.StringTypes):
+        return classid
+
     m, k = classid.rsplit(".", 1)
     mod = __import__(m, fromlist=[k])
     klass = getattr(mod, k)

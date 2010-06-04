@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from rctk.webpy import serve
+from rctk.sessions import Session, Manager
 
 def main():
     import sys
@@ -19,7 +20,9 @@ def main():
     ## web.py scans the arguments as well
     del args[1]
 
-    serve(classid)
+    cwd = os.getcwd()
+    manager = Manager(Session, classid, cwd)
+    serve(manager)
 
 if __name__ == '__main__':
     main()

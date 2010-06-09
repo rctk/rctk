@@ -101,20 +101,43 @@ class ControlImporter(object):
             elif c.tag == NS("flags"):
                 for f in c.getchildren():
                     ## how to handle int vs string?
-                    flags[NONS(f.tag)] = f.text.strip()
+                    if NONS(f.tag) in ("row", "col", "colspan", "rowspan"):
+                        flags[NONS(f.tag)] = int(f.text.strip())
+                    else:
+                        flags[NONS(f.tag)] = f.text.strip()
+            elif c.tag == NS("items"):
+                ## handle <items> to satisfy dropdown, list, etc
+                items = []
+                for ii in c.getchildren():
+                    if ii.tag == NS("item"):
+                        key, value = None, None
+                        for i in ii.getchildren():
+                            if i.tag == NS("key"):
+                                key = i.text.strip()
+                            if i.tag == NS("value"):
+                                value = i.text
+                        items.append((key, value))
+                properties['items'] = items
             else:
                 properties[NONS(c.tag)] = c.text
 
-        name = object.attrib['name']
+        name = object.attrib.get('name', None)
 
         missing = set(getRequired(self.control_class)).difference(properties.keys()) - set(["tk"])
         if missing:
             ## It would be nice to get the tags linenumber
             raise ParseError, "Missing required properties on <object class=\"%s\">: %s" % (classname, ", ".join(missing))
 
-        control = self.control_class(tk, **properties)
-        setattr(storage, name, control)
+        try:
+            control = self.control_class(tk, **properties)
+        except TypeError, e:
+            raise ParseError, "Failed to create <object class=\"%s\">: %s" % (classname, str(e))
+            
+        if name:
+            setattr(storage, name, control)
         parent.append(control, **flags)
+
+        print "C", control, properties, flags
 
         ## add subobjects to it, if it has any
         for c in sub:
@@ -166,7 +189,10 @@ class GridImporter(ControlImporter):
             elif c.tag == NS("flags"):
                 for f in c.getchildren():
                     ## how to handle int vs string?
-                    flags[NONS(f.tag)] = f.text.strip()
+                    if NONS(f.tag) in ("row", "col", "colspan", "rowspan"):
+                        flags[NONS(f.tag)] = int(f.text.strip())
+                    else:
+                        flags[NONS(f.tag)] = f.text.strip()
             elif c.tag == NS("cols"):
                 for col in c.getchildren():
                     colprops = {}
@@ -175,7 +201,7 @@ class GridImporter(ControlImporter):
                         ## again, how to handle bool, int?
                         for prop in col.getchildren():
                             colprops[NONS(prop.tag)] = prop.text.strip()
-                cols.append(colprops)
+                    cols.append(colprops)
             else:
                 properties[NONS(c.tag)] = c.text
 
@@ -183,12 +209,14 @@ class GridImporter(ControlImporter):
 
         columns = [Column(**p) for p in cols]
 
-        name = object.attrib['name']
+        name = object.get('name')
 
         control = self.control_class(tk, columns)
-        setattr(storage, name, control)
+        if name:
+            setattr(storage, name, control)
         parent.append(control, **flags)
 
+        print "C", control, columns, flags
         ## we're not handling the subs, grid's don't have any
 
 XMLControlRegistry = {}

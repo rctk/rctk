@@ -17,7 +17,7 @@ class StaticText(Control):
                      italic=False,
                      decoration="")
 
-    def __init__(self, tk, text, **options):
+    def __init__(self, tk, text="", **options):
         self._text = text
         super(StaticText, self).__init__(tk, **options)
 

@@ -137,8 +137,6 @@ class ControlImporter(object):
             setattr(storage, name, control)
         parent.append(control, **flags)
 
-        print "C", control, properties, flags
-
         ## add subobjects to it, if it has any
         for c in sub:
             klass = c.attrib['class']
@@ -216,7 +214,6 @@ class GridImporter(ControlImporter):
             setattr(storage, name, control)
         parent.append(control, **flags)
 
-        print "C", control, columns, flags
         ## we're not handling the subs, grid's don't have any
 
 XMLControlRegistry = {}

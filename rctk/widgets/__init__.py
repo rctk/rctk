@@ -15,4 +15,5 @@ from rctk.widgets.window import Window
 from rctk.widgets.image import Image, ImageFile
 
 from rctk.widgets.grid import Grid
+from rctk.widgets.collection import Collection
 #from menu import Menu, MenuItem

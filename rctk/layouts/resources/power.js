@@ -69,13 +69,13 @@ Onion.layout.Power.prototype.calculate_dimensions = function() {
      */
     else if(this.cols) {
         this.calculatedcols = Math.min(this.cols, this.controls.length);
-        this.calculatedrows = Math.round(this.controls.length / this.calculatedcols);
+        this.calculatedrows = Math.round(this.controls.length / Math.max(this.calculatedcols, 1));
     }
     else {
         this.calculatedrows = Math.min(Math.max(this.rows, 1), this.controls.length);
-        this.calculatedcols = Math.round(this.controls.length / this.calculatedrows);
+        this.calculatedcols = Math.round(this.controls.length / Math.max(this.calculatedrows, 1));
     }
-
+    
     //jQuery.log("# calculated rows: " + this.calculatedrows);
     //jQuery.log("# calculated cols: " + this.calculatedcols);
     this.row_sizes = [];
@@ -150,7 +150,17 @@ Onion.layout.Power.prototype.append = function(control, data) {
     this.controls.push(controlinfo);
     control.control.appendTo(this.layoutcontrol);
     control.containingparent = this.parent;
+}
 
+Onion.layout.Power.prototype.remove = function(control, data) {
+    for (var i = 0; i < this.controls.length; i++) {
+        if (this.controls[i].control == control) {
+            this.controls.splice(i, 1);
+        }
+    }
+    var factory = $("#factory");
+    control.control.appendTo(factory);
+    control.containingparent = null;
 }
 
 Onion.layout.Power.prototype.sumwidth = function(start, end) {

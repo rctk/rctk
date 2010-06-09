@@ -1,6 +1,6 @@
 from copy import copy
 
-from rctk.widgets import Panel
+from rctk.widgets import Panel, StaticText
 from rctk.layouts import VBox
 
 
@@ -12,6 +12,16 @@ class Collection(Panel):
         self.setLayout(VBox())
         self.widget_class = widget_class
         self._items = []
+        """ Empty panels seem to break the layout manager. Insert
+         a dummy StaticText for now and hide if from self by
+         clearing self._controls. This is a really ugly hack and
+         what we should do is fix the layout manager.
+         FIXME: fix layout manger to support empty panels
+        """ 
+        dummy = StaticText(tk, 'Dummy Control')
+        dummy.visible = False
+        super(Collection, self).append(dummy)
+        self._controls = [] # hide dummy control
         self.extend(items)
     
     def append(self, x):

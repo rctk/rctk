@@ -44,6 +44,6 @@ class BaseCollectionTest(BaseTest):
         assert len(c._controls) == 0
 
     
-from portal.ui.collection import Collection
+from rctk.widgets import Collection
 class  TestCollectionWidget(BaseCollectionTest):
     collection = Collection

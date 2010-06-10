@@ -90,11 +90,31 @@ class TestDateXML(BaseControlTest):
 class TestPasswordXML(BaseControlTest):
     type = "Password"
 
-class TestListXML(BaseControlTest):
-    type = "List"
-
 class TestDropdownXML(BaseControlTest):
     type = "Dropdown"
+
+    ## Dropdowns have items
+    @property
+    def xml(self):
+       return self.build_xml('<object class="%s" name="hello"><items><item><key>1</key><value>A</value></item><item><key>2</key><value>B</value></item></items></object>' % self.type)
+
+    def test_items(self):
+        """ verify column actually gets passed """
+        self.builder.fromString(self.xml)
+        
+        control = self.storage.hello
+
+        assert len(self.tk._queue) == 2
+        assert self.tk._queue[0]._task['action'] == 'create'
+        assert self.tk._queue[1]._task['action'] == 'append'
+        assert 'items' in self.tk._queue[0]._task
+        ## Don't be fooled: the control generates its own keys
+        assert self.tk._queue[0]._task['items'] == [(0, 'A'), (1, 'B')]
+
+        assert [(k, v) for (i, (k,v)) in control.items] == [('1', 'A'), ('2', 'B')]
+
+class TestListXML(TestDropdownXML):
+    type = "List"
 
 class TestGridXML(BaseControlTest):
     type = "Grid"

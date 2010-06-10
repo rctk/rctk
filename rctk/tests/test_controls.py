@@ -91,6 +91,17 @@ class TestDropdownWidget(BaseNonRootWidgetTest):
         return self.widget(self.tk, ((1, 'a'), (2, 'b')))
 
     # test syncing selection, add()
+    def test_items(self):
+        w = self.create_widget()
+        assert len(self.tk._queue) == 1
+        assert self.tk._queue[0]._task['action'] == 'create'
+        assert self.tk._queue[0]._task['control'] == self.widget.name
+        assert self.tk._queue[0]._task['id'] == w.id
+        assert 'items' in self.tk._queue[0]._task
+        ## dropdown provides its own unique keys
+        assert self.tk._queue[0]._task['items'] == [(0, 'a'), (1, 'b')]
+        assert [(k, v) for (i, (k,v)) in w.items] == [(1, 'a'), (2, 'b')]
+        
 
 from rctk.widgets.list import List
 class TestListWidget(TestDropdownWidget):

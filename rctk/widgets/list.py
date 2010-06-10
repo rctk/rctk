@@ -16,4 +16,4 @@ class List(Dropdown): # confusing name - list vs List?
         super(List, self).__init__(tk, items)
 
     def create(self):
-        self.tk.create_control(self, items=self.items, size=self._size)
+        self.tk.create_control(self, items=self._items(), size=self._size)

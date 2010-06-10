@@ -24,5 +24,12 @@ class ImageFile(Image):
         self._title = title
         addResource(self._resource)
         super(Image, self).__init__(tk, **properties)
+
+    
+class ImageResource(Image):
+    def __init__(self, tk, resource, title="", **properties):
+        self._resource = resource
+        self._title = title
+        super(Image, self).__init__(tk, **properties)
     
 

@@ -23,7 +23,6 @@ class BaseContainerTest(BaseTest):
         assert w in c._controls
     
     def test_remove(self):
-        print dir(self)
         c, w = self.create_widgets()
         c.append(w)
         self.tk.clear() # ignore append task

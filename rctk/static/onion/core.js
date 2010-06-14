@@ -47,6 +47,11 @@ Onion.core.JWinClient.prototype.do_work = function(data) {
            this.controls[id] = c;
         }
         break;
+    case "destroy":
+        var control = this.controls[id];
+        control.destroy();
+        this.controls[id] = null
+        break;
     case "update":
         // update a control. Rename to sync?
         var control = this.controls[id];

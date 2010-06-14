@@ -56,6 +56,11 @@ class Container(Control):
             del self._controls_args[control]
             self._controls.remove(control)
     
+    def destroy(self):
+        for c in self._controls:
+            c.destroy()
+        super(Container, self).destroy()
+    
     def restore(self):
         self.create()
         self._add_layout_task(self._layout)

@@ -1,5 +1,9 @@
 from rctk.tests.base import BaseTest
 
+from rctk.widgets import Control
+from rctk.task import Task
+
+
 #
 # - test events, etc?
 # - test clickable generically. Mixin with button, etc?
@@ -19,13 +23,23 @@ class BaseWidgetTest(BaseTest):
         assert self.tk._queue[0]._task['action'] == 'create'
         assert self.tk._queue[0]._task['control'] == self.widget.name
         assert self.tk._queue[0]._task['id'] == w.id
-
+    
+    def test_destroy(self):
+        w = self.create_widget()
+        self.tk.clear()
+        w.destroy()
+        assert len(self.tk._queue) == 1
+        task = self.tk._queue.pop()
+        assert task == Task("Destroy %s id %d" % (self.widget.name, w.id),
+            { 'action':'destroy', 'id':w.id, })
+        assert w.state == Control.DESTROYED
+    
     def test_class(self):
         from rctk.widgets.control import Control
         w = self.create_widget()
         assert isinstance(w, Control)
-
-
+    
+    
 class BaseNonRootWidgetTest(BaseWidgetTest):
     """
         Root is an odd case, this extended base class adds 
@@ -47,7 +61,8 @@ class BaseNonRootWidgetTest(BaseWidgetTest):
 
     def test_id_nonzero(self):
         assert self.create_widget().id != 0
-
+        
+    
 from rctk.widgets.button import Button
 class TestButtonWidget(BaseNonRootWidgetTest):
     widget = Button

@@ -1,4 +1,11 @@
+from exceptions import Exception
+
 from rctk.task import Task
+
+
+class ControlDestroyed(Exception):
+    pass
+
 
 class remote_attribute(object):
     """
@@ -20,17 +27,21 @@ class remote_attribute(object):
         return getattr(control, '_'+self.name, self.default)
 
     def __set__(self, control, value):
-        setattr(control, '_'+self.name, value)
-        control.tk.queue(Task("%s id %d attr %s update to '%s'" % 
-                              (control.name, control.id, self.name, value),
-            {
-                'control':control.name,
-                'id':control.id,
-                'action':'update',
-                'update':{self.name:self.filter(control, value)}
-            }
-        ))
-
+        if control.state == Control.DESTROYED:
+            raise ControlDestroyed
+        else:
+            setattr(control, '_'+self.name, value)
+            control.tk.queue(Task("%s id %d attr %s update to '%s'" % 
+                                  (control.name, control.id, self.name, value),
+                {
+                    'control':control.name,
+                    'id':control.id,
+                    'action':'update',
+                    'update':{self.name:self.filter(control, value)}
+                }
+            ))
+    
+    
 class PropertyHolder(object):
     properties = {}
 
@@ -86,11 +97,19 @@ class Control(PropertyHolder):
     def restore(self):
         self.create()
     
+    def destroy(self):
+        if self._parent:
+            self._parent.remove(self)
+        self.tk.queue(Task("Destroy %s id %d" % (self.name, self.id),
+            { 'action':'destroy', 'id':self.id }))
+        self._state = Control.DESTROYED
+    
     def __repr__(self):
-        return '<%s name="%s" id=%d>' % (self.__class__.__name__, self.name, self.id)
+        return '<%s name="%s" id=%d state=%d>' % (self.__class__.__name__, self.name, self.id, self.state)
     
     ENABLED = 0
     DISABLED = 1
+    DESTROYED = 2
     state = remote_attribute("state", ENABLED)
     
     visible = remote_attribute("visible", True)

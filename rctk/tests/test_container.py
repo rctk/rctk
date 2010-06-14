@@ -1,6 +1,6 @@
 from rctk.tests.base import BaseTest
 from rctk.task import Task
-from rctk.widgets import StaticText
+from rctk.widgets import StaticText, Control
 
 class BaseContainerTest(BaseTest):
     """
@@ -58,6 +58,25 @@ class BaseContainerTest(BaseTest):
             {'action': 'remove', 'id': c1.id, 'child': w.id})
         assert append_task == Task('Append %d to %d' % (w.id, c2.id),
             {'action': 'append', 'id': c2.id, 'child': w.id})
+
+    def test_destroy_widget(self):
+        c, w = self.create_widgets()
+        c.append(w)
+        self.tk.clear()
+        w.destroy()
+        self.tk._queue.pop(0) # ignore layout remove task
+        assert w not in c._controls
+        assert w not in c._controls_args
+        assert w._parent == None
+        assert w._append_args == None
+    
+    def test_destroy(self):
+        c, w = self.create_widgets()
+        c.append(w)
+        self.tk.clear()
+        c.destroy()
+        assert len(c._controls) == 0
+        assert len(c._controls_args) == 0
     
 
 from rctk.widgets.panel import Panel

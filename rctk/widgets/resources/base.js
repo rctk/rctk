@@ -57,6 +57,10 @@ Onion.widget.Control.prototype.create = function(data) {
 
 }
 
+Onion.widget.Control.prototype.destroy = function() {
+    this.control.remove();
+}
+
 /*
  * A container is a control that can contain controls, i.e. a window,
  * a layout manager. Its control may be different from its container

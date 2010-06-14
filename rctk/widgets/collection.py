@@ -25,6 +25,7 @@ class Collection(Panel):
             if x == a:
                 super(Collection, self).remove(w)
                 self._items.remove((x, w))
+                w.destroy()
         self.layout()
     
     def extend(self, L):
@@ -34,6 +35,7 @@ class Collection(Panel):
     def clear(self):
         for w in copy(self._controls):
             super(Collection, self).remove(w)
+            w.destroy()
         self._items = []
         self.layout()
     

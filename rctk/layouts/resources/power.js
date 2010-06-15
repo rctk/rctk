@@ -76,8 +76,8 @@ Onion.layout.Power.prototype.calculate_dimensions = function() {
         this.calculatedcols = Math.round(this.controls.length / Math.max(this.calculatedrows, 1));
     }
     
-    //jQuery.log("# calculated rows: " + this.calculatedrows);
-    //jQuery.log("# calculated cols: " + this.calculatedcols);
+    //Onion.util.log("# calculated rows: " + this.calculatedrows);
+    //Onion.util.log("# calculated cols: " + this.calculatedcols);
     this.row_sizes = [];
     this.col_sizes = [];
     for(var i = 0; i < this.calculatedrows; i++) {
@@ -100,7 +100,7 @@ Onion.layout.Power.prototype.calculate_dimensions = function() {
         var col = c.col;
         var rspan = c.rowspan;
         var cspan = c.colspan;
-        //jQuery.log("Positioning " + i + " row, col, rspan, cspan: " + row + ", " + col + ", " + rspan + ", " + cspan);
+        //Onion.util.log("Positioning " + i + " row, col, rspan, cspan: " + row + ", " + col + ", " + rspan + ", " + cspan);
         
         if(row == -1 || col == -1) {
             for(var j=0, row=0, col=0; j < this.calculatedrows*this.calculatedcols; 

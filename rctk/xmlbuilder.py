@@ -119,7 +119,8 @@ class ControlImporter(object):
                         items.append((key, value))
                 properties['items'] = items
             else:
-                properties[NONS(c.tag)] = c.text
+                ## again typing issue
+                properties[NONS(c.tag)] = c.text or ""
 
         name = object.attrib.get('name', None)
 

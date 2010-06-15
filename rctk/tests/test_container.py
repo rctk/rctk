@@ -67,8 +67,8 @@ class BaseContainerTest(BaseTest):
         self.tk._queue.pop(0) # ignore layout remove task
         assert w not in c._controls
         assert w not in c._controls_args
-        assert w._parent == None
-        assert w._append_args == None
+        assert w._parent is None
+        assert w._append_args is None
     
     def test_destroy(self):
         c, w = self.create_widgets()

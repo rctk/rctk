@@ -16,7 +16,7 @@ Onion.widget.Image.prototype.create = function(data) {
 
 Onion.widget.Image.prototype.update = function(data) {
     Onion.widget.Control.prototype.update.apply(this, arguments);
-    if(data.title) {
+    if('title' in data) {
         this.control.attr('title', data.title);
     }
     this.set_properties(data);

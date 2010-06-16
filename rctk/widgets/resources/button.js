@@ -24,7 +24,7 @@ Onion.widget.Button.prototype.clicked = function() {
 
 Onion.widget.Button.prototype.update = function(data) {
     Onion.widget.Control.prototype.update.apply(this, arguments);
-    if(data.text) {
+    if('text' in data) {
         this.control.html(data.text);
     }
 }

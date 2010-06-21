@@ -143,8 +143,8 @@ class TestResourceRegistry(object):
         n1 = self.rr.add(r1)
         n2 = self.rr.add(r2)
 
-        assert self.rr.get_resource(n1)[1] == r1.data
-        assert self.rr.get_resource(n2)[1] == r2.data
+        assert self.rr.get_resource(n1).data == r1.data
+        assert self.rr.get_resource(n2).data == r2.data
 
     def test_singleton(self):
         from rctk.resourceregistry import getResourceRegistry

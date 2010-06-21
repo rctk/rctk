@@ -96,7 +96,8 @@ class ResourceManager(object):
             return ('text/html', rendered)
         elif name.startswith('resources'):
             elements = name.split('/')
-            return self.rr.get_resource(elements[-1])
+            resource = self.rr.get_resource(elements[-1])
+            return (resource.type, resource.data)
         raise KeyError(name)
 
 class Toolkit(ResourceManager):

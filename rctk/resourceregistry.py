@@ -34,7 +34,7 @@ class FileResource(BaseResource):
     def __init__(self, path, name=None, type=None):
         if name is None:
             name = os.path.basename(path)
-
+        
         ## some magic to allow paths relative to calling module
         if path.startswith('/'):
             self.path = path
@@ -42,6 +42,8 @@ class FileResource(BaseResource):
             frame = sys._getframe(1)
             base = os.path.dirname(frame.f_globals['__file__'])
             self.path = os.path.join(base, path)
+        if type is None:
+            type, encoding = mimetypes.guess_type(self.path)
         data = open(self.path, "r").read()
         timestamp = os.stat(self.path)[stat.ST_MTIME]
 
@@ -65,20 +67,11 @@ class JSResource(BaseResource):
 class CSSResource(BaseResource):
     type = "text/css"
 
-class ImgResource(BaseResource):
-    type = "application/octet-stream"
-
 class JSFileResource(FileResource):
     type = "text/javascript"
 
 class CSSFileResource(FileResource):
     type = "text/css"
-
-class ImgFileResource(FileResource):
-    def __init__(self, path, name=None, type=None):
-        if type is None:
-            type, encoding = mimetypes.guess_type(path)
-        super(ImgFileResource, self).__init__(path, name, type)
 
 class ResourceRegistry(object):
     """ The resource registry is used to register javascript and
@@ -138,8 +131,7 @@ class ResourceRegistry(object):
             return a (type, data) tuple containing the mimetype and resource 
             data 
         """
-        r = self.resources[name]
-        return (r.type, r.data)
+        return self.resources[name]
 
     def header(self):
         """ return html usable for injection into <head></head> """

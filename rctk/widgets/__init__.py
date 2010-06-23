@@ -12,7 +12,7 @@ from rctk.widgets.statictext import StaticHTMLText
 from rctk.widgets.text import Text
 from rctk.widgets.text import Password
 from rctk.widgets.window import Window
-from rctk.widgets.image import Image, ImageFile, ImageResource
+from rctk.widgets.image import Image, ImageData, ImageFile
 
 from rctk.widgets.grid import Grid
 from rctk.widgets.collection import Collection

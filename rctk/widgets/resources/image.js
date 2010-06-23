@@ -16,8 +16,11 @@ Onion.widget.Image.prototype.create = function(data) {
 
 Onion.widget.Image.prototype.update = function(data) {
     Onion.widget.Control.prototype.update.apply(this, arguments);
-    if('title' in data) {
+    if ('title' in data) {
         this.control.attr('title', data.title);
+    }
+    if ('resource' in data) {
+        this.control.attr('src', data.resource);
     }
     this.set_properties(data);
 }

@@ -14,10 +14,13 @@ class Collection(Panel):
         self._items = []
         self.extend(items)
     
-    def append(self, x):
+    def _append(self, x):
         w = self.widget_class(self.tk, x)
         self._items.append((x, w))
         super(Collection, self).append(w)
+    
+    def append(self, x):
+        self._append(x)
         self.layout()
 
     def remove(self, x):
@@ -30,7 +33,8 @@ class Collection(Panel):
     
     def extend(self, L):
         for x in L:
-            self.append(x)
+            self._append(x)
+        self.layout()
     
     def clear(self):
         for w in copy(self._controls):

@@ -9,8 +9,6 @@
 Onion.widget.Root = function(jwin) {
     this.control = $("#root");
     this.container = this.control;
-    this.control.width(1000);
-    this.control.height(500);
     Onion.widget.Container.apply(this, [jwin, this, 0]);
 }
 

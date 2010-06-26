@@ -34,6 +34,9 @@ Onion.widget.Control.prototype.set_properties = function(data) {
         return;
     }
     // handle base properties
+    if('css_class' in data && data.css_class) {
+        this.control.addClass(data.css_class);
+    } 
     if('width' in data && data.width) {
         this.control.css("width", data.width + "px");
     }

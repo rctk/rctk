@@ -67,7 +67,14 @@ class Control(PropertyHolder):
 
     _id = 0
 
-    properties = PropertyHolder.extend(width=0, height=0, foreground=None, background=None);
+    # control state
+    ENABLED = 0
+    DISABLED = 1
+    DESTROYED = 2
+
+    state = remote_attribute("state", ENABLED)
+    visible = remote_attribute("visible", True)
+    properties = PropertyHolder.extend(width=0, height=0, foreground=None, background=None, css_class=None);
 
     def __init__(self, tk, **properties):
         super(Control, self).__init__(**properties)
@@ -107,10 +114,6 @@ class Control(PropertyHolder):
     def __repr__(self):
         return '<%s name="%s" id=%d state=%d>' % (self.__class__.__name__, self.name, self.id, self.state)
     
-    ENABLED = 0
-    DISABLED = 1
-    DESTROYED = 2
-    state = remote_attribute("state", ENABLED)
     
-    visible = remote_attribute("visible", True)
+
 

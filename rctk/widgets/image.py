@@ -32,14 +32,14 @@ class Image(Control):
     
 
 class ImageData(Image):
-    def __init__(self, tk, data, name='', type=None, title='', **properties):
+    def __init__(self, tk, data, name=None, type=None, title='', **properties):
         resource = BaseResource(data, name=name, type=type)
         addResource(resource)
         super(ImageDate, self).__init__(tk, resource, title=title, **properties)
     
 
 class ImageFile(Image):
-    def __init__(self, tk, path, name='', type=None, title='', **properties):
+    def __init__(self, tk, path, name=None, type=None, title='', **properties):
         resource = FileResource(path, name=name, type=type)
         addResource(resource)
         super(ImageFile, self).__init__(tk, resource, title=title, **properties)

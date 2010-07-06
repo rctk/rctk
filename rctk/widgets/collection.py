@@ -22,13 +22,16 @@ class Collection(Panel):
     def append(self, x):
         self._append(x)
         self.layout()
-
-    def remove(self, x):
+    
+    def _remove(self, x):
         for (a, w) in copy(self._items):
             if x == a:
                 super(Collection, self).remove(w)
                 self._items.remove((x, w))
                 w.destroy()
+    
+    def remove(self, x):
+        self._remove(x)
         self.layout()
     
     def extend(self, L):
@@ -37,10 +40,8 @@ class Collection(Panel):
         self.layout()
     
     def clear(self):
-        for w in copy(self._controls):
-            super(Collection, self).remove(w)
-            w.destroy()
-        self._items = []
+        for (a, w) in copy(self._items):
+            self._remove(a)
         self.layout()
     
-    
+

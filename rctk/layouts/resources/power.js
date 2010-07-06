@@ -228,8 +228,8 @@ Onion.layout.Power.prototype.layout = function() {
             ctrinfo.laidout = false; // initialize/clear for the actual layout-step
             var ctr = ctrinfo.control;
             var ctrl = ctr.control;
-            var w = Math.round(ctrl.outerWidth() / ctrinfo.colspan);
-            var h = Math.round(ctrl.outerHeight() / ctrinfo.rowspan);
+            var w = Math.round(ctrl.outerWidth(true) / ctrinfo.colspan);
+            var h = Math.round(ctrl.outerHeight(true) / ctrinfo.rowspan);
 
             //if(!ctr.scrolling) {
                 this.maxwidth = Math.max(this.maxwidth, w);

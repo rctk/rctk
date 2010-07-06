@@ -74,7 +74,13 @@ class Control(PropertyHolder):
 
     state = remote_attribute("state", ENABLED)
     visible = remote_attribute("visible", True)
-    properties = PropertyHolder.extend(width=0, height=0, foreground=None, background=None, css_class=None);
+    properties = PropertyHolder.extend(
+        width=0, height=0,
+        foreground=None, background=None,
+        margin={'top':0, 'right':0, 'bottom':0, 'left':0},
+        padding={'top':0, 'right':0, 'bottom':0, 'left':0},
+        css_class=None
+    )
 
     def __init__(self, tk, **properties):
         super(Control, self).__init__(**properties)

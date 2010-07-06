@@ -30,38 +30,34 @@ Onion.widget.Control.prototype.update = function(data) {
 }
 
 Onion.widget.Control.prototype.set_properties = function(data) {
-    if(data === undefined) {
+    if (data === undefined) {
         return;
     }
     // handle base properties
-    if('css_class' in data && data.css_class) {
+    if ('css_class' in data && data.css_class) {
         this.control.addClass(data.css_class);
     } 
-    if('width' in data && data.width) {
+    if ('width' in data && data.width) {
         this.control.css("width", data.width + "px");
     }
-    if('height' in data && data.height) {
+    if ('height' in data && data.height) {
         this.control.css("height", data.height + "px");
     }
-    if('foreground' in data && data.foreground) {
+    if ('foreground' in data && data.foreground) {
         this.control.css("color", data.foreground);
     }
-    if('background' in data && data.background) {
+    if ('background' in data && data.background) {
         this.control.css("background-color", data.background);
     }
-    if('margin' in data && data.margin) {
-        if ('top' in data.margin && data.margin.top) {
+    if ('margin' in data && data.margin) {
+        if ('top' in data.margin && data.margin.top)
             this.control.css("margin-top", data.margin.top + "px");
-        }
-        if ('right' in data.margin && data.margin.right) {
+        if ('right' in data.margin && data.margin.right)
             this.control.css("margin-right", data.margin.right + "px");
-        }
-        if ('bottom' in data.margin && data.margin.bottom) {
+        if ('bottom' in data.margin && data.margin.bottom)
             this.control.css("margin-bottom", data.margin.bottom + "px");
-        }
-        if ('left' in data.margin && data.margin.left) {
+        if ('left' in data.margin && data.margin.left)
             this.control.css("margin-left", data.margin.left + "px");
-        }
     }
     if('padding' in data && data.padding) {
         if ('top' in data.padding && data.padding.top)

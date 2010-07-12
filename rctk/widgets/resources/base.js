@@ -49,25 +49,35 @@ Onion.widget.Control.prototype.set_properties = function(data) {
     if ('background' in data && data.background) {
         this.control.css("background-color", data.background);
     }
-    if ('margin' in data && data.margin) {
-        if ('top' in data.margin && data.margin.top)
-            this.control.css("margin-top", data.margin.top + "px");
-        if ('right' in data.margin && data.margin.right)
-            this.control.css("margin-right", data.margin.right + "px");
-        if ('bottom' in data.margin && data.margin.bottom)
-            this.control.css("margin-bottom", data.margin.bottom + "px");
-        if ('left' in data.margin && data.margin.left)
-            this.control.css("margin-left", data.margin.left + "px");
+    if ('font' in data) {
+        for (property in data.font) {
+            if (property == 'size') {
+                this.control.css('font-size', data.font.size + 'px');
+            } else {
+                this.control.css('font-' + property, data.font[property]);
+            }
+        }
     }
-    if('padding' in data && data.padding) {
-        if ('top' in data.padding && data.padding.top)
-            this.control.css("padding-top", data.padding.top + "px");
-        if ('right' in data.padding && data.padding.right)
-            this.control.css("padding-right", data.padding.right + "px");
-        if ('bottom' in data.padding && data.padding.bottom)
-            this.control.css("padding-bottom", data.padding.bottom + "px");
-        if ('left' in data.padding && data.padding.left)
-            this.control.css("padding-left", data.padding.left + "px"); 
+    if ('border' in data && data.border) {
+        for (side in data.border) {
+            for (property in data.border[side]) {
+                if (property == 'width') {
+                    this.control.css('border-' + side + '-width', data.border[side].width);
+                } else {
+                    this.control.css('border-' + side + '-' + property, data.border[side][property]);
+                }
+            }
+        }
+    }
+    if ('margin' in data && data.margin) {
+        for (side in data.margin) {
+            this.control.css('margin-' + side, data.margin[side] + 'px');
+        }
+    }
+    if ('padding' in data && data.padding) {
+        for (side in data.padding) {
+            this.control.css('padding-' + side, data.padding[side] + 'px');
+        }
     }
 }
 

@@ -76,9 +76,8 @@ class Control(PropertyHolder):
     visible = remote_attribute("visible", True)
     properties = PropertyHolder.extend(
         width=0, height=0,
-        foreground=None, background=None,
-        margin={'top':0, 'right':0, 'bottom':0, 'left':0},
-        padding={'top':0, 'right':0, 'bottom':0, 'left':0},
+        font=None, foreground=None, background=None,
+        border=None, margin=None, padding=None,
         css_class=None
     )
 

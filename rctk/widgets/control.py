@@ -75,10 +75,11 @@ class Control(PropertyHolder):
     state = remote_attribute("state", ENABLED)
     visible = remote_attribute("visible", True)
     properties = PropertyHolder.extend(
-        width=0, height=0,
+        width=0, height=0, align=None,
         font=None, foreground=None, background=None,
         border=None, margin=None, padding=None,
-        css_class=None
+        css_class=None,
+        debug=False
     )
 
     def __init__(self, tk, **properties):

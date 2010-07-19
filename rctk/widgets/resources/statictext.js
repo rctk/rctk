@@ -14,7 +14,7 @@ Onion.widget.StaticText.prototype.create = function(data) {
 
     if('wrap' in data) {
         if(data.wrap) {
-            this.control.css("white-space", "wrap");
+            this.control.css("white-space", "normal");
         }
         else {
             this.control.css("white-space", "nowrap");

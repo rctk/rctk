@@ -39,9 +39,9 @@ function registry() {
     
     return {
         /* Register a class with a name */
-        register: function(name, class) {
+        register: function(name, klass) {
             if (!map[name]) {
-                map[name] = class;
+                map[name] = klass;
             }
         },
         /* Lookup the class using a name */

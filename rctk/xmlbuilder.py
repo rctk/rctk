@@ -231,6 +231,7 @@ XMLControlRegistry["Window"] = ControlImporter("rctk.widgets.window.Window")
 XMLControlRegistry["Grid"] = GridImporter("rctk.widgets.grid.Grid")
 
 XMLControlRegistry["GridLayout"] = GridLayoutImporter("rctk.layouts.layouts.Grid")
+XMLControlRegistry["VBoxLayout"] = GridLayoutImporter("rctk.layouts.layouts.VBox")
 
 
 if __name__ == '__main__':

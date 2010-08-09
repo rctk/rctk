@@ -8,32 +8,53 @@ from rctk.sessions import Manager, Session, SpawnedSession
 class WebPyGateway(object):
     """ A gateway mediates between user/browser and RCTK application.
         This gateway is built on the web.py application server """
-    def __init__(self, manager):
+    def __init__(self, manager, use_cookies=False):
         self.manager = manager
+        self.use_cookies = use_cookies
 
     def GET(self, data):
-        session = self.get_active_session()
+        data = data.strip()
+        session = None
+        
+        if self.use_cookies:
+            session = self.get_session_from_cookie()
+            rest = data
+        else:
+            if data:
+                sessionid, rest = data.split('/', 1)		
+                session = self.manager.get(sessionid)
         
         if session is None:
             sessionid = self.manager.create()
-            web.setcookie('rctk-sid', sessionid)
-            web.seeother('/')
-            return
-
-        type, result = session.serve(data.strip())
+            if self.use_cookies:
+                web.setcookie('rctk-sid', sessionid)
+                web.seeother('/')
+            else:
+                web.seeother('/' + sessionid + '/')		
+            return		
+        
+        type, result = session.serve(rest)
         web.header("content-type", type)
         self.manager.cleanup_expired()
         return result
     
     def POST(self, data):
-        session = self.get_active_session()
-
+        data = data.strip()
+        session = None
+        
+        if self.use_cookies:
+            session = self.get_session_from_cookie()
+            rest = data
+        else:
+            sessionid, rest = data.split('/', 1)		
+            session = self.manager.get(sessionid)
+        
         if session is None:
             web.seeother('/')
             return
 
         web.header("content-type", "application/json")
-        method = data.strip()
+        method = rest.strip()
         arguments = web.input()
 
         self.manager.cleanup_expired()
@@ -44,7 +65,7 @@ class WebPyGateway(object):
             pass
         return simplejson.dumps(result)
 
-    def get_active_session(self):
+    def get_session_from_cookie(self):
         """ Use a cookie to find out if the client already has an active session.
             Returns the session or None if valid session is found.
         """
@@ -67,13 +88,13 @@ class WebPyGateway(object):
         """
         return self
 
-def app(manager):
+def app(manager, use_cookies=False):
     ## required for local static to work
     os.chdir(os.path.dirname(__file__))
-    gw = WebPyGateway(manager)
+    gw = WebPyGateway(manager, use_cookies=use_cookies)
     return web.application(('/(.*)', 'gateway'), {'gateway':gw}, autoreload=True)
 
-def serve(manager=Manager):
+def serve(manager=Manager, use_cookies=False):
     """ create the (webpy) app and run it """
-    app(manager).run()
+    app(manager, use_cookies=use_cookies).run()
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from rctk.webpy import serve
-from rctk.sessions import Session, Manager
+from rctk.sessions import Session, SpawnedSession, Manager
 
 def main():
     import sys

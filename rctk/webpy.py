@@ -16,6 +16,11 @@ class WebPyGateway(object):
         data = data.strip()
         session = None
         
+        # FIXME: this is an hack to get spawned sessions to work,
+        # /favicon.ico should be added to the resource manager
+        if data == '/favicon.ico':
+            raise web.notfound()
+        
         if self.use_cookies:
             session = self.get_session_from_cookie()
             rest = data
@@ -60,10 +65,10 @@ class WebPyGateway(object):
         self.manager.cleanup_expired()
         try:
             result = session.handle(method, **arguments)
+            return simplejson.dumps(result)
         except:
             # TODO: something has gone wrong, find out what and handle session cleanup or recovery.
             pass
-        return simplejson.dumps(result)
 
     def get_session_from_cookie(self):
         """ Use a cookie to find out if the client already has an active session.

@@ -12,10 +12,17 @@ Onion.widget.Dropdown.prototype.create = function(data) {
     this.control.addClass(this.cssclass);
     this.handle_click = false;
 
+    this.control.attr('multiple', false);
+
     if(data.items) {
         for(var i = 0; i < data.items.length; i++) {
             this.append_item(data.items[i][0], data.items[i][1]);
         }
+    }
+    if('multiple' in data) {
+       if(data.multiple) {
+           this.control.attr('multiple', true);
+       }
     }
     var self=this;
     this.control.change(function() { self.changed(); self.jwin.flush(); });
@@ -40,8 +47,22 @@ Onion.widget.Dropdown.prototype.update = function(data) {
     if(data.item) {
         this.append_item(data.item[0], data.item[1]);
     }
+    if('multiple' in data) {
+       if(data.multiple) {
+           this.control.attr('multiple', true);
+       }
+       else {
+           this.control.attr('multiple', false);
+       }
+    }
     if('selection' in data) {
-        this.control.val(data.selection);
+        if(jQuery.isArray(data.selection)) {
+            var converted = jQuery.map(data.selection, function(n, i) { return n.toString(); })
+            this.control.val(converted);
+        }
+        else {
+            this.control.val(data.selection.toString());
+        }
     }
     if('clear' in data && data.clear) {
         this.control.empty(); // doesn't work on google chrome?

@@ -16,8 +16,10 @@ class Dropdown(Control, Clickable):
         A Dropdown is clickable, the handler will receive the item selected
         in the eventobject as "key".
 
+        Behaviour changes if the widget is "multiple", selection will
+        return a list in stead of a single value
+
         TODO:
-        - support multi-selection
         - support index for insertion
         - support removal of items
         - make the entire user-defined keystuff optional, provide a way to map
@@ -26,8 +28,10 @@ class Dropdown(Control, Clickable):
     name = "dropdown"
 
     selection = remote_attribute('selection', None)
+    multiple = remote_attribute('multiple', False)
 
-    def __init__(self, tk, items=()):
+
+    def __init__(self, tk, items=(), multiple=False):
         self.indexer = 0
 
         self.items = []
@@ -35,22 +39,30 @@ class Dropdown(Control, Clickable):
             self.items.append((self.indexer, (k, v)))
             self.indexer += 1
 
+        self._multiple = multiple
         if self.items:
-            self._selection = 0
+            if self._multiple:
+                self._selection = []
+            else:
+                self._selection = 0
         else:
             self._selection = None
+
 
         super(Dropdown, self).__init__(tk)
 
     def create(self):
-        self.tk.create_control(self, items=self._items())
+        self.tk.create_control(self, items=self._items(), multiple=self._multiple)
 
     def add(self, key, value):
         """ this adds a new entry to the bottom. Removing items or selecting
             an insertion position is not yet possible """
         ## the first entry is the initial default. Check if this is the first entry
         if not self.items:
-            self._selection = 0
+            if self._multiple:
+                self._selection = []
+            else:
+                self._selection = 0
 
         self.items.append((self.indexer, (key, value)))
 
@@ -62,22 +74,40 @@ class Dropdown(Control, Clickable):
 
     def sync(self, **data):
         if 'selection' in data:
-            self._selection = int(data['selection'])
+            if self._multiple:
+                self._selection = [int(i) for i in data['selection']]
+            else:
+                self._selection = int(data['selection'])
 
     def _items(self):
         return [(idx, label) for (idx, (k, label)) in self.items]
 
     def _get_value(self):
-        for (idx, (key, value)) in self.items:
-            if idx == self._selection:
-                return key
+        if self._multiple:
+            r = []
+            for (idx, (key, value)) in self.items:
+                if idx in self._selection:
+                    r.append(key)
+            return r
+        else:
+            for (idx, (key, value)) in self.items:
+                if idx == self._selection:
+                    return key
         return None
 
     def _set_value(self, v):
-        for (idx, (key, value)) in self.items:
-            if v == key:
-                self.selection = idx
-                return
+        if self._multiple:
+            s = []
+            for (idx, (key, value)) in self.items:
+                if key in v:
+                    s.append(idx)
+            self.selection = s
+            return
+        else:
+            for (idx, (key, value)) in self.items:
+                if v == key:
+                    self.selection = idx
+                    return
         raise KeyError(v)
 
     value = property(_get_value, _set_value)
@@ -96,4 +126,4 @@ class Dropdown(Control, Clickable):
           "update":{"clear":True}}))
 
     def __repr__(self):
-        return '<%s name="%s" id=%d items %s>' % (self.__class__.__name__, self.name, self.id, repr(self.items))
+        return '<%s name="%s" id=%d multiple=%s items %s>' % (self.__class__.__name__, self.name, self.id, self.multiple, repr(self.items))

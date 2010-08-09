@@ -18,7 +18,7 @@ class WebPyGateway(object):
         
         # FIXME: this is an hack to get spawned sessions to work,
         # /favicon.ico should be added to the resource manager
-        if data == '/favicon.ico':
+        if data == 'favicon.ico':
             raise web.notfound()
         
         if self.use_cookies:

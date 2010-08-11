@@ -22,7 +22,7 @@ def main():
     while not classid:
         if args[1] == '--use_cookies':
             use_cookies = True
-        elif args[1] == '--spawned_sessions':
+        elif args[1] in ('--spawned_sessions', '--spawned-sessions'):
             session_class = SpawnedSession
         else:
             classid = args[1]

@@ -2,6 +2,8 @@
 Onion.core.JWinClient = function() {
     this.poll = false; // poll for new tasks
     this.interval = 1000; // if so, how often
+    this.debug = false;
+    this.crashed = false;
 
     var root = new Onion.widget.Root(this);
     root.create();
@@ -21,6 +23,23 @@ Onion.core.JWinClient.prototype.do_work = function(data) {
     var parent = this.controls[data.parentid];
     var id = data.id;
                        
+    if(this.crashed) {
+        return;
+    }
+
+    if('crash' in data && data.crash) {
+        if(this.debug) {
+            this.root.append('<div id="system" class="jqmWindow" style="width: 600px; height: 600px"><b>The application ' + data.application + ' has crashed. </b><br><p>Click <a href="/">here</a> to restart</p><br><div style="overflow: auto; width: 600px; height: 500px;">' + data.traceback + '</div></div>');
+        }
+        else {
+            this.root.append('<div id="system" class="jqmWindow" style="width: 600px; height: 300px"><b>The application ' + data.application + ' has crashed. </b><br><p>Click <a href="/">here</a> to restart</p></div>');
+
+        }
+        $("#system").jqm({'modal':true});
+        $("#system").jqmShow();
+        this.crashed = true;
+        return;
+    }
     switch(data.action) {
     case "append":
         var container = this.controls[data.id];
@@ -109,10 +128,13 @@ Onion.core.JWinClient.prototype.start_work = function () {
             var config = data.config;
 
             if('poll' in config) {
-                this.poll = config.poll;
+                self.poll = config.poll;
             }
             if('interval' in config) {
-                this.interval = config.interval;
+                self.interval = config.interval;
+            }
+            if('debug' in config) {
+                self.debug = config.debug;
             }
         }
         self.get_work();

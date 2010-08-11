@@ -8,6 +8,9 @@ addResource(JSFileResource('static/json2.js'))
 addResource(CSSFileResource('static/onion/onion.css'))
 addResource(CSSFileResource('static/onion/onion.jqueryui.css'))
 
+addResource(JSFileResource('static/plugins/jqModal/jqModal.js'))
+addResource(CSSFileResource('static/plugins/jqModal/jqModal.css'))
+
 import rctk.layouts.resources
 import rctk.widgets.resources
 

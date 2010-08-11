@@ -101,16 +101,16 @@ class ResourceManager(object):
         raise KeyError(name)
 
 class Toolkit(ResourceManager):
-    def __init__(self, app, *args, **kw):
+    def __init__(self, app, debug=False, *args, **kw):
         super(Toolkit, self).__init__()
         self.app = app
         self._queue = []
         self._controls = {}
         self._root = Root(self)
+        self.debug = debug
         self.args = args
         self.kw = kw
         self.timers = TimerManager(self)
-        self.config = {}
         self.startupdir = os.getcwd() 
 
 
@@ -144,7 +144,7 @@ class Toolkit(ResourceManager):
                 #    c.restore()
             else:
                 self.app.run(self)
-            return {"state":"started", "config":self.config}
+            return {"state":"started", "config":dict(debug=self.debug)}
         if method == "task" and 'queue' in args:
             queue = json.loads(args['queue'])
             for task in queue:

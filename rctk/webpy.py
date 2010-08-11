@@ -58,6 +58,10 @@ class WebPyGateway(object):
             web.seeother('/')
             return
 
+        if session.crashed:
+            self.manager.cleanup_expired()
+            return
+
         web.header("content-type", "application/json")
         method = rest.strip()
         arguments = web.input()
@@ -65,6 +69,9 @@ class WebPyGateway(object):
         self.manager.cleanup_expired()
         
         result = session.handle(method, **arguments)
+        if result is None:
+            return simplejson.dumps([{'crash':True, 'application':session.classid, 'traceback':session.traceback}])
+
         return simplejson.dumps(result)
 
     def get_session_from_cookie(self):
@@ -96,7 +103,7 @@ def app(manager, use_cookies=False):
     gw = WebPyGateway(manager, use_cookies=use_cookies)
     return web.application(('/(.*)', 'gateway'), {'gateway':gw}, autoreload=True)
 
-def serve(manager=Manager, use_cookies=False):
+def serve(manager=Manager,  use_cookies=False):
     """ create the (webpy) app and run it """
     app(manager, use_cookies=use_cookies).run()
 

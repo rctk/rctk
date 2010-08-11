@@ -18,10 +18,13 @@ def main():
 
     classid = ''
     use_cookies = False
+    debug = False
 
     while not classid:
-        if args[1] == '--use_cookies':
+        if args[1] in('--use_cookies', '--use-cookies'):
             use_cookies = True
+        if args[1] == '--debug':
+            debug = True
         elif args[1] in ('--spawned_sessions', '--spawned-sessions'):
             session_class = SpawnedSession
         else:
@@ -34,7 +37,7 @@ def main():
         sys.exit(-1)
 
     cwd = os.getcwd()
-    manager = Manager(session_class, classid, cwd)
+    manager = Manager(session_class, classid, cwd, debug=debug)
     serve(manager, use_cookies=use_cookies)
 
 if __name__ == '__main__':

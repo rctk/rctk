@@ -29,8 +29,11 @@ class ProcessWrapper(object):
                 message = self.stdin.read(size)
                 type, rest = message.split(" ", 1)
                 if type == "SERVE":
-                    type, data = self.tk.serve(rest)
-                    result = {'type':type, 'data':data}
+                    try:
+                        type, data = self.tk.serve(rest)
+                        result = {'type':type, 'data':data}
+                    except KeyError, e:
+                        result = {}
                 elif type == "HANDLE":
                     print rest
                     method, args_str = rest.split(" ", 1)

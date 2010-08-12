@@ -202,6 +202,10 @@ class SpawnedSession(object):
         self.lock.release()
 
         res = simplejson.loads(message)
+
+        if res == {}:
+            return None
+
         type = res['type']
         data = res['data']
         return type, data

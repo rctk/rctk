@@ -8,6 +8,17 @@ from rctk.util import resolveclass
 import uuid
 import sys, cgitb
 
+class AppException(Exception):
+    pass
+
+class AppNotCallable(AppException):
+    """ The application is not callable. I.e. it's not a class """
+    pass
+
+class AppNotRunnable(AppException):
+    """ The application does not have a run() method """
+    pass
+
 class Manager(object):
     """ session manager """
     def __init__(self, sessionclass, classid, startupdir, debug=False, *args, **kw):
@@ -19,6 +30,17 @@ class Manager(object):
         self.kw = kw
 
         self.sessions = {}
+
+        self.check_classid()
+
+    def check_classid(self):
+        o = resolveclass(self.classid)
+        if not callable(o):
+            raise AppNotCallable(self.classid)
+        # it may be a factory. We won't know untill we actually 
+        # create an instance.
+        #if not hasattr(o, 'run') or not callable(o.run):
+        #    raise AppNotRunnable(self.classid)
 
     def cleanup_expired(self):
         expired = []

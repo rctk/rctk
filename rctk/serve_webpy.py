@@ -7,7 +7,7 @@ def main():
     import sys
     import os
 
-    usage = "Usage: serve_webpy.py [--use_cookies] [--spawned_sessions] module.class"
+    usage = "Usage: serve_webpy.py [--use-cookies] [--spawned-sessions] [--debug] module.class"
 
     args = sys.argv
     if len(args) < 2:
@@ -21,9 +21,9 @@ def main():
     debug = False
 
     while not classid:
-        if args[1] in('--use_cookies', '--use-cookies'):
+        if args[1] in ('--use_cookies', '--use-cookies'):
             use_cookies = True
-        if args[1] == '--debug':
+        elif args[1] == '--debug':
             debug = True
         elif args[1] in ('--spawned_sessions', '--spawned-sessions'):
             session_class = SpawnedSession

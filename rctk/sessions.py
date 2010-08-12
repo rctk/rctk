@@ -1,4 +1,5 @@
 import os
+import signal
 import time
 import simplejson
 import subprocess
@@ -192,14 +193,20 @@ class SpawnedSession(object):
 
         ## empty messages mean child closed connection (iow, dead)
         self.lock.acquire()
-        self.proc.stdin.write("%d\n%s" % (len(message), message))
-        self.proc.stdin.flush()
+        try:
+            self.proc.stdin.write("%d\n%s" % (len(message), message))
+            self.proc.stdin.flush()
 
-        ## Handle broken pipes in general, and specific errors (404) from the
-        ## process in general
-        size = int(self.proc.stdout.readline().strip())
-        message = self.proc.stdout.read(size)
-        self.lock.release()
+            ## Handle broken pipes in general, and specific errors (404) 
+            ## from the process in general
+            size = int(self.proc.stdout.readline().strip())
+            message = self.proc.stdout.read(size)
+        except IOError, e:
+            self.crashed = True
+            self.traceback = "The process died unexpectedly (%s)" % e
+            return None
+        finally:
+            self.lock.release()
 
         res = simplejson.loads(message)
 
@@ -211,8 +218,12 @@ class SpawnedSession(object):
         return type, data
 
     def expired(self):
-        return time.time() - self.last_access > (24*3600)
+        return self.crashed or (time.time() - self.last_access > (24*3600))
 
     def cleanup(self):
         """ kill process, close proc stuff, etc """
-        return self.crashed
+        ## self.proc.terminate() is nicer, but >2.6 only 
+        self.proc.stdin.close()
+        self.proc.stdout.close()
+        # self.proc.stderr.close()
+        os.kill(self.proc.pid, signal.SIGKILL)

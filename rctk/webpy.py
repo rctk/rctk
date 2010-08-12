@@ -17,6 +17,7 @@ class WebPyGateway(object):
         rest = ''
         session = None
         
+        ## data == '' always means a new session. When using
         if data:
             if self.use_cookies:
                 session = self.get_session_from_cookie()
@@ -24,6 +25,8 @@ class WebPyGateway(object):
             elif '/' in data:
                 sessionid, rest = data.split('/', 1)		
                 session = self.manager.get(sessionid)
+            else:
+                raise web.notfound()
         
         if session is None:
             sessionid = self.manager.create()
@@ -32,17 +35,24 @@ class WebPyGateway(object):
                 web.setcookie('rctk-sid', sessionid)
                 if data:
                     web.seeother('/')
+                    return
             else:
                 web.seeother('/' + sessionid + '/')		
                 return		
         
+        if session.crashed:
+            self.manager.cleanup_expired()
+            web.seeother('/')
+            return
+
         resource = session.serve(rest)
+        self.manager.cleanup_expired()
+
         if resource is None:
             raise web.notfound()
 
         type, result = resource
         web.header("content-type", type)
-        self.manager.cleanup_expired()
         return result
     
     def POST(self, data):
@@ -68,9 +78,11 @@ class WebPyGateway(object):
         method = rest.strip()
         arguments = web.input()
 
-        self.manager.cleanup_expired()
         
         result = session.handle(method, **arguments)
+
+        self.manager.cleanup_expired()
+
         if result is None:
             return simplejson.dumps([{'crash':True, 'application':session.classid, 'traceback':session.traceback}])
 

@@ -14,29 +14,32 @@ class WebPyGateway(object):
 
     def GET(self, data):
         data = data.strip()
+        rest = ''
         session = None
         
         # FIXME: this is an hack to get spawned sessions to work,
         # /favicon.ico should be added to the resource manager
-        if data == 'favicon.ico':
-            raise web.notfound()
+        #if data == 'favicon.ico':
+        #    raise web.notfound()
         
-        if self.use_cookies:
-            session = self.get_session_from_cookie()
-            rest = data
-        else:
-            if data:
+        if data:
+            if self.use_cookies:
+                session = self.get_session_from_cookie()
+                rest = data
+            else:
                 sessionid, rest = data.split('/', 1)		
                 session = self.manager.get(sessionid)
         
         if session is None:
             sessionid = self.manager.create()
+            session = self.manager.get(sessionid)
             if self.use_cookies:
                 web.setcookie('rctk-sid', sessionid)
-                web.seeother('/')
+                if data:
+                    web.seeother('/')
             else:
                 web.seeother('/' + sessionid + '/')		
-            return		
+                return		
         
         type, result = session.serve(rest)
         web.header("content-type", type)

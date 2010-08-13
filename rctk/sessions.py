@@ -101,7 +101,11 @@ class Session(object):
     def serve(self, name):
         """ serve means serving (static) content. Resources or html """
         self.set_global_state()
-        type, data = self.tk.serve(name)
+        try:
+            type, data = self.tk.serve(name)
+        except KeyError, e:
+            return None
+
         return type, data
 
     def expired(self):
@@ -138,13 +142,14 @@ class SpawnedSession(object):
         self.debug = debug
         server = os.path.join(startupdir, "bin", "serve_process")
         if self.debug:
-            cmd = [server, "--debug", classid]
+            cmd = [server, "--startupdir=" + startupdir, "--debug", classid]
         else:
-            cmd = [server, classid]
+            cmd = [server, "--startupdir=" + startupdir, classid]
 
         self.proc = subprocess.Popen(cmd,
                       stdin=subprocess.PIPE, 
-                      stdout=subprocess.PIPE)
+                      stdout=subprocess.PIPE,
+                      cwd=startupdir)
         self.lock = threading.Lock()
         self.crashed = False
 
@@ -208,13 +213,25 @@ class SpawnedSession(object):
         finally:
             self.lock.release()
 
+        if message.startswith("ERROR "):
+            self.crashed = True
+            error = simplejson.loads(message[6:])
+            self.traceback = error['html']
+            if self.debug:
+                ### XXX use appropriate logging
+                print "A spawned process crashed. Since you're running in debug mode, here's a traceback!"
+                print
+                print error['text']
+                
+            return None
+
         res = simplejson.loads(message)
 
         if res == {}:
             return None
 
         type = res['type']
-        data = res['data']
+        data = res['data'].decode('base64')
         return type, data
 
     def expired(self):

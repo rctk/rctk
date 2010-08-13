@@ -31,11 +31,11 @@ class ProcessWrapper(object):
                 if type == "SERVE":
                     try:
                         type, data = self.tk.serve(rest)
-                        result = {'type':type, 'data':data}
+                        result = {'type':type, 'data':data.encode('base64')}
                     except KeyError, e:
                         result = {}
                 elif type == "HANDLE":
-                    print rest
+                    # print rest
                     method, args_str = rest.split(" ", 1)
                     ## make sure we're not passing unicode keys as keyword
                     ## arguments
@@ -59,11 +59,15 @@ def main():
     sys.stdin = open("/dev/null", "r")
     stdout = sys.stdout
     sys.stdout = sys.stderr = open("/tmp/out.txt", "w")
-    
+
+    ## order is relevant, for now. ugh
+    if sys.argv[1].startswith("--startupdir="):
+        startupdir = sys.argv[1][13:]
+        os.chdir(startupdir)
+        del sys.argv[1]
     if sys.argv[1] == "--debug":
         debug = True
         del sys.argv[1]
-
     appid = sys.argv[1]
     m, k = appid.rsplit('.', 1)
     mod = __import__(m, fromlist=[k])

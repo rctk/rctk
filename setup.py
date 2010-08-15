@@ -21,7 +21,9 @@ else:
           "serve_webpy=rctk.serve_webpy:main",
           "serve_mozilla=rctk.serve_mozilla:main",
           "serve_process=rctk.serve_process:main"
-    ]}
+        ],
+        "zc.buildout": ["default = rctk.recipes:WSGI"]
+    }
     
 setup(name='rctk',
       version=version,

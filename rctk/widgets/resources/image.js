@@ -20,7 +20,7 @@ Onion.widget.Image.prototype.update = function(data) {
         this.control.attr('title', data.title);
     }
     if ('resource' in data) {
-        this.control.attr('src', data.resource);
+        this.control.attr('src', 'resources/' + data.resource);
     }
     this.set_properties(data);
 }

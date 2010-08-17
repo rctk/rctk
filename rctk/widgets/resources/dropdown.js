@@ -38,7 +38,15 @@ Onion.widget.Dropdown.prototype.changed = function() {
     this.jwin.add_task("sync", "sync", this.controlid, {'selection':this.control.val()});
     if(this.handle_click) {
         // find current selection.
-        this.jwin.add_task("event", "click", this.controlid);
+        if(!this.busy) {
+            // XXX Not sure if this is 100% correct behaviour. We're
+            // mostly avoiding doubleclicks here, which means the selection
+            // can't really have changed. Else we might actually miss a
+            // relevant event!
+
+            this.jwin.add_task("event", "click", this.controlid);
+            this.jwin.register_busy(this);
+        }
     }
 }
 

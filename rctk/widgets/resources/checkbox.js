@@ -32,7 +32,10 @@ Onion.widget.CheckBox.prototype.changed = function() {
     this.jwin.add_task("sync", "sync", this.controlid, {'checked':this.control.attr('checked')});
 
     if(this.handle_click) {
-        this.jwin.add_task("event", "click", this.controlid);
+        if(!this.busy) {
+            this.jwin.add_task("event", "click", this.controlid);
+            this.jwin.register_busy(this);
+        }
     }
 }
 

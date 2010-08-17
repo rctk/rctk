@@ -49,10 +49,17 @@ Onion.widget.Text.prototype.keypressed = function(e) {
     // if this.handle_keypress: jwin.sync, post event
     // could use some optimization
     if(this.handle_submit) {
-        if(e.which == 13) {
-            this.jwin.add_task("sync", "sync", this.controlid, {'value':this.control.val()});
-            this.jwin.add_task("event", "submit", this.controlid);
-            return false;
+        if(!this.busy) {
+            /*
+             * Does it make sense to handle busy-ness here? This would mean
+             * double-hitting enter..
+             */
+            if(e.which == 13) {
+                this.jwin.register_busy(this);
+                this.jwin.add_task("sync", "sync", this.controlid, {'value':this.control.val()});
+                this.jwin.add_task("event", "submit", this.controlid);
+                return false;
+            }
         }
     }
 }

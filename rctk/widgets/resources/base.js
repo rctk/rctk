@@ -4,6 +4,7 @@ Onion.widget.Control = function(jwin, parent, controlid) {
     this.controlid = controlid;
     this.parent = parent;
     this.debug = false;
+    this.busy = false;
 }
 
 /* 

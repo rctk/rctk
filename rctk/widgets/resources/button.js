@@ -12,7 +12,19 @@ Onion.widget.Button.prototype.create = function(data) {
     this.handle_click = false;
 
     var self=this;
-    this.control.click(function() { self.clicked(); self.jwin.flush(); });
+    this.control.click(function() { 
+         // being busy means we've been clicked and the handler
+         // is still busy handling. Don't accept clicks untill
+         // it's finished.
+         if(!self.busy) {
+            self.clicked(); 
+            self.jwin.flush(); 
+            self.jwin.register_busy(self);
+         }
+         else {
+            Onion.util.log("Control busy", self);
+         }
+    });
     this.set_properties(data);
 }
 

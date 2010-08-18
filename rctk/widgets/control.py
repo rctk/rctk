@@ -31,7 +31,7 @@ class remote_attribute(object):
             raise ControlDestroyed
         else:
             setattr(control, '_'+self.name, value)
-            control.tk.queue(Task("%s id %d attr %s update to '%s'" % 
+            control.tk.queue(Task("%s id %d attr %s update to '%s'" %
                                   (control.name, control.id, self.name, value),
                 {
                     'control':control.name,
@@ -40,8 +40,8 @@ class remote_attribute(object):
                     'update':{self.name:self.filter(control, value)}
                 }
             ))
-    
-    
+
+
 class PropertyHolder(object):
     properties = {}
 
@@ -101,25 +101,31 @@ class Control(PropertyHolder):
         return Control._id
 
     def sync(self, **data):
-        """ 
+        """
             controls sometimes need synchronization, i.e. something has changed
             on the clientside
         """
         pass
-        
+
     def restore(self):
         self.create()
-    
+
     def destroy(self):
         if self._parent:
             self._parent.remove(self)
         self.tk.queue(Task("Destroy %s id %d" % (self.name, self.id),
             { 'action':'destroy', 'id':self.id }))
         self._state = Control.DESTROYED
-    
+
     def __repr__(self):
-        return '<%s name="%s" id=%d state=%d>' % (self.__class__.__name__, self.name, self.id, self.state)
-    
-    
+        if hasattr(self,'id'): reprid = self.id
+        else: reprid = 'unknown'
+        if hasattr(self,'state'): reprstate = self.state
+        else: reprstate = 'unknown'
+        if hasattr(self, 'name'): reprname = self.name
+        else: reprname = 'unknown'
+        return '<%s name="%s" id=%s state=%s>' % (self.__class__.__name__, reprname, reprid, reprstate)
+
+
 
 

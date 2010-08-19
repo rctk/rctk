@@ -15,7 +15,7 @@ Onion.core.JWinClient = function() {
     this.toplevels = $("#toplevels");
     this.queue = []
     this.busy = []
-    $("#throbber").hide()
+    this.request_count = 0;
 }
 
 Onion.core.JWinClient.prototype.dump = function(data, debug) {
@@ -111,6 +111,11 @@ Onion.core.JWinClient.prototype.do_work = function(data) {
 }
 
 Onion.core.JWinClient.prototype.handle_tasks = function (data, status) {
+    this.request_count--;
+    if(this.request_count == 0)  {
+        $("body").css("cursor", "auto");
+    }
+
     if(data) {
       for(var i=0; i < data.length; i++) {
         this.do_work(data[i]);
@@ -135,6 +140,7 @@ Onion.core.JWinClient.prototype.handle_tasks = function (data, status) {
 
 Onion.core.JWinClient.prototype.get_work = function() {
     $.post('pop', { 'key':'value' }, Onion.util.hitch(this, "handle_tasks"), "json");
+    this.show_throbber();
 }
 
 Onion.core.JWinClient.prototype.start_work = function () {
@@ -169,6 +175,7 @@ Onion.core.JWinClient.prototype.start_work = function () {
 Onion.core.JWinClient.prototype.flush = function() {
     if(this.queue.length > 0) {
         $.post("task", {'queue':JSON.stringify(this.queue)}, Onion.util.hitch(this, "handle_tasks"), "json");
+        this.show_throbber();
         this.queue = []
     }
 }
@@ -187,3 +194,20 @@ Onion.core.JWinClient.prototype.register_busy = function(control) {
     control.busy = true;
     this.busy.push(control);
 }
+
+Onion.core.JWinClient.prototype.show_throbber = function() {
+    this.request_count++;
+
+    var self=this;
+    setTimeout(
+        (function(self) {
+            return function() {
+                if(self.request_count == 0) {
+                    return;
+                }
+
+                $("body").css("cursor", "progress");
+            }
+        })(this) , 1000);
+}
+

@@ -17,6 +17,21 @@ Onion.core.JWinClient = function() {
     this.busy = []
 }
 
+Onion.core.JWinClient.prototype.dump = function(data, debug) {
+    if(debug) {
+        this.root.append('<div id="system" class="jqmWindow" style="width: 600px; height: 600px"><b>The application ' + data.application + ' has crashed. </b><br><p>Click <a href="/">here</a> to restart</p><br><div style="overflow: auto; width: 600px; height: 500px;">' + data.traceback + '</div></div>');
+    }
+    else {
+        this.root.append('<div id="system" class="jqmWindow" style="width: 600px; height: 300px"><b>The application ' + data.application + ' has crashed. </b><br><p>Click <a href="/">here</a> to restart</p></div>');
+
+    }
+    $("#system").jqm({'modal':true});
+    $("#system").jqmShow();
+    this.crashed = true;
+    return;
+
+}
+
 Onion.core.JWinClient.prototype.do_work = function(data) {
     //Onion.util.log("do_work ", data);
     
@@ -29,16 +44,7 @@ Onion.core.JWinClient.prototype.do_work = function(data) {
     }
 
     if('crash' in data && data.crash) {
-        if(this.debug) {
-            this.root.append('<div id="system" class="jqmWindow" style="width: 600px; height: 600px"><b>The application ' + data.application + ' has crashed. </b><br><p>Click <a href="/">here</a> to restart</p><br><div style="overflow: auto; width: 600px; height: 500px;">' + data.traceback + '</div></div>');
-        }
-        else {
-            this.root.append('<div id="system" class="jqmWindow" style="width: 600px; height: 300px"><b>The application ' + data.application + ' has crashed. </b><br><p>Click <a href="/">here</a> to restart</p></div>');
-
-        }
-        $("#system").jqm({'modal':true});
-        $("#system").jqmShow();
-        this.crashed = true;
+        this.dump(data, this.debug);
         return;
     }
     switch(data.action) {
@@ -133,7 +139,14 @@ Onion.core.JWinClient.prototype.get_work = function() {
 Onion.core.JWinClient.prototype.start_work = function () {
     var self = this;
     var h = function(data, status) {
-        data = data || "{}";
+        data = data || {};
+        // a backtrace is wrapped in a list.
+        if(jQuery.isArray(data) && 'crash' in data[0] && data[0].crash) {
+            // pass true for debug, since we've never actually received
+            // a configuration
+            self.dump(data[0], true);
+            return;
+        }
         if('config' in data) {
             var config = data.config;
 

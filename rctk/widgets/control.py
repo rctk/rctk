@@ -118,13 +118,12 @@ class Control(PropertyHolder):
         self._state = Control.DESTROYED
 
     def __repr__(self):
-        if hasattr(self,'id'): reprid = self.id
-        else: reprid = 'unknown'
-        if hasattr(self,'state'): reprstate = self.state
-        else: reprstate = 'unknown'
-        if hasattr(self, 'name'): reprname = self.name
-        else: reprname = 'unknown'
-        return '<%s name="%s" id=%s state=%s>' % (self.__class__.__name__, reprname, reprid, reprstate)
+        ## some state may be unitialized when crashing
+        rid = getattr(self, 'id', -1)
+        rstate = getattr(self, 'state', 'unknown')
+        rmame = getattr(self, 'name', 'unknown')
+
+        return '<%s name="%s" id=%s state=%s>' % (self.__class__.__name__, rname, rid, rstate)
 
 
 

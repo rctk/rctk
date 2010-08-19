@@ -15,6 +15,7 @@ Onion.core.JWinClient = function() {
     this.toplevels = $("#toplevels");
     this.queue = []
     this.busy = []
+    $("#throbber").hide()
 }
 
 Onion.core.JWinClient.prototype.dump = function(data, debug) {

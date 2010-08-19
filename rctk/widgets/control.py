@@ -121,7 +121,7 @@ class Control(PropertyHolder):
         ## some state may be unitialized when crashing
         rid = getattr(self, 'id', -1)
         rstate = getattr(self, 'state', 'unknown')
-        rmame = getattr(self, 'name', 'unknown')
+        rname = getattr(self, 'name', 'unknown')
 
         return '<%s name="%s" id=%s state=%s>' % (self.__class__.__name__, rname, rid, rstate)
 

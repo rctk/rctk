@@ -7,16 +7,15 @@ from rctk.layouts import VBox
 class Collection(Panel):
     name = "collection"
 
-    def __init__(self, parent, widget_class, items=[], **properties):
-        self.parent = parent
-        super(Collection, self).__init__(parent.tk, **properties)
+    def __init__(self, tk, widget_class, items=[], **properties):
+        super(Collection, self).__init__(tk, **properties)
         self.setLayout(VBox())
         self.widget_class = widget_class
         self._items = []
         self.extend(items)
 
     def _append(self, x):
-        w = self.widget_class(self.parent, x)
+        w = self.widget_class(self.tk, x)
         self._items.append((x, w))
         super(Collection, self).append(w)
 

@@ -11,6 +11,7 @@ if sys.version_info[0] == 3: # python 3
     ]}
 else:
     install_requires=[
+          'uuid',
           'py',
           'web.py',
           'simplejson'

@@ -6,7 +6,7 @@ def resolveclass(classid):
         return classid
 
     m, k = classid.rsplit(".", 1)
-    mod = __import__(m, fromlist=[k])
+    mod = __import__(m, globals(), locals(), [k])
     klass = getattr(mod, k)
     return klass
 

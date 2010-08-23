@@ -5,7 +5,6 @@ from rctk.webpy import app
 import os
 
 startupdir = os.getcwd()
-startupdir = "/home/ivo/m3r/projects/rctk/demo-buildout/"
 manager = None
 
 def application(environ, start_response):

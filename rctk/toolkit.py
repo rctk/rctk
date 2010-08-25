@@ -101,13 +101,15 @@ class ResourceManager(object):
         raise KeyError(name)
 
 class Toolkit(ResourceManager):
-    def __init__(self, app, debug=False, *args, **kw):
+    def __init__(self, app, debug=False, polling=0, *args, **kw):
         super(Toolkit, self).__init__()
         self.app = app
         self._queue = []
         self._controls = {}
         self._root = Root(self)
         self.debug = debug
+        self.polling = polling
+
         self.args = args
         self.kw = kw
         self.timers = TimerManager(self)
@@ -144,6 +146,11 @@ class Toolkit(ResourceManager):
                 #    c.restore()
             else:
                 self.app.run(self)
+
+            return dict(state="started", 
+                        config=dict(debug=self.debug,
+                                    polling=self.polling)
+                       )
             return {"state":"started", "config":dict(debug=self.debug)}
         if method == "task" and 'queue' in args:
             queue = json.loads(args['queue'])
@@ -186,4 +193,13 @@ class Toolkit(ResourceManager):
             if neccesary
         """
         return self.timers.set_timer(handler, millis)
+
+def factory(app, debug=False, polling=0):
+    """ create and configure a toolkit specifically for 'app' """
+
+    debug = getattr(app, 'debug', debug)
+    polling = getattr(app, 'polling', polling)
+
+    return Toolkit(app, debug=debug, polling=polling)
+
 

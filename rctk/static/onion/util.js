@@ -9,6 +9,8 @@ Onion.util = function() {
         },
          // stubs, should be overwritten with framework specific function
         log: function() { return true },
-        debug: function() { return true }
+        debug: function() { return true },
+        // mimic jquery 1.4
+        proxy: function(a, b) { return Onion.util.hitch(b, a); }
     }
 }();

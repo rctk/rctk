@@ -16,6 +16,8 @@ class AppNotRunnable(AppException):
 class App(object):
     """
         Base class for rctk apps.
+
+        Not sure if we really, really need this.
     """
     debug = False
     polling = 0
@@ -23,39 +25,16 @@ class App(object):
     def __init__(self):
         pass
 
-    def create_toolkit(self, **kw):
-        debug = kw.get('debug', self.debug)
-        polling = kw.get('polling', self.polling)
-
-        self.tk = Toolkit(self, debug, polling)
-        return tk
-
-    @classmethod
-    def create(cls):
-        a = cls()
-        a.create_toolkit()
-        return a
-
     def run(self, tk):
         pass
 
-def factory(appid, **config):
-    o = resolveclass(appid)
-    ## handle defaults
-    debug = config.get('debug', False)
-    polling = config.get('polling', 0)
+import warnings
+
+def check_classid(classid):
+    o = resolveclass(classid)
     if not callable(o):
-        raise AppNotCallable(appid)
-    if not implements(o, App):
+        raise AppNotCallable(classid)
+    if not issubclass(o, App):
         # old style or just plain wrong 
-        print >> sys.stderr, "Deprecation Warning: Please subclass rctk.app.App"
-        a = o(*args, **kw)
-        tk = Toolkit(a, debug=debug, polling=polling) # ???
-        return a
-    else:
-        a = App()
-        a.create()
-        a.create_toolkit(debug=debug, polling=polling)
-
-
-
+        warnings.warn("Deprecation Warning: Please subclass rctk.app.App", DeprecationWarning)
+        

@@ -133,9 +133,6 @@ Onion.core.JWinClient.prototype.handle_tasks = function (data, status) {
 
     this.flush();
 
-    if(this.poll) {
-        setInterval(Onion.util.hitch(this, 'get_work'), this.interval);
-    }
 }
 
 Onion.core.JWinClient.prototype.get_work = function() {
@@ -144,32 +141,39 @@ Onion.core.JWinClient.prototype.get_work = function() {
 }
 
 Onion.core.JWinClient.prototype.start_work = function () {
-    var self = this;
-    var h = function(data, status) {
-        data = data || {};
-        // a backtrace is wrapped in a list.
-        if(jQuery.isArray(data) && 'crash' in data[0] && data[0].crash) {
-            // pass true for debug, since we've never actually received
-            // a configuration
-            self.dump(data[0], true);
-            return;
-        }
-        if('config' in data) {
-            var config = data.config;
+    $.post('start', {}, 
+      (function(self) {
+        return function(data, status) {
+          data = data || {};
+          // a backtrace is wrapped in a list.
+          if(jQuery.isArray(data) && 'crash' in data[0] && data[0].crash) {
+              // pass true for debug, since we've never actually received
+              // a configuration
+              self.dump(data[0], true);
+              return;
+          }
+          if('config' in data) {
+              var config = data.config;
 
-            if('poll' in config) {
-                self.poll = config.poll;
-            }
-            if('interval' in config) {
-                self.interval = config.interval;
-            }
-            if('debug' in config) {
-                self.debug = config.debug;
-            }
-        }
-        self.get_work();
-    };
-    $.post('start', {}, h, "json");
+              if('polling' in config) {
+                  if(config.polling) {
+                      self.poll = true;
+                      self.interval = config.polling;
+                      self.polltimer = setInterval(
+                         Onion.util.proxy("get_work", self),
+                         self.interval);
+                  }
+                  else {
+                      self.poll = false;
+                  }
+              }
+              if('debug' in config) {
+                  self.debug = config.debug;
+              }
+          }
+          self.get_work();
+        };
+      })(this), "json");
 }
 
 Onion.core.JWinClient.prototype.flush = function() {

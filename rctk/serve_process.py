@@ -5,7 +5,7 @@ import sys
 import os
 
 import simplejson
-from rctk.toolkit import Toolkit
+from rctk.toolkit import factory
 from rctk.util import un_unicode
 import sys, cgitb
 
@@ -13,13 +13,14 @@ class ProcessWrapper(object):
     def __init__(self, klass, debug, stdin, stdout):
         self.debug = debug
         self.stdin = stdin
-        if (self.stdin == sys.stdin):
+        if self.stdin == sys.stdin:
             sys.stdin = open("/dev/null", "r")
         self.stdout = stdout
-        if (self.stdout == sys.stdout):
+        if self.stdout == sys.stdout:
             sys.stdout = open("/dev/null", "w")
-        self.tk = Toolkit(klass(), debug=debug)
-        self.tk.startupdir = os.getcwd()
+        app = klass()
+        self.tk = factory(app, debug=debug)
+        self.tk.startupdir = os.getcwd() # ??
 
     def run(self):
         while True:

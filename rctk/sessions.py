@@ -4,9 +4,9 @@ import time
 import simplejson
 import subprocess
 
-from rctk.toolkit import Toolkit, State, globalstate
+from rctk.toolkit import factory, State, globalstate
 from rctk.util import resolveclass
-from rctk.app import AppNotCallable
+from rctk.app import check_classid
 
 import uuid
 import sys, cgitb
@@ -24,16 +24,8 @@ class Manager(object):
 
         self.sessions = {}
 
-        self.check_classid()
+        check_classid(self.classid)
 
-    def check_classid(self):
-        o = resolveclass(self.classid)
-        if not callable(o):
-            raise AppNotCallable(self.classid)
-        # it may be a factory. We won't know untill we actually 
-        # create an instance.
-        #if not hasattr(o, 'run') or not callable(o.run):
-        #    raise AppNotRunnable(self.classid)
 
     def cleanup_expired(self):
         expired = []
@@ -69,9 +61,12 @@ class Session(object):
         self.set_global_state()
         self.classid = classid
         self.debug = debug
-        self.app = resolveclass(classid)
-        self.tk = Toolkit(self.app(*args, **kw), debug=self.debug)
-        self.tk.startupdir = startupdir
+        self.appclass = resolveclass(classid)
+
+        self.app = self.appclass(*args, **kw)
+        self.tk = factory(self.app, debug=debug, **kw)
+
+        self.tk.startupdir = startupdir # ??
         self.crashed = False
 
     def set_global_state(self):

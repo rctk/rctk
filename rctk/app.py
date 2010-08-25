@@ -39,20 +39,23 @@ class App(object):
     def run(self, tk):
         pass
 
-def factory(appid):
+def factory(appid, **config):
     o = resolveclass(appid)
+    ## handle defaults
+    debug = config.get('debug', False)
+    polling = config.get('polling', 0)
     if not callable(o):
         raise AppNotCallable(appid)
     if not implements(o, App):
         # old style or just plain wrong 
         print >> sys.stderr, "Deprecation Warning: Please subclass rctk.app.App"
         a = o(*args, **kw)
-        tk = Toolkit(a, debug=False, polling=0) # ???
+        tk = Toolkit(a, debug=debug, polling=polling) # ???
         return a
     else:
         a = App()
         a.create()
-        a.create_toolkit()
+        a.create_toolkit(debug=debug, polling=polling)
 
 
 

@@ -198,7 +198,11 @@ Onion.core.JWinClient.prototype.register_busy = function(control) {
 Onion.core.JWinClient.prototype.show_throbber = function() {
     this.request_count++;
 
-    var self=this;
+    /*
+     * This doesn't always work perfectly. A request may have finished
+     * and a new one may have been sent during the 1000msec delay and
+     * we wronly conclude we need to show a progress cursor.
+     */
     setTimeout(
         (function(self) {
             return function() {

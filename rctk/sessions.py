@@ -3,22 +3,14 @@ import signal
 import time
 import simplejson
 import subprocess
+
 from rctk.toolkit import Toolkit, State, globalstate
 from rctk.util import resolveclass
+from rctk.app import AppNotCallable
 
 import uuid
 import sys, cgitb
 
-class AppException(Exception):
-    pass
-
-class AppNotCallable(AppException):
-    """ The application is not callable. I.e. it's not a class """
-    pass
-
-class AppNotRunnable(AppException):
-    """ The application does not have a run() method """
-    pass
 
 class Manager(object):
     """ session manager """
@@ -165,12 +157,12 @@ class SpawnedSession(object):
             self.proc.stdin.flush()
             size = int(self.proc.stdout.readline().strip())
             message = self.proc.stdout.read(size)
+            self.lock.release()
         except IOError, e:
             self.crashed = True
             self.traceback = "The process died unexpectedly (%s)" % e
-            return None
-        finally:
             self.lock.release()
+            return None
 
         if message == '': ## also an error
             self.crashed = True
@@ -206,12 +198,12 @@ class SpawnedSession(object):
             ## from the process in general
             size = int(self.proc.stdout.readline().strip())
             message = self.proc.stdout.read(size)
+            self.lock.release()
         except IOError, e:
             self.crashed = True
             self.traceback = "The process died unexpectedly (%s)" % e
-            return None
-        finally:
             self.lock.release()
+            return None
 
         if message.startswith("ERROR "):
             self.crashed = True

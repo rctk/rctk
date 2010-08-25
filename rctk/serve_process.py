@@ -70,7 +70,7 @@ def main():
         del sys.argv[1]
     appid = sys.argv[1]
     m, k = appid.rsplit('.', 1)
-    mod = __import__(m, fromlist=[k])
+    mod = __import__(m, globals(), locals(), [k])
     klass = getattr(mod, k)
 
     ProcessWrapper(klass, debug, stdin, stdout).run()

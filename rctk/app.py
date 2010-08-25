@@ -29,12 +29,13 @@ class App(object):
         pass
 
 import warnings
+import inspect
 
 def check_classid(classid):
     o = resolveclass(classid)
     if not callable(o):
         raise AppNotCallable(classid)
-    if not issubclass(o, App):
+    if inspect.isclass(o) and not issubclass(o, App):
         # old style or just plain wrong 
         warnings.warn("Deprecation Warning: Please subclass rctk.app.App", DeprecationWarning)
-        
+    ## For now we accept factories that create non-App based apps 

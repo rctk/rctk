@@ -28,6 +28,16 @@ Onion.widget.Root.prototype.update = function(data) {
     if('title' in data) {
         $("title").html(data.title);
     }
+    // properly resizing the actual window is tricky (and usually blocked
+    // anyway)
+    if('width' in data && data.width) {
+        $("#root").width(data.width);
+        //window.resizeTo(data.width, $(window).height());
+    }
+    if('height' in data && data.height) {
+        $("#root").height(data.width);
+        //window.resizeTo($(window).width(), data.height);
+    }
 }
 Onion.widget.register("root", Onion.widget.Root);
 

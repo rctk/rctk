@@ -170,6 +170,9 @@ Onion.core.JWinClient.prototype.start_work = function () {
               if('debug' in config) {
                   self.debug = config.debug;
               }
+              if('title' in config) {
+                    $("title").html(config.title);
+              }
           }
           self.get_work();
         };

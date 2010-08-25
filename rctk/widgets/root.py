@@ -1,8 +1,11 @@
+from rctk.widgets.control import remote_attribute
 from rctk.widgets.container import Container
 
 class Root(Container):
     """ the root window. Unique, id 0 """
     name = "root"
+
+    title = remote_attribute("title", "RCTK")
 
     def __init__(self, tk):
         super(Root, self).__init__(tk)

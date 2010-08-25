@@ -23,5 +23,11 @@ Onion.widget.Root.prototype.append = function(control, data) {
     this.layout.append(control, data);
 }
 
+Onion.widget.Root.prototype.update = function(data) {
+    Onion.widget.Container.prototype.update.apply(this, arguments);
+    if('title' in data) {
+        $("title").html(data.title);
+    }
+}
 Onion.widget.register("root", Onion.widget.Root);
 

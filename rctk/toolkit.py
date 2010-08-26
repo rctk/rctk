@@ -199,9 +199,9 @@ class Toolkit(ResourceManager):
 def factory(app, debug=False, polling=0, title="RCTK"):
     """ create and configure a toolkit specifically for 'app' """
 
-    debug = getattr(app, 'debug', debug)
-    polling = getattr(app, 'polling', polling)
-    title = getattr(app, 'title', title)
+    debug = getattr(app, 'debug', False) or debug
+    polling = getattr(app, 'polling', 0) or polling
+    title = getattr(app, 'title', None) or title
 
     return Toolkit(app, debug=debug, polling=polling, title=title)
 

@@ -14,6 +14,9 @@ class Collection(Panel):
         self._items = []
         self.extend(items)
 
+    def __len__(self):
+        return len(self._items)
+
     def _append(self, x):
         w = self.widget_class(self.tk, x)
         self._items.append((x, w))

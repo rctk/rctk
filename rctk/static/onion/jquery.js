@@ -2,12 +2,22 @@
     jQuery.extend({
         "log": function() {
             if (typeof window.console != 'undefined') {
-                window.console.log.apply(window.console, arguments);
+                if($.browser.msie) {
+                    window.console.log(arguments);
+                }
+                else {
+                    window.console.log.apply(window.console, arguments);
+                }
             }
         },
         "debug": function() {
             if (typeof window.console != 'undefined') {
-                window.console.debug.apply(window.console, arguments);
+                if($.browser.msie) {
+                    window.console.log(arguments);
+                }
+                else {
+                    window.console.debug.apply(window.console, arguments);
+               }
             }
         }
     });

@@ -171,7 +171,9 @@ Onion.core.JWinClient.prototype.start_work = function () {
                   self.debug = config.debug;
               }
               if('title' in config) {
-                    $("title").html(config.title);
+                    // fails on IE8, argh!
+                    //$("title").html(config.title);
+                    document.title = config.title || '';
               }
           }
           self.get_work();

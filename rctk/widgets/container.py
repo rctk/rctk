@@ -3,6 +3,8 @@ from rctk.widgets.control import Control
 from rctk.layouts import GridLayout, LayoutException
 from rctk.task import Task
 
+import warnings
+
 class Container(Control):
     """ A container can contain controls. It uses a layout manager
         to position them. The default layoutmanager is a gridlayout
@@ -32,13 +34,17 @@ class Container(Control):
             args can provide layout instructions for the
             layoutmanager
         """
+        if not control.containable:
+            warnings.warn("Widget %s does not support appending to parent container" % control)
+            return
+
         if self.id != control.id:
-            if control._parent:
-                control._parent.remove(control)
+            if control.parent:
+                control.parent.remove(control)
             t = {'id':self.id, 'child':control.id, 'action':'append'}
             t.update(args)
             self._controls.append(control)
-            control._parent = self
+            control.parent = self
             control._append_args = t
             self._add_append_task(control, t)
             ## restoration
@@ -50,7 +56,7 @@ class Container(Control):
         """
         if control in self._controls and self.id != control.id:
             t = {'id':self.id, 'child':control.id, 'action':'remove'}
-            control._parent = None
+            control.parent = None
             control._append_args = None
             self.tk.queue(Task('Remove %d from %d' % (control.id, self.id), t))
             del self._controls_args[control]
@@ -65,9 +71,9 @@ class Container(Control):
         self.create()
         self._add_layout_task(self._layout)
         ## Not root and not a toplevel
-        #if self.id > 0 and self._parent is not None:
+        #if self.id > 0 and self.parent is not None:
         #    print str(self._append_args)
-        #    self._parent.append(self, **self._append_args)
+        #    self.parent.append(self, **self._append_args)
 
         for c in self._controls:
             c.restore()

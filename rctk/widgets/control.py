@@ -65,6 +65,7 @@ class Control(PropertyHolder):
     """ any control in the UI, a window, button, text, etc """
     name = "base"
 
+    containable = True # by default a control can be contained 
     _id = 0
 
     # control state
@@ -86,7 +87,7 @@ class Control(PropertyHolder):
         super(Control, self).__init__(**properties)
         self.tk = tk
         self.id = self.newid()
-        self._parent = None
+        self.parent = None
         self._append_args = {}
         self.tk.add_control(self)
         self.create()
@@ -111,8 +112,8 @@ class Control(PropertyHolder):
         self.create()
 
     def destroy(self):
-        if self._parent:
-            self._parent.remove(self)
+        if self.parent:
+            self.parent.remove(self)
         self.tk.queue(Task("Destroy %s id %d" % (self.name, self.id),
             { 'action':'destroy', 'id':self.id }))
         self._state = Control.DESTROYED

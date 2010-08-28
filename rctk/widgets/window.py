@@ -5,6 +5,8 @@ from rctk.widgets.container import Container
 class Window(Container):
     name = "window"
 
+    containable = False
+
     properties = Container.extend(title="Window", modal=False)
 
     def __init__(self, tk, title="", **properties):

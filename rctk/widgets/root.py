@@ -5,6 +5,8 @@ class Root(Container):
     """ the root window. Unique, id 0 """
     name = "root"
 
+    containable = False
+
     ## traditional properties don't really work
     ## on the Root control, and they conflict
     ## with remote_attributes with the same name.

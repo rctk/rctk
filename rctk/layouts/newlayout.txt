@@ -1,0 +1,54 @@
+NewLayout builds on IvoLayout/PowerLayout but moves part of the logic (and
+adds extra logic) to the Python implementation.
+
+
+What's required? 
+
+TkInter offers:
+
+  row, col (possition): got that
+
+  rowspan, colspan (spanning): got that
+
+  ipadx, ipady: padding inside the widget: don't have that yet. Not sure if it's a layout property or a widget property.
+
+  padx, pady: padding outside the widget: don't have that yet. Need it.
+
+  sticky: gravity, alignment, expanding combined. Combination of NESW, i.e.
+  E+W will expand horizontally, N+E+S+W will use up all space.
+  default: Center
+
+  Default configuration per row, per column: minsize, pad and weight.
+  Weight determines how the layout behaves when resizing. Without weight, 
+  a row/col will not resize.
+
+Remaining issues:
+
+Suggested API:
+
+BaseLayout (used for Grid, H/VBox, static)
+  __init__ - defaults:
+    rows
+    columns
+    static
+    padx, pady
+    ipadx, ipady
+
+    alignment / sticky (?)
+
+    overall defaults?
+
+  append
+    row
+    column
+    padx, pady
+    ipadx, ipady
+
+The layoutmanager uses as much space as needed, which may be less than
+available. If any of the rows are flexible, they will scale relatively
+with the available space.
+
+If the containing parent is too small
+ - scrollbars?
+ - resize parent container? (if no maxsize)
+ - do nothing, clip? (tkinter with maxsize)

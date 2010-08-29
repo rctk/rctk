@@ -52,3 +52,18 @@ If the containing parent is too small
  - scrollbars?
  - resize parent container? (if no maxsize)
  - do nothing, clip? (tkinter with maxsize)
+
+By default, containers (panels, windows) will take as much space as necessary. This means shrink/expand if necessary.
+If the container itself is part of a layout, it may have certain 'stickyness'
+
+If the container (or widget in general) has a defined size, then this is the size it takes. It can be aligned using stickyness.
+It will be clipped if necessary.
+
+What if a widget gets updated and resizes? I.e. becomes larger/smaller?
+- You may not want a container (or layout in general) to resize once it's been scaled.
+- It's hard / impossible to calculate the new size
+ - take widget out of layout, move it offscreen, size it asif it's new
+ - duplicate widget with new state to get its size
+ - expanding is the biggest problem because the widget loses its original size. You can fake real (html) widget padding 
+   sometimes but not always (i.e. buttons)
+

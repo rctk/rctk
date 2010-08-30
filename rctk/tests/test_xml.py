@@ -182,3 +182,41 @@ class TestWindowTestXML(BaseContainerTestXML):
     @property
     def sub_xml(self):
         return self.build_xml('<object class="%s" name="hello"><title>Hello World</title><object class="Button" name="foo"><text>Foo Bar</text></object></object>' % self.type)
+
+    def test_simple(self):
+        self.builder.fromString(self.xml)
+
+        ## verify it's been created in storage
+        assert hasattr(self.storage, 'hello')
+        w = self.storage.hello
+        assert w.name == XMLControlRegistry[self.type].name
+
+        ## verify tasks have been created
+
+        assert len(self.tk._queue) == 1
+        create = self.tk._queue[0]._task
+        assert create['action'] == 'create'
+        assert create['control'] == XMLControlRegistry[self.type].name
+        assert create['id'] == w.id
+
+    def test_subobjects(self):
+        self.builder.fromString(self.sub_xml)
+        
+        # verify the subobject is accessible through storage
+        assert hasattr(self.storage, "foo")
+        container = self.storage.hello
+        button = self.storage.foo
+
+        assert len(self.tk._queue) == 3
+        ## first / second entry are create/append of container to root,
+        ## which is already tested
+        assert self.tk._queue[0]._task['action'] == 'create'
+
+        ## creation of button
+        assert self.tk._queue[1]._task['action'] == 'create'
+        assert self.tk._queue[1]._task['control'] == 'button'
+
+        ## append of button to container
+        assert self.tk._queue[2]._task['action'] == 'append'
+        assert self.tk._queue[2]._task['id'] == container.id
+        assert self.tk._queue[2]._task['child'] == button.id

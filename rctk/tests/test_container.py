@@ -87,7 +87,12 @@ from rctk.widgets.window import Window
 class TestWindowContainer(BaseContainerTest):
     container = Window
 
+    def test_do_not_append_self(self):
+        pass
+
 from rctk.widgets.root import Root
 class TestRootContainer(BaseContainerTest):
     container = Root
 
+    def test_do_not_append_self(self):
+        pass

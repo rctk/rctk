@@ -136,7 +136,8 @@ class ControlImporter(object):
             
         if name:
             setattr(storage, name, control)
-        parent.append(control, **flags)
+        if control.containable:
+            parent.append(control, **flags)
 
         ## add subobjects to it, if it has any
         for c in sub:

@@ -33,12 +33,11 @@ class Grid(object):
                 yield (r, c)
             c += 1
 
-    def _get_index(self, cell):
-        r, c = cell
-        if self.cols is not None:
-            idx = r * self.cols + c
+    def _get_index(self, row, column):
+        if self.columns is not None:
+            idx = row * self.columns + column
         else:
-            idx = c * self.rows + r
+            idx = column * self.rows + row
         return idx
 
     def _expand(self, idx):
@@ -46,13 +45,13 @@ class Grid(object):
         while len(self._grid) <= idx:
             self._grid.append(None)
 
-    def __getitem__(self, cell):
-        idx = self._get_index(cell)
+    def get(self, row, column):
+        idx = self._get_index(row, column)
         self._expand(idx)
         return self._grid[idx]
 
-    def __setitem__(self, cell, val):
-        idx = self._get_index(cell)
+    def set(self, row, column, val):
+        idx = self._get_index(row, column)
         self._expand(idx)
         self._grid[idx] = val
 
@@ -93,61 +92,16 @@ class NewLayout(Layout):
 
     def allocate(self, row, column, rowspan=1, colspan=1):
         """ allocate a cell. Shouldn't be allocated already """
-        if self.rows is not None and self.columns is not None:
-            cell = row * self.columns + column
-            if self.grid[cell] is self.FULL:
-                ## spans!
-                raise LayoutException("Cell row=%d column=%d already allocated" % (row, column))
+        if self.grid.get(row, column) is not Grid.EMPTY:
+            raise LayoutException("Cell row=%d column=%d already allocated" % (row, column))
+        else:
+            self.grid.set(row, column, Grid.FULL)
 
-            self.grid[cell] = self.FULL
-
-        if self.columns is None:
-            cell = column * self.rows + row
-            if self.grid[cell] is self.FULL:
-                ## spans!
-                raise LayoutException("Cell row=%d column=%d already allocated" % (row, column))
-
-            self.grid[cell] = self.FULL
-            ## spans!
-
-        
     def available_positions(self):
-        ## fixed grid
-        if self.rows is not None and self.columns is not None:
-            for r in range(0, self.rows):
-                for c in range(0, self.columns):
-                    idx = r * self.columns + c
-                    if idx >= len(self.grid):
-                        # unexplored pad. Expand grid, we've found something
-                        self.grid.append(None)
-                        return r, c
-                    elif self.grid[idx] is self.EMPTY:
-                        return r, c
+        for cell in iter(self.grid):
+            if self.grid.get(*cell) is Grid.EMPTY:
+                return cell
 
-            return None # full
-
-        ## columns are bound, grow vertically
-        if self.rows is not None:
-            r = 0
-            while True:
-                for c in range(0, self.columns):
-                    idx = r * self.columns + c
-                    if idx >= len(self.grid):
-                        # unexplored pad. Expand grid, we've found something
-                        self.grid.append(None)
-                        return r, c
-                    elif self.grid[idx] is self.EMPTY:
-                        return r, c
-                r += 1
-            return None # full
-
-        ## rows are bound, grow horizontally
-        c = 0
-        while True:
-            for r in range(0, self.rows):
-                idx = c * self.rows + r
-                # ...
-                
     def space_available(self, row, column, rowspan=1, colspan=1):
         # verify a space is available, possibly expanding the grid
 
@@ -157,19 +111,18 @@ class NewLayout(Layout):
         if self.rows is not None and rowspan > self.rows:
             raise LayoutException("Rowspan of %d too high for grid with %d rows" % (rowspan, self.rows))
 
-        for position in self.available_positions():
-            pass #...
+        for r in range(row, row+rowspan):
+            for c in range(column, column+colspan):
+                if self.grid.get(r, c) is not Grid.EMPTY:
+                    return False
+        return True
 
-    def find(self, row=None, column=None, rowspan=1, colspan=1):
-
-        if row is None and col is None:
-            find-first-free
-        elif row is None:
-            find-first-free(column)
-        elif col is None:
-            find-first-free(row)
-        else:
-            check (row, column) is available
+    def find(self, rowspan=1, colspan=1):
+        """ find a large enough area """
+        for cell in iter(self.grid):
+            row, column = cell
+            if self.space_available(row, column, rowspan, colspan):
+                return cell
 
     def append(self, row, column, padx=None, pady=None, ipadx=None, 
                ipady=None, sticky=None, colspan=1, rowspan=1):

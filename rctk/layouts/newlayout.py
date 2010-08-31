@@ -1,5 +1,61 @@
 from rctk.layouts.layouts import Layout, LayoutException
 
+class Grid(object):
+    """ basic dynamic grid abstraction """
+    EMPTY = None
+    FULL = object()
+
+    def __init__(self, rows=None, columns=None):
+        self.rows = rows
+        self.columns = columns
+        self._grid = []
+
+    def __iter__(self):
+        ## left to right, top to bottom, fixed size
+        if self.rows is not None and self.columns is not None:
+            for r in range(0, self.rows):
+                for c in range(0, self.columns):
+                    yield (r, c)
+            raise StopIteration()
+
+        ## left to right, top to bottom, grow vertically (forever!)
+        if self.rows is None:
+            r = 0
+            while True:
+                for c in range(0, self.columns):
+                    yield (r, c)
+                r += 1
+
+        ## top to bottom, left to right, grow horizontally
+        c = 0
+        while True:
+            for r in range(0, self.rows):
+                yield (r, c)
+            c += 1
+
+    def _get_index(self, cell):
+        r, c = cell
+        if self.cols is not None:
+            idx = r * self.cols + c
+        else:
+            idx = c * self.rows + r
+        return idx
+
+    def _expand(self, idx):
+        """ expand the grid so <idx> becomes a valid index """
+        while len(self._grid) <= idx:
+            self._grid.append(None)
+
+    def __getitem__(self, cell):
+        idx = self._get_index(cell)
+        self._expand(idx)
+        return self._grid[idx]
+
+    def __setitem__(self, cell, val):
+        idx = self._get_index(cell)
+        self._expand(idx)
+        self._grid[idx] = val
+
 class NewLayout(Layout):
     type = "new"
 
@@ -17,9 +73,6 @@ class NewLayout(Layout):
     ## rows = None => grow vertical
     ## rows, cols not None: raise if no fit
 
-    EMPTY = None
-    FULL = object()
-
     def __init__(self, rows=None, columns=None, static=False,
                  padx=0, pady=0, ipadx=0, ipady=0, sticky=CENTER):
         if rows is None and columns is None:
@@ -33,7 +86,8 @@ class NewLayout(Layout):
         self.ipady = ipady
         self.sticky = sticky
 
-        self.grid = []
+        self.grid = Grid(rows=rows, columns=columns)
+
         self.calculated_rows = rows
         self.calculated_cols = columns
 

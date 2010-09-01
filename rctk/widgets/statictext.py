@@ -40,6 +40,8 @@ class StaticText(Control):
     #text = property(_get_text, _set_text)
 
 class StaticHTMLText(StaticText):
+    name = "statichtmltext"
+
     def _escape(self, s):
         """ for now, allow any html/css/javascript to pass through. But eventually, this
             should be an explicit option and only a small subset of html should be allowed

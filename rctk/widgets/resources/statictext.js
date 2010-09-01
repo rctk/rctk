@@ -14,10 +14,10 @@ Onion.widget.StaticText.prototype.create = function(data) {
 
     if('wrap' in data) {
         if(data.wrap) {
-            this.control.css("white-space", "normal");
+            this.control.css("white-space", "pre-wrap");
         }
         else {
-            this.control.css("white-space", "nowrap");
+            this.control.css("white-space", "pre");
         }
     }
     if('bold' in data) {
@@ -58,5 +58,23 @@ Onion.widget.StaticText.prototype.update = function(data) {
     }
 }
 
+Onion.widget.StaticHTMLText = function(jwin, parent, controlid) {
+    Onion.widget.StaticText.apply(this, arguments);
+}
+
+Onion.widget.StaticHTMLText.prototype = new Onion.widget.StaticText();
+
+Onion.widget.StaticHTMLText.prototype.create = function(data) {
+    var controlid = "ctrl"+this.controlid;
+    this.jwin.factory.append('<div id="' + controlid + '">' + data.text + "</div>");
+
+    this.control = $("#"+controlid);
+    this.control.addClass(this.cssclass);
+    this.set_properties(data);
+
+    // we're not supporting any of the specific statictext properties
+}
+
 // register
 Onion.widget.register("statictext", Onion.widget.StaticText);
+Onion.widget.register("statichtmltext", Onion.widget.StaticHTMLText);

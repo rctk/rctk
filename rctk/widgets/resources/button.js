@@ -1,5 +1,6 @@
 Onion.widget.Button = function(jwin, parent, controlid) {
     Onion.widget.Control.apply(this, arguments);
+    this.name = "button";
 }
 
 Onion.widget.Button.prototype = new Onion.widget.Control();
@@ -9,6 +10,7 @@ Onion.widget.Button.prototype.create = function(data) {
     this.jwin.factory.append('<button id="' + controlid + '">' + data.text + "</button>")
     this.control = $("#"+controlid);
     this.control.addClass(this.cssclass);
+    this.control.addClass(this.name);
     this.handle_click = false;
 
     var self=this;

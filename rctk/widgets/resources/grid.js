@@ -1,6 +1,7 @@
 Onion.widget.Grid = function(jwin, parent, controlid) {
     Onion.widget.Control.apply(this, arguments);
     this.items = [];
+    this.name = "grid";
 }
 
 Onion.widget.Grid.prototype = new Onion.widget.Control();
@@ -10,6 +11,7 @@ Onion.widget.Grid.prototype.create = function(data) {
     this.jwin.factory.append('<table id="' + controlid + '">' + "</table>");
     this.container = $("#"+controlid);
     this.container.addClass(this.cssclass);
+    this.container.addClass(this.name);
     // this.set_properties(data);
     this.container.jqGrid({
         datatype: 'local',

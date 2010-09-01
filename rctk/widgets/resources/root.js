@@ -10,12 +10,15 @@ Onion.widget.Root = function(jwin) {
     this.control = $("#root");
     this.container = this.control;
     Onion.widget.Container.apply(this, [jwin, this, 0]);
+    this.name = "root";
 }
 
 Onion.widget.Root.prototype = new Onion.widget.Container()
 
 Onion.widget.Root.prototype.create = function(data) {
     this.set_properties(data);
+    this.control.addClass(this.cssclass);
+    this.control.addClass(this.name);
 }
 
 Onion.widget.Root.prototype.append = function(control, data) {

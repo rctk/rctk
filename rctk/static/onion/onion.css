@@ -17,7 +17,11 @@ body {
     left: -10000px;
 }
 
-.panel-control {
+/* 
+ * we need to be more specific with .panel to override the .control class, 
+ * which a panel will also have 
+ */
+div.panel {
     display: inline-block;
 }
 .control {

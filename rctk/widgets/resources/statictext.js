@@ -1,5 +1,6 @@
 Onion.widget.StaticText = function(jwin, parent, controlid) {
     Onion.widget.Control.apply(this, arguments);
+    this.name = "statichtml";
 }
 
 Onion.widget.StaticText.prototype = new Onion.widget.Control();
@@ -10,6 +11,7 @@ Onion.widget.StaticText.prototype.create = function(data) {
 
     this.control = $("#"+controlid);
     this.control.addClass(this.cssclass);
+    this.control.addClass(this.name);
     this.set_properties(data);
 
     if('wrap' in data) {
@@ -60,6 +62,7 @@ Onion.widget.StaticText.prototype.update = function(data) {
 
 Onion.widget.StaticHTMLText = function(jwin, parent, controlid) {
     Onion.widget.StaticText.apply(this, arguments);
+    this.name = "statichtmltext";
 }
 
 Onion.widget.StaticHTMLText.prototype = new Onion.widget.StaticText();
@@ -71,6 +74,7 @@ Onion.widget.StaticHTMLText.prototype.create = function(data) {
     this.control = $("#"+controlid);
     this.control.addClass(this.cssclass);
     this.set_properties(data);
+    this.control.addClass(this.name);
 
     // we're not supporting any of the specific statictext properties
 }

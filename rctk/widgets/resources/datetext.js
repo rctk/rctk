@@ -3,6 +3,7 @@
  */
 Onion.widget.DateText = function(jwin, parent, controlid) {
     Onion.widget.Text.apply(this, arguments);
+    this.name = "datetext";
 }
 
 Onion.widget.DateText.prototype = new Onion.widget.Text();

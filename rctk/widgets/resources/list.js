@@ -7,6 +7,7 @@
 Onion.widget.List = function(jwin, parent, controlid) {
     Onion.widget.Dropdown.apply(this, arguments);
     this.size = 5; // default
+    this.name = "list";
 }
 
 Onion.widget.List.prototype = new Onion.widget.Dropdown();

@@ -1,5 +1,6 @@
 Onion.widget.CheckBox = function(jwin, parent, controlid) {
     Onion.widget.Control.apply(this, arguments);
+    this.name = "checkbox";
 }
 
 Onion.widget.CheckBox.prototype = new Onion.widget.Control();
@@ -14,6 +15,8 @@ Onion.widget.CheckBox.prototype.create = function(data) {
     }
     this.control = $("#" + controlid);
     this.control.attr('defaultChecked', data.defaultChecked);
+    this.control.addClass(this.cssclass);
+    this.control.addClass(this.name);
     this.handle_click = false;
 
     var self=this;

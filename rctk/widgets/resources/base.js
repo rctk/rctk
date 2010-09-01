@@ -1,5 +1,6 @@
 Onion.widget.Control = function(jwin, parent, controlid) {
     this.cssclass = "control";
+    this.name = "base";
     this.jwin = jwin;
     this.controlid = controlid;
     this.parent = parent;
@@ -95,6 +96,7 @@ Onion.widget.Control.prototype.create = function(data) {
     this.jwin.factory.append('<div id="' + controlid + '"></div>');
     this.control = $("#"+controlid);
     this.control.addClass(this.cssclass);
+    this.control.addClass(this.name);
     this.set_properties(data);
 
 }

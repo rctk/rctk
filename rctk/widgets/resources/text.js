@@ -9,6 +9,7 @@
 
 Onion.widget.Text = function(jwin, parent, controlid) {
     Onion.widget.Control.apply(this, arguments);
+    this.name = "text";
 }
 
 Onion.widget.Text.prototype = new Onion.widget.Control();
@@ -25,6 +26,7 @@ Onion.widget.Text.prototype.create = function(data) {
     this.control.attr('rows', data.rows);
     this.control.attr('cols', data.columns);
     this.control.addClass(this.cssclass);
+    this.control.addClass(this.name);
 
     var self = this;
     this.control.change(function() {

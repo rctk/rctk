@@ -1,6 +1,7 @@
 Onion.widget.Dropdown = function(jwin, parent, controlid) {
     Onion.widget.Control.apply(this, arguments);
     this.items = [];
+    this.name = "dropdown";
 }
 
 Onion.widget.Dropdown.prototype = new Onion.widget.Control();
@@ -10,6 +11,7 @@ Onion.widget.Dropdown.prototype.create = function(data) {
     this.jwin.factory.append('<select id="' + controlid + '">' + "</select>");
     this.control = $("#"+controlid);
     this.control.addClass(this.cssclass);
+    this.control.addClass(this.name);
     this.handle_click = false;
 
     this.control.attr('multiple', false);

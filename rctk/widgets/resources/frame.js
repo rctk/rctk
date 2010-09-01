@@ -1,5 +1,6 @@
 Onion.widget.Frame = function(jwin, parent, controlid) {
     Onion.widget.Container.apply(this, arguments);
+    this.name = "frame";
 }
 
 Onion.widget.Frame.prototype = new Onion.widget.Container();
@@ -14,6 +15,7 @@ Onion.widget.Frame.prototype.create = function(data) {
     this.container = $("#"+controlid);
     // dialogBox class not currently used
     this.container.addClass(this.cssclass);
+    this.container.addClass(this.name);
     
     // windows aren't appended, they appear immediately
     this.control.appendTo(this.jwin.toplevels);

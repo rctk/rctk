@@ -82,6 +82,10 @@ class Session(object):
         except Exception, e:
             self.crashed = True
             self.traceback = cgitb.html(sys.exc_info())
+            if self.debug:
+                print "A session crashed. Since you're running in debug mode, here's a traceback!"
+                print
+                print cgitb.text(sys.exc_info())
         return None
 
 

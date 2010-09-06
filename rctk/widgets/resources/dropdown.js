@@ -13,6 +13,7 @@ Onion.widget.Dropdown.prototype.create = function(data) {
     this.control.addClass(this.cssclass);
     this.control.addClass(this.name);
     this.handle_click = false;
+    this.handle_doubleclick = false;
 
     this.control.attr('multiple', false);
 
@@ -28,6 +29,7 @@ Onion.widget.Dropdown.prototype.create = function(data) {
     }
     var self=this;
     this.control.change(function() { self.changed(); self.jwin.flush(); });
+    this.control.dblclick(function() { self.doubleclick(); self.jwin.flush(); });
     this.set_properties(data);
 }
 
@@ -52,6 +54,16 @@ Onion.widget.Dropdown.prototype.changed = function() {
     }
 }
 
+Onion.widget.Dropdown.prototype.doubleclick = function() {
+    this.jwin.add_task("sync", "sync", this.controlid, {'selection':this.control.val()});
+    if(this.handle_doubleclick) {
+        // find current selection.
+        if(!this.busy) {
+            this.jwin.add_task("event", "doubleclick", this.controlid);
+            this.jwin.register_busy(this);
+        }
+    }
+}
 Onion.widget.Dropdown.prototype.update = function(data) {
     Onion.widget.Control.prototype.update.apply(this, arguments);
     if(data.item) {

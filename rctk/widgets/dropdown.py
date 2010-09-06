@@ -1,9 +1,9 @@
 from rctk.widgets.control import Control, remote_attribute
 
 from rctk.task import Task
-from rctk.event import Clickable
+from rctk.event import Clickable, DoubleClickable
 
-class Dropdown(Control, Clickable):
+class Dropdown(Control, Clickable, DoubleClickable):
     """
         Display a dropdown containing values. The caller must supply
         items as tuples (key, label), label will be used for presentation,

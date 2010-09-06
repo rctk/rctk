@@ -15,6 +15,9 @@ class Event(object):
 class ClickEvent(Event):
     pass
 
+class DoubleClickEvent(Event):
+    pass
+
 class ChangeEvent(Event):
     pass
 
@@ -33,6 +36,19 @@ class Clickable(object):
         return self._click_handler
 
     click = property(_get_click, _set_click)    
+
+class DoubleClickable(object):
+    _doubleclick_handler = None
+
+    def _set_doubleclick(self, val):
+        self._doubleclick_handler = val
+        self.tk.queue(Task("Handler installed on %s %d" % (self.name, self.id),
+          {'control':self.name, "id":self.id, "action":"handler", "type":"doubleclick"}))
+
+    def _get_doubleclick(self):
+        return self._doubleclick_handler
+
+    doubleclick = property(_get_doubleclick, _set_doubleclick)    
 
 class Changable(object):
     _change_handler = None
@@ -80,5 +96,6 @@ class Dispatcher(object):
 dispatcher = Dispatcher()
 
 dispatcher.register('click', ClickEvent)
+dispatcher.register('doubleclick', ClickEvent)
 dispatcher.register('change', ChangeEvent)
 dispatcher.register('submit', SubmitEvent)

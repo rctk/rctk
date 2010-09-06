@@ -59,13 +59,6 @@ Onion.core.JWinClient.prototype.do_work = function(data) {
         var child = this.controls[data.child];
         container.remove(child, data);
         break;
-    case "show":
-        // Can this be removed? Doesn't seem to be a show task anymore.
-        // show all - hack!
-        for(var i = 0; i < this.controls.length; i++) {
-            this.controls[i].css("display", "inline");
-        }
-        break;
     case "create":
         // TODO?: if this fails 'the other side' is not informed!
         if(control_class) {
@@ -83,6 +76,13 @@ Onion.core.JWinClient.prototype.do_work = function(data) {
         // update a control. Rename to sync?
         var control = this.controls[id];
         control.update(data.update);
+        break;
+    case "call":
+        // call a method with arguments on a control
+        var control = this.controls[id];
+        var method = data.method;
+        var args = data.args || [];
+        control[method].apply(control, args)
         break;
     case "handler":
         var control = this.controls[id];

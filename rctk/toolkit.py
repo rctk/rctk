@@ -128,6 +128,12 @@ class Toolkit(ResourceManager):
 
         self.queue(Task("Create " + repr(control), taskdata))
 
+    def call(self, control, method, *args):
+        taskdata = dict(control=control.name, id=control.id, action="call")
+        taskdata['method'] = method
+        taskdata['args'] = args
+        self.queue(Task("Call" + repr(control), taskdata))
+
     def root(self):
         return self._root
 

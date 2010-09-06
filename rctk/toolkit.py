@@ -8,7 +8,7 @@ from rctk.resourceregistry import getResourceRegistry
 import rctk.resources
 
 from rctk.widgets import Root
-from rctk.event import ClickEvent, ChangeEvent, SubmitEvent
+from rctk.event import dispatcher
 from rctk.task import Task
 from rctk.util import un_unicode
 
@@ -176,12 +176,7 @@ class Toolkit(ResourceManager):
                         if control.state == control.DISABLED:
                             continue
 
-                        if eventtype == "click":
-                            control.click(ClickEvent(control))
-                        elif eventtype == "change":
-                            control.change(ChangeEvent(control))
-                        elif eventtype == "submit":
-                            control.submit(SubmitEvent(control))
+                        dispatcher(eventtype, control)
                 elif tasktype == "sync":
                     control = self._controls[id]
                     control.sync(**un_unicode(task.get('data', {})))

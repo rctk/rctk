@@ -1,8 +1,16 @@
 from rctk.task import Task
 
 class Event(object):
-    def __init__(self, control):
+    def __init__(self, control, **kw):
         self.control = control
+        self.args = kw
+
+    @classmethod
+    def invoke(cls, id, control, **kw):
+        """ default is to map to a method equal to the eventid """
+        handler = getattr(control, id, None)
+        if handler:
+            handler(cls(control, **kw))
 
 class ClickEvent(Event):
     pass
@@ -56,3 +64,21 @@ class Submittable(object):
 
     submit = property(_get_submit, _set_submit)    
 
+
+class Dispatcher(object):
+    events = {}
+
+    def register(self, id, eventclass):
+        self.events[id] = eventclass
+
+    def __call__(self, id, control, **kw):
+        """ 
+            invoke an event. This may raise a keyerror for unregistered events 
+        """
+        self.events[id].invoke(id, control, **kw)
+
+dispatcher = Dispatcher()
+
+dispatcher.register('click', ClickEvent)
+dispatcher.register('change', ChangeEvent)
+dispatcher.register('submit', SubmitEvent)

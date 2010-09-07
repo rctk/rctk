@@ -53,7 +53,31 @@ class WebPyGateway(object):
 
         type, result = resource
         web.header("content-type", type)
-        return result
+
+        ## experimental partial content support
+        ## perhaps this shouldn't be enabled by default
+        range = web.ctx.env.get('HTTP_RANGE')
+        if range is None:
+            return result
+
+        total = len(result)
+        _, r = range.split("=")
+        partial_start, partial_end = r.split("-")
+
+        start = int(partial_start)
+
+        if not partial_end:
+            end = total-1
+        else:
+            end = int(partial_end)
+
+        chunksize = (end-start)+1
+
+        web.ctx.status = "206 Partial Content"
+        web.header("Content-Range", "bytes %d-%d/%d" % (start, end, total))
+        web.header("Accept-Ranges", "bytes")
+        web.header("Content-Length", chunksize)
+        return result[start:end+1]        
     
     def POST(self, data):
         data = data.strip()

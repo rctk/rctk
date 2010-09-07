@@ -164,5 +164,5 @@ def getResourceRegistry():
     return _instance
 
 def addResource(r):
-    getResourceRegistry().add(r)
+    return getResourceRegistry().add(r)
 

@@ -77,6 +77,10 @@ class DynamicResource(BaseResource):
     def __call__(self, path):
         pass
 
+    def __eq__(self, other):
+        """ dynamic resources aren't as equal as simple ones """
+        return self is other
+
 class ResourceRegistry(object):
     """ The resource registry is used to register javascript and
         css that is used by rctk. It allows the main page to be

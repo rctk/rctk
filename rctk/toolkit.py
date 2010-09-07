@@ -96,7 +96,7 @@ class ResourceManager(object):
             return ('text/html', rendered)
         elif name.startswith('resources'):
             elements = name.split('/')
-            resource = self.rr.get_resource(elements[-1])
+            resource = self.rr.get_resource(elements[1], elements)
             return (resource.type, resource.data)
         raise KeyError(name)
 

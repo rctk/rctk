@@ -73,6 +73,10 @@ class JSFileResource(FileResource):
 class CSSFileResource(FileResource):
     type = "text/css"
 
+class DynamicResource(BaseResource):
+    def __call__(self, path):
+        pass
+
 class ResourceRegistry(object):
     """ The resource registry is used to register javascript and
         css that is used by rctk. It allows the main page to be
@@ -126,12 +130,16 @@ class ResourceRegistry(object):
         return [k for (k,v) in self.resources.items() 
                 if isinstance(v, (JSFileResource, JSResource))]
 
-    def get_resource(self, name):
+    def get_resource(self, name, elements=[]):
         """ 
             return a (type, data) tuple containing the mimetype and resource 
             data 
         """
-        return self.resources[name]
+        r = self.resources[name]
+
+        if isinstance(r, DynamicResource):
+            r = r(elements)
+        return r
 
     def header(self):
         """ return html usable for injection into <head></head> """

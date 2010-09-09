@@ -64,7 +64,7 @@ class Session(object):
         self.appclass = resolveclass(classid)
 
         self.app = self.appclass(*args, **kw)
-        self.tk = factory(self.app, debug=debug, **kw)
+        self.tk = factory(self.app, debug=debug)
 
         self.tk.startupdir = startupdir # ??
         self.crashed = False

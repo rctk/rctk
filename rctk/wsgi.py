@@ -14,11 +14,20 @@ def application(environ, start_response):
         classid = environ.get('rctk.classid')
         debug = environ.get('rctk.debug', "false").lower() in ("1", "true")
         session = environ.get('rctk.session')
+        
+        options = {}
+
+        optionconfig = environ.get('options')
+        if optionconfig:
+            for kv in optionconfig.split(','):
+                k, v = kv.split("=", 1)
+                options[k] = v
+            
         if session == "SpawnedSession":
             sessionclass = SpawnedSession
         else:
             sessionclass = Session
 
-        manager = Manager(SpawnedSession, classid, startupdir, debug)
+        manager = Manager(SpawnedSession, classid, startupdir, debug, **options)
     return app(manager, use_cookies).wsgifunc()(environ, start_response)
 

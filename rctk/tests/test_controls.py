@@ -173,3 +173,8 @@ class TestRootCreate(BaseWidgetTest):
             root = self.create_widget()
             yield check, root
 
+import py.test
+
+class TestImage(object): 
+    def test_lies(self):
+        py.test.skip("Niet goed getest")

@@ -95,7 +95,21 @@ class TestFileResource(BaseTestResource):
         r1 = self.factory("files/dummy.x")
 
         assert r1.name == "dummy.x"
-        
+
+class TestDynamicResource(BaseTestResource):
+    from rctk.resourceregistry import DynamicResource
+    type = DynamicResource
+
+    class DummyDynamicResource(DynamicResource):
+        def __call__(self, elements):
+            return elements[-1]
+
+    def test_dynamic_resource(self):
+        r = TestDynamicResource.DummyDynamicResource()
+        assert r(['a', 'b', 'c']) == 'c' 
+        assert r(['a', 'b']) == 'b' 
+
+
 class TestResourceRegistry(object):
     def setup_method(self, method):
         from rctk.resourceregistry import ResourceRegistry
@@ -153,4 +167,31 @@ class TestResourceRegistry(object):
         rr2 = getResourceRegistry()
 
         assert rr1 is rr2
+
+class TestDynamicResourceInRegistry(object):
+    def setup_method(self, method):
+        from rctk.resourceregistry import ResourceRegistry
+        self.rr = ResourceRegistry()
+
+    from rctk.resourceregistry import DynamicResource
+    class DummyDynamicResource(DynamicResource):
+        def __call__(self, elements):
+            return elements[-1]
+
+    def test_equality(self):
+        """
+           two dynamic resources with the same name get different registrations
+        """
+        r1 = self.DummyDynamicResource("unique")
+        r2 = self.DummyDynamicResource("unique")
+        n1 = self.rr.add(r1)
+        n2 = self.rr.add(r2)
+        assert n1 != n2
+
+    def test_dynamics(self):
+        r = self.DummyDynamicResource("name")
+        n = self.rr.add(r)
+        assert self.rr.get_resource(n, ['a', 'b', 'c']) == 'c'
+        assert self.rr.get_resource(n, ['a', 'b', ]) == 'b'
+
 

@@ -1,5 +1,14 @@
 from rctk.layouts.layouts import Layout, LayoutException
 
+class Cell(object):
+    def __init__(self, o, row, column, rowspan=1, colspan=1, **options):
+        self.o = o
+        self.row = row
+        self.column = column
+        self.rowspan = rowspan
+        self.colspan = colspan
+        self.options = options
+
 class Grid(object):
     """ basic dynamic grid abstraction """
     EMPTY = None
@@ -56,21 +65,20 @@ class Grid(object):
         self._grid[idx] = val
 
 class NewLayout(Layout):
+    """
+        This layout uses a "Grid" to keep track of which
+        cells have been allocated, but the actual end result
+        of the layout is a list of cells with position, spanning 
+        and options, and a reference to the object that's placed
+        in this cell
+    """
     type = "new"
-
     
     CENTER = 0
     N = NORTH = 1
     E = EAST = 2
     S = SOUTH = 4
     W = WEST = 8
-
-
-    ## how to define flexible rows, columns?
-
-    ## cols = None => grow horizontal
-    ## rows = None => grow vertical
-    ## rows, cols not None: raise if no fit
 
     def __init__(self, rows=None, columns=None, static=False,
                  padx=0, pady=0, ipadx=0, ipady=0, sticky=CENTER):
@@ -86,9 +94,7 @@ class NewLayout(Layout):
         self.sticky = sticky
 
         self.grid = Grid(rows=rows, columns=columns)
-
-        self.calculated_rows = rows
-        self.calculated_cols = columns
+        self.cells = []
 
     def allocate(self, row, column, rowspan=1, colspan=1):
         """ allocate a cell. Shouldn't be allocated already """
@@ -133,7 +139,7 @@ class NewLayout(Layout):
             if self.space_available(row, column, rowspan, colspan):
                 return cell
 
-    def append(self, row, column, padx=None, pady=None, ipadx=None, 
+    def append(self, o, row=-1, column=-1, padx=None, pady=None, ipadx=None, 
                ipady=None, sticky=None, colspan=1, rowspan=1):
         if padx is None:
             padx = self.padx
@@ -146,4 +152,17 @@ class NewLayout(Layout):
         if sticky is None:
             sticky = self.sticky
 
+        if row == -1 and column == -1:
+            r, c = self.find(rowspan, colspan)
+            self.allocate(r, c, rowspan, colspan)
+            self.cells.append(Cell(o, row, column, rowspan, colspan, 
+              padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, sticky=sticky))
+            return self.cells[-1]
+        elif row != -1 and column != -1:
+            self.allocate(row, column, rowspan, colspan)
+            self.cells.append(Cell(o, row, column, rowspan, colspan, 
+              padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, sticky=sticky))
+            return self.cells[-1]
+        else:
+            raise LayoutException("Either both row and column must be set, or both must be undefined")
         

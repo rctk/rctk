@@ -157,3 +157,133 @@ class TestNewLayoutSpans(object):
         # so far so good. Try to allocate something with a colspan of 2
         # at 0,0
         py.test.raises(LayoutException, layout.allocate, 0, 0, 2, 1)
+
+class TestSingleRow(object):
+    def test_grow(self):
+        layout = NewLayout(rows=1)
+        layout.allocate(0, 0)
+        assert layout.find() == (0, 1)
+        layout.allocate(0, 1)
+        assert layout.find() == (0, 2)
+
+    def test_gap(self):
+        layout = NewLayout(rows=1)
+        layout.allocate(0, 1)
+        assert layout.find() == (0, 0)
+
+    def test_largegap(self):
+        layout = NewLayout(rows=1)
+        layout.allocate(0, 10)
+        assert layout.find() == (0, 0)
+
+    def test_no_secondrow(self):
+        layout = NewLayout(rows=1)
+        py.test.raises(LayoutException, layout.allocate, 1, 0)
+
+class TestDoubleRow(object):
+    def test_grow(self):
+        layout = NewLayout(rows=2)
+        layout.allocate(0, 0)
+        assert layout.find() == (1, 0)
+        layout.allocate(1, 0)
+        assert layout.find() == (0, 1)
+
+    def test_gap(self):
+        layout = NewLayout(rows=2)
+        layout.allocate(1, 0)
+        assert layout.find() == (0, 0)
+    
+    def test_largegap(self):
+        layout = NewLayout(rows=2)
+        layout.allocate(1, 5)
+        assert layout.find() == (0, 0)
+
+class TestSingleColumn(object):
+    def test_grow(self):
+        layout = NewLayout(columns=1)
+        layout.allocate(0, 0)
+        assert layout.find() == (1, 0)
+        layout.allocate(1, 0)
+        assert layout.find() == (2, 0)
+
+    def test_gap(self):
+        layout = NewLayout(columns=1)
+        layout.allocate(1, 0)
+        assert layout.find() == (0, 0)
+
+    def test_largegap(self):
+        layout = NewLayout(columns=1)
+        layout.allocate(10, 0)
+        assert layout.find() == (0, 0)
+
+    def test_no_secondcolumn(self):
+        layout = NewLayout(columns=1)
+        py.test.raises(LayoutException, layout.allocate, 0, 1)
+
+class TestDoubleColumn(object):
+    def test_grow(self):
+        layout = NewLayout(columns=2)
+        layout.allocate(0, 0)
+        assert layout.find() == (0, 1)
+        layout.allocate(0, 1)
+        assert layout.find() == (1, 0)
+
+    def test_gap(self):
+        layout = NewLayout(columns=2)
+        layout.allocate(0, 1)
+        assert layout.find() == (0, 0)
+    
+    def test_largegap(self):
+        layout = NewLayout(columns=2)
+        layout.allocate(5, 1)
+        assert layout.find() == (0, 0)
+
+dummy = object()
+
+class TestFixedComplex1(object):
+    """ a random, fixed layout """
+    def setup_method(self, method):
+        self.layout = NewLayout(rows=5, columns=7)
+
+    def test_blocks(self):
+        self.layout.append(dummy, rowspan=3, colspan=3)
+        self.layout.append(dummy, rowspan=2, colspan=2)
+        self.layout.append(dummy, rowspan=2, colspan=2)
+        self.layout.append(dummy, rowspan=3, colspan=2)
+        self.layout.append(dummy, rowspan=3, colspan=2)
+        self.layout.append(dummy, rowspan=2, colspan=3)
+        assert self.layout.find() is None
+
+    def test_cells(self):
+        for i in range(0, 5*7):
+            self.layout.append(dummy)
+        assert self.layout.find() is None
+
+    def test_widecells(self):
+        for i in range(0, 5):
+            self.layout.append(dummy, colspan=7)
+        assert self.layout.find() is None
+
+class TestComplex1(object):
+    """ Same as TestComplex but only columns fixed, rows grow """
+    def setup_method(self, method):
+        self.layout = NewLayout(columns=7)
+
+    def test_blocks(self):
+        self.layout.append(dummy, rowspan=3, colspan=3)
+        self.layout.append(dummy, rowspan=2, colspan=2)
+        self.layout.append(dummy, rowspan=2, colspan=2)
+        self.layout.append(dummy, rowspan=3, colspan=2)
+        self.layout.append(dummy, rowspan=3, colspan=2)
+        self.layout.append(dummy, rowspan=2, colspan=3)
+        assert self.layout.find() == (5, 0)
+
+    def test_cells(self):
+        for i in range(0, 5*7):
+            self.layout.append(dummy)
+        assert self.layout.find() == (5, 0)
+
+    def test_widecells(self):
+        for i in range(0, 5):
+            self.layout.append(dummy, colspan=7)
+        assert self.layout.find() == (5, 0)

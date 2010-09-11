@@ -74,6 +74,9 @@ class CSSFileResource(FileResource):
     type = "text/css"
 
 class DynamicResource(BaseResource):
+    def __init__(self, name=None):
+        super(DynamicResource, self).__init__("dummy data", name=name)
+
     def __call__(self, path):
         pass
 

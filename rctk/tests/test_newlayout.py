@@ -112,14 +112,48 @@ class TestNewLayoutTrivial(object):
         py.test.raises(LayoutException, fail)
 
 class TestNewLayoutSpans(object):
-    def test_1(self):
+    def test_fit(self):
+        layout = NewLayout(rows=2, columns=2)
+        res = layout.find(rowspan=2, colspan=2)
+        assert res == (0, 0)
+
+    def test_available(self):
         layout = NewLayout(rows=3, columns=3)
         layout.allocate(0,0)
         res = layout.find(rowspan=2, colspan=3)
-        assert res == (0, 1)
+        assert res == (1, 0)
 
-    def test_2(self):
+    def test_notavailable(self):
         layout = NewLayout(rows=3, columns=3)
         layout.allocate(1,1)
         res = layout.find(rowspan=2, colspan=3)
         assert res is None
+
+    def test_blocks(self):
+        layout = NewLayout(rows=4, columns=4)
+        layout.allocate(0, 0, colspan=2, rowspan=2)
+        res = layout.find(rowspan=2, colspan=2)
+        assert res == (0, 2)
+        layout.allocate(0, 2, colspan=2, rowspan=2)
+        res = layout.find(rowspan=2, colspan=2)
+        assert res == (2, 0)
+        layout.allocate(2, 0, colspan=2, rowspan=2)
+        res = layout.find(rowspan=2, colspan=2)
+        assert res == (2, 2)
+        layout.allocate(2, 2, colspan=2, rowspan=2)
+        res = layout.find(rowspan=2, colspan=2)
+        assert res == None
+
+    def test_allocate_refused_row(self):
+        layout = NewLayout(rows=4, columns=4)
+        layout.allocate(0, 1)
+        # so far so good. Try to allocate something with a colspan of 2
+        # at 0,0
+        py.test.raises(LayoutException, layout.allocate, 0, 0, 1, 2)
+
+    def test_allocate_refused_col(self):
+        layout = NewLayout(rows=4, columns=4)
+        layout.allocate(1, 0)
+        # so far so good. Try to allocate something with a colspan of 2
+        # at 0,0
+        py.test.raises(LayoutException, layout.allocate, 0, 0, 2, 1)

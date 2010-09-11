@@ -92,10 +92,13 @@ class NewLayout(Layout):
 
     def allocate(self, row, column, rowspan=1, colspan=1):
         """ allocate a cell. Shouldn't be allocated already """
-        if self.grid.get(row, column) is not Grid.EMPTY:
-            raise LayoutException("Cell row=%d column=%d already allocated" % (row, column))
-        else:
-            self.grid.set(row, column, Grid.FULL)
+        if not self.space_available(row, column, rowspan, colspan):
+            raise LayoutException("No %dx%d block available at (%d, %d)" % (rowspan, colspan, row, column))
+
+        ## we know for sure it's available, so no further checks necessary
+        for r in range(row, row+rowspan):
+            for c in range(column, column+colspan):
+                self.grid.set(r, c, Grid.FULL)
 
     def available_positions(self):
         for cell in iter(self.grid):
@@ -110,6 +113,12 @@ class NewLayout(Layout):
 
         if self.rows is not None and rowspan > self.rows:
             raise LayoutException("Rowspan of %d too high for grid with %d rows" % (rowspan, self.rows))
+
+        ## take actual gridsize / limits into account!
+        if self.columns is not None and column+colspan > self.columns:
+            return False
+        if self.rows is not None and row+rowspan > self.rows:
+            return False
 
         for r in range(row, row+rowspan):
             for c in range(column, column+colspan):

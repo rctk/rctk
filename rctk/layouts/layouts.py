@@ -14,6 +14,9 @@ class Layout(object):
     def config(self):
         return {'type':self.type}
 
+    def append(self, control, **kw):
+        pass
+
 class TabbedLayout(Layout):
     type = "tabbed"
 

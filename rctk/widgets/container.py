@@ -38,17 +38,21 @@ class Container(Control):
             warnings.warn("Widget %s does not support appending to parent container" % control)
             return
 
-        if self.id != control.id:
-            if control.parent:
-                control.parent.remove(control)
-            t = {'id':self.id, 'child':control.id, 'action':'append'}
-            t.update(args)
-            self._controls.append(control)
-            control.parent = self
-            control._append_args = t
-            self._add_append_task(control, t)
-            ## restoration
-            self._controls_args[control] = t
+        if self.id == control.id:
+            warnings.warn("Refusing to add widget %s to itself" % control)
+            return
+        if control.parent:
+            control.parent.remove(control)
+        t = {'id':self.id, 'child':control.id, 'action':'append'}
+        t.update(args)
+        self._controls.append(control)
+        control.parent = self
+        control._append_args = t
+        self._add_append_task(control, t)
+        ## restoration
+        self._controls_args[control] = t
+
+        self._layout.append(control, **args)
     
     def remove(self, control):
         """ Removes a control from the window and moves it back into
@@ -91,7 +95,7 @@ class Container(Control):
 
     def layout(self):
         self.tk.queue(Task("Laying out id %d" % (self.id,),
-          {'id':self.id, 'action':'relayout'}))
+          {'id':self.id, 'action':'relayout', 'config':self._layout.config()}))
     
     def _controls_added(self):
         return len(self._controls) > 0

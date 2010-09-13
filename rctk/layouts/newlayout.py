@@ -1,4 +1,5 @@
 from rctk.layouts.layouts import Layout, LayoutException
+import math
 
 class Cell(object):
     def __init__(self, o, row, column, rowspan=1, colspan=1, **options):
@@ -8,6 +9,15 @@ class Cell(object):
         self.rowspan = rowspan
         self.colspan = colspan
         self.options = options
+
+    def data(self):
+        base = self.options.copy()
+        base['controlid'] = self.o.id
+        base['row'] = self.row
+        base['column'] = self.column
+        base['rowspan'] = self.rowspan
+        base['colspan'] = self.colspan
+        return base
 
 class Grid(object):
     """ basic dynamic grid abstraction """
@@ -63,6 +73,21 @@ class Grid(object):
         idx = self._get_index(row, column)
         self._expand(idx)
         self._grid[idx] = val
+
+    def size(self):
+        count = len(self._grid)
+
+        if self.columns is not None and self.rows is not None:
+            rows = self.rows
+            columns = self.columns
+        elif self.columns is not None:
+            columns = self.columns
+            rows = int(math.ceil(count / float(self.columns))) or 1
+        else:
+            columns = int(math.ceil(count / float(self.rows))) or 1
+            rows = self.rows
+        return (rows, columns) 
+
 
 class NewLayout(Layout):
     """
@@ -155,14 +180,19 @@ class NewLayout(Layout):
         if row == -1 and column == -1:
             r, c = self.find(rowspan, colspan)
             self.allocate(r, c, rowspan, colspan)
-            self.cells.append(Cell(o, row, column, rowspan, colspan, 
+            self.cells.append(Cell(o, r, c, rowspan, colspan, 
               padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, sticky=sticky))
             return self.cells[-1]
         elif row != -1 and column != -1:
             self.allocate(row, column, rowspan, colspan)
-            self.cells.append(Cell(o, row, column, rowspan, colspan, 
+            self.cells.append(Cell(o, r, c, rowspan, colspan, 
               padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, sticky=sticky))
             return self.cells[-1]
         else:
             raise LayoutException("Either both row and column must be set, or both must be undefined")
         
+    def config(self):
+        return dict(type="new",
+                    size=self.grid.size(),
+                    cells=[c.data() for c in self.cells])
+

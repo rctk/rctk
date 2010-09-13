@@ -131,7 +131,7 @@ Onion.layout.Power.prototype.calculate_dimensions = function() {
 
 Onion.layout.Power.prototype.append = function(control, data) {
     this.create();
-    // this is alot of control: control.control.control!
+    // this is a lot of control: control.control.control!
     var controlinfo = {row:-1, col:-1, rowspan:1, colspan:1, control:control, data:data || {}}
 
     if("row" in data) {

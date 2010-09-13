@@ -52,6 +52,63 @@ class TestGrid(object):
         assert g.get(1, 0) is Grid.EMPTY
         assert g.get(1, 12) is Grid.EMPTY
 
+class TestGridSize(object):
+    def test_fixed(self):
+        g = Grid(rows=3, columns=6)
+        assert g.size() == (3, 6)
+
+    def test_rows_empty(self):
+        g = Grid(rows=3)
+        g.size() == (3, 1)
+
+    def test_columns_empty(self):
+        g = Grid(columns=3)
+        g.size() == (1, 3)
+
+    def test_rows_minimal(self):
+        g = Grid(rows=3)
+        g.set(0, 0, Grid.FULL)
+        g.size() == (3, 1)
+
+    def test_columns_minimal(self):
+        g = Grid(columns=3)
+        g.set(0, 0, Grid.FULL)
+        g.size() == (1, 3)
+
+    def test_rows_fit(self):
+        g = Grid(rows=2)
+        g.set(0, 0, Grid.FULL)
+        g.set(0, 1, Grid.FULL)
+        g.set(1, 0, Grid.FULL)
+        g.set(1, 1, Grid.FULL)
+        g.size() == (2, 2)
+
+    def test_columns_fit(self):
+        g = Grid(columns=2)
+        g.set(0, 0, Grid.FULL)
+        g.set(0, 1, Grid.FULL)
+        g.set(1, 0, Grid.FULL)
+        g.set(1, 1, Grid.FULL)
+        g.size() == (2, 2)
+
+    def test_rows_extra(self):
+        g = Grid(rows=2)
+        g.set(0, 0, Grid.FULL)
+        g.set(0, 1, Grid.FULL)
+        g.set(1, 0, Grid.FULL)
+        g.set(1, 1, Grid.FULL)
+        g.set(0, 2, Grid.FULL)
+        g.size() == (2, 3)
+
+    def test_columns_extra(self):
+        g = Grid(columns=2)
+        g.set(0, 0, Grid.FULL)
+        g.set(0, 1, Grid.FULL)
+        g.set(1, 0, Grid.FULL)
+        g.set(1, 1, Grid.FULL)
+        g.set(2, 0, Grid.FULL)
+        g.size() == (3, 2)
+
 class TestNewLayoutTrivial(object):
     """ trivial cases, single  cells, no colspans """
     def test_available_fixed(self):

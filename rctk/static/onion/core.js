@@ -94,7 +94,7 @@ Onion.core.JWinClient.prototype.do_work = function(data) {
         break;
     case "relayout":
         var container = this.controls[id];
-        container.relayout();
+        container.relayout(data.config);
         break;
     case "timer":
         Onion.util.log("Handling timer " + id + ", " + data.milliseconds);

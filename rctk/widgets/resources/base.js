@@ -141,8 +141,8 @@ Onion.widget.Container.prototype.setLayout = function(type, config) {
     }
 }
 
-Onion.widget.Container.prototype.relayout = function() {
-    this.layout.layout();
+Onion.widget.Container.prototype.relayout = function(config) {
+    this.layout.layout(config);
     this.layout.layout_fase2();
     this.layout_updated();
 }

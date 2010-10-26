@@ -149,3 +149,8 @@ Onion.widget.Container.prototype.relayout = function(config) {
 
 Onion.widget.Container.prototype.layout_updated = function() {}
 
+Onion.widget.Container.prototype.resize = function(width, height) {
+    this.container.css("width", width + "px");
+    this.container.css("height", height + "px");
+}
+

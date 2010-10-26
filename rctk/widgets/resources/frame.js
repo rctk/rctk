@@ -42,5 +42,9 @@ Onion.widget.Frame.prototype.update = function(data) {
     }
 }
 
+Onion.widget.Frame.prototype.resize = function(width, height) {
+    this.container.dialog({width:width, height: height});
+    //this.container.dialog({minWidth:width, minHeight: height});
+}
 // register
 Onion.widget.register("window", Onion.widget.Frame);

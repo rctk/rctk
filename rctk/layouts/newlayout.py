@@ -104,6 +104,7 @@ class NewLayout(Layout):
     E = EAST = 2
     S = SOUTH = 4
     W = WEST = 8
+    NEWS = N|E|W|S
 
     def __init__(self, rows=None, columns=None, static=False,
                  padx=0, pady=0, ipadx=0, ipady=0, sticky=CENTER):

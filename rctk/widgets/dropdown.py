@@ -31,7 +31,7 @@ class Dropdown(Control, Clickable, DoubleClickable):
     multiple = remote_attribute('multiple', False)
 
 
-    def __init__(self, tk, items=(), multiple=False):
+    def __init__(self, tk, items=(), multiple=False, **properties):
         self.indexer = 0
 
         self.items = []
@@ -49,7 +49,7 @@ class Dropdown(Control, Clickable, DoubleClickable):
             self._selection = None
 
 
-        super(Dropdown, self).__init__(tk)
+        super(Dropdown, self).__init__(tk, **properties)
 
     def create(self):
         self.tk.create_control(self, items=self._items(), multiple=self._multiple)

@@ -11,9 +11,9 @@ class List(Dropdown): # confusing name - list vs List?
     size = remote_attribute('size', 0)
     _size = 0
 
-    def __init__(self, tk, items=(), size=5, multiple=False):
+    def __init__(self, tk, items=(), size=5, multiple=False, **properties):
         self._size = size
-        super(List, self).__init__(tk, items, multiple)
+        super(List, self).__init__(tk, items, multiple, **properties)
 
     def create(self):
         self.tk.create_control(self, items=self._items(), size=self._size, multiple=self._multiple)

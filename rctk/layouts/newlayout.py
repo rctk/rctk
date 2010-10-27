@@ -121,6 +121,20 @@ class NewLayout(Layout):
         self.grid = Grid(rows=rows, columns=columns)
         self.cells = []
 
+    def _sticky(self, stick):
+        if stick == self.CENTER:
+            return "center"
+        s = ""
+        if stick & self.NORTH:
+            s += "n"
+        if stick & self.EAST:
+            s += "e"
+        if stick & self.SOUTH:
+            s += "s"
+        if stick & self.WEST:
+            s += "w"
+        return s
+
     def allocate(self, row, column, rowspan=1, colspan=1):
         """ allocate a cell. Shouldn't be allocated already """
         if not self.space_available(row, column, rowspan, colspan):
@@ -181,12 +195,12 @@ class NewLayout(Layout):
             r, c = self.find(rowspan, colspan)
             self.allocate(r, c, rowspan, colspan)
             self.cells.append(Cell(o, r, c, rowspan, colspan, 
-              padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, sticky=sticky))
+              padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, sticky=self._sticky(sticky)))
             return self.cells[-1]
         elif row != -1 and column != -1:
             self.allocate(row, column, rowspan, colspan)
             self.cells.append(Cell(o, r, c, rowspan, colspan, 
-              padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, sticky=sticky))
+              padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, sticky=self._sticky(sticky)))
             return self.cells[-1]
         else:
             raise LayoutException("Either both row and column must be set, or both must be undefined")
@@ -194,5 +208,6 @@ class NewLayout(Layout):
     def config(self):
         return dict(type="new",
                     size=self.grid.size(),
+                    options=dict(padx=self.padx, pady=self.pady, ipadx=self.ipadx, ipady=self.ipady, static=self.static, sticky=self._sticky(self.sticky)),
                     cells=[c.data() for c in self.cells])
 

@@ -89,7 +89,7 @@ class Grid(object):
         return (rows, columns) 
 
 
-class Grid(Layout):
+class GridLayout(Layout):
     """
         This layout uses a "Grid" to keep track of which
         cells have been allocated, but the actual end result
@@ -203,6 +203,7 @@ class Grid(Layout):
               padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, sticky=self._sticky(sticky)))
             return self.cells[-1]
         elif row != -1 and column != -1:
+            r, c = self.find(rowspan, colspan)
             self.allocate(row, column, rowspan, colspan)
             self.cells.append(Cell(o, r, c, rowspan, colspan, 
               padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, sticky=self._sticky(sticky)))
@@ -216,27 +217,27 @@ class Grid(Layout):
                     options=dict(padx=self.padx, pady=self.pady, ipadx=self.ipadx, ipady=self.ipady, static=self.static, sticky=self._sticky(self.sticky)),
                     cells=[c.data() for c in self.cells])
 
-class StaticGrid(Grid):
+class StaticGrid(GridLayout):
     def __init__(self, rows=None, columns=None, static=True,
-                 padx=0, pady=0, ipadx=0, ipady=0, sticky=CENTER):
+                 padx=0, pady=0, ipadx=0, ipady=0, sticky=GridLayout.CENTER):
         super(StaticGrid, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)
 
-class HBox(Grid)
+class HBox(GridLayout):
     def __init__(self, rows=1, columns=None, static=False,
-                 padx=0, pady=0, ipadx=0, ipady=0, sticky=CENTER):
-        super(StaticGrid, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)
+                 padx=0, pady=0, ipadx=0, ipady=0, sticky=GridLayout.CENTER):
+        super(HBox, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)
 
-class StaticHBox(Grid)
+class StaticHBox(GridLayout):
     def __init__(self, rows=1, columns=None, static=True,
-                 padx=0, pady=0, ipadx=0, ipady=0, sticky=CENTER):
-        super(StaticGrid, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)
+                 padx=0, pady=0, ipadx=0, ipady=0, sticky=GridLayout.CENTER):
+        super(StaticHBox, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)
 
-class VBox(Grid)
+class VBox(GridLayout):
     def __init__(self, rows=None, columns=1, static=False,
-                 padx=0, pady=0, ipadx=0, ipady=0, sticky=CENTER):
-        super(StaticGrid, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)
+                 padx=0, pady=0, ipadx=0, ipady=0, sticky=GridLayout.CENTER):
+        super(VBox, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)
 
-class StaticVBox(Grid)
+class StaticVBox(GridLayout):
     def __init__(self, rows=None, columns=1, static=True,
-                 padx=0, pady=0, ipadx=0, ipady=0, sticky=CENTER):
-        super(StaticGrid, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)
+                 padx=0, pady=0, ipadx=0, ipady=0, sticky=GridLayout.CENTER):
+        super(StaticVBox, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)

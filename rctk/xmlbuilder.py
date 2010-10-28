@@ -101,7 +101,7 @@ class ControlImporter(object):
             elif c.tag == NS("flags"):
                 for f in c.getchildren():
                     ## how to handle int vs string?
-                    if NONS(f.tag) in ("row", "col", "colspan", "rowspan"):
+                    if NONS(f.tag) in ("row", "column", "colspan", "rowspan"):
                         flags[NONS(f.tag)] = int(f.text.strip())
                     else:
                         flags[NONS(f.tag)] = f.text.strip()
@@ -161,9 +161,13 @@ class GridLayoutImporter(ControlImporter):
             if c.tag == NS("object"):
                 sub.append(c)
             else:
-                properties[NONS(c.tag)] = c.text
+                ## handle sticky, static, XXX
+                if NONS(c.tag) in ("rows", "columns"):
+                    properties[NONS(c.tag)] = int(c.text)
+                else:
+                    properties[NONS(c.tag)] = c.text
 
-        ## expand_horizontal, expand_vertical, rows, columns
+
         layout = self.control_class(**properties)
         parent.setLayout(layout)
 
@@ -188,8 +192,9 @@ class GridImporter(ControlImporter):
                 sub.append(c)
             elif c.tag == NS("flags"):
                 for f in c.getchildren():
+                    ## XXX duplication
                     ## how to handle int vs string?
-                    if NONS(f.tag) in ("row", "col", "colspan", "rowspan"):
+                    if NONS(f.tag) in ("row", "column", "colspan", "rowspan"):
                         flags[NONS(f.tag)] = int(f.text.strip())
                     else:
                         flags[NONS(f.tag)] = f.text.strip()
@@ -231,8 +236,9 @@ XMLControlRegistry["Panel"] = ControlImporter("rctk.widgets.panel.Panel")
 XMLControlRegistry["Window"] = ControlImporter("rctk.widgets.window.Window")
 XMLControlRegistry["Grid"] = GridImporter("rctk.widgets.grid.Grid")
 
-XMLControlRegistry["GridLayout"] = GridLayoutImporter("rctk.layouts.layouts.Grid")
-XMLControlRegistry["VBoxLayout"] = GridLayoutImporter("rctk.layouts.layouts.VBox")
+XMLControlRegistry["GridLayout"] = GridLayoutImporter("rctk.layouts.grid.GridLayout")
+XMLControlRegistry["VBoxLayout"] = GridLayoutImporter("rctk.layouts.grid.VBox")
+XMLControlRegistry["HBoxLayout"] = GridLayoutImporter("rctk.layouts.grid.HBox")
 
 
 if __name__ == '__main__':

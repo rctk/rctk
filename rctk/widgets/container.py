@@ -1,6 +1,6 @@
 from rctk.widgets.control import Control
 
-from rctk.layouts import GridLayout, LayoutException
+from rctk.layouts import VBox, LayoutException
 from rctk.task import Task
 
 import warnings
@@ -14,7 +14,7 @@ class Container(Control):
         as long as no controls have been added 
     """
 
-    default_layout = GridLayout
+    default_layout = VBox
 
     def __init__(self, tk, **properties):
         super(Container, self).__init__(tk, **properties)

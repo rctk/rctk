@@ -235,10 +235,10 @@ Onion.layout.NewLayout.prototype.layout_fase2 = function() {
             var W = info.sticky.indexOf('w') != -1;
             // handle expanding
             if(N && S) {
-                ctr.css("width", w - info.padx*2);
+                ctr.css("height", h - info.pady*2);
             }
             if(E && W) {
-                ctr.css("height", h - info.pady*2);
+                ctr.css("width", w - info.padx*2);
             }
             // handle positioning
             if(N) {

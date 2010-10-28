@@ -220,24 +220,24 @@ class GridLayout(Layout):
 class StaticGrid(GridLayout):
     def __init__(self, rows=None, columns=None, static=True,
                  padx=0, pady=0, ipadx=0, ipady=0, sticky=GridLayout.CENTER):
-        super(StaticGrid, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)
+        super(StaticGrid, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=static, sticky=sticky)
 
 class HBox(GridLayout):
     def __init__(self, rows=1, columns=None, static=False,
                  padx=0, pady=0, ipadx=0, ipady=0, sticky=GridLayout.CENTER):
-        super(HBox, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)
+        super(HBox, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=static, sticky=sticky)
 
 class StaticHBox(GridLayout):
     def __init__(self, rows=1, columns=None, static=True,
                  padx=0, pady=0, ipadx=0, ipady=0, sticky=GridLayout.CENTER):
-        super(StaticHBox, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)
+        super(StaticHBox, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=static, sticky=sticky)
 
 class VBox(GridLayout):
     def __init__(self, rows=None, columns=1, static=False,
                  padx=0, pady=0, ipadx=0, ipady=0, sticky=GridLayout.CENTER):
-        super(VBox, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)
+        super(VBox, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=static, sticky=sticky)
 
 class StaticVBox(GridLayout):
     def __init__(self, rows=None, columns=1, static=True,
                  padx=0, pady=0, ipadx=0, ipady=0, sticky=GridLayout.CENTER):
-        super(StaticVBox, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)
+        super(StaticVBox, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=static, sticky=sticky)

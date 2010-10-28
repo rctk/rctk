@@ -89,13 +89,17 @@ class Grid(object):
         return (rows, columns) 
 
 
-class NewLayout(Layout):
+class Grid(Layout):
     """
         This layout uses a "Grid" to keep track of which
         cells have been allocated, but the actual end result
         of the layout is a list of cells with position, spanning 
         and options, and a reference to the object that's placed
         in this cell
+
+        Formerly known as "NewLayout", it's now the default Grid layout.
+        It will live in the "grid2" module for a while, next to the old
+        "Power" Grid layout. It will, however, be the Grid you import by default
     """
     type = "new"
     
@@ -212,3 +216,27 @@ class NewLayout(Layout):
                     options=dict(padx=self.padx, pady=self.pady, ipadx=self.ipadx, ipady=self.ipady, static=self.static, sticky=self._sticky(self.sticky)),
                     cells=[c.data() for c in self.cells])
 
+class StaticGrid(Grid):
+    def __init__(self, rows=None, columns=None, static=True,
+                 padx=0, pady=0, ipadx=0, ipady=0, sticky=CENTER):
+        super(StaticGrid, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)
+
+class HBox(Grid)
+    def __init__(self, rows=1, columns=None, static=False,
+                 padx=0, pady=0, ipadx=0, ipady=0, sticky=CENTER):
+        super(StaticGrid, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)
+
+class StaticHBox(Grid)
+    def __init__(self, rows=1, columns=None, static=True,
+                 padx=0, pady=0, ipadx=0, ipady=0, sticky=CENTER):
+        super(StaticGrid, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)
+
+class VBox(Grid)
+    def __init__(self, rows=None, columns=1, static=False,
+                 padx=0, pady=0, ipadx=0, ipady=0, sticky=CENTER):
+        super(StaticGrid, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)
+
+class StaticVBox(Grid)
+    def __init__(self, rows=None, columns=1, static=True,
+                 padx=0, pady=0, ipadx=0, ipady=0, sticky=CENTER):
+        super(StaticGrid, self).__init__(rows, columns, padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, static=True, sticky=sticky)

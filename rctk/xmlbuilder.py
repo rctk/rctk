@@ -154,7 +154,6 @@ class GridLayoutImporter(ControlImporter):
     """
     def __call__(self, tk, storage, parent, object, classname): 
         properties = {}
-        flags = {}
         sub = []
 
         for c in object.getchildren():
@@ -225,6 +224,7 @@ class GridImporter(ControlImporter):
 
 XMLControlRegistry = {}
 XMLControlRegistry["Button"] = ControlImporter("rctk.widgets.button.Button")
+XMLControlRegistry["Image"] = ControlImporter("rctk.widgets.image.Image")
 XMLControlRegistry["StaticText"] = ControlImporter("rctk.widgets.statictext.StaticText")
 XMLControlRegistry["CheckBox"] = ControlImporter("rctk.widgets.checkbox.CheckBox")
 XMLControlRegistry["Text"] = ControlImporter("rctk.widgets.text.Text")

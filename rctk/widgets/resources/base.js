@@ -113,7 +113,7 @@ Onion.widget.Control.prototype.destroy = function() {
 Onion.widget.Container = function(jwin, parent, controlid) {
     Onion.widget.Control.apply(this, arguments);
     // default layout manager
-    this.layout = new Onion.layout.Power(this.jwin, this);
+    this.layout = new Onion.layout.NewLayout(this.jwin, this);
 }
 
 Onion.widget.Container.prototype = new Onion.widget.Control();
@@ -143,7 +143,6 @@ Onion.widget.Container.prototype.setLayout = function(type, config) {
 
 Onion.widget.Container.prototype.relayout = function(config) {
     this.layout.layout(config);
-    this.layout.layout_fase2();
     this.layout_updated();
 }
 

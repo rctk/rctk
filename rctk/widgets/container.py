@@ -94,6 +94,11 @@ class Container(Control):
         self._add_layout_task(layout)
 
     def layout(self):
+        ## recursively call layout on children, bottom to top
+        for c in self._controls:
+            if isinstance(c, Container):
+                c.layout()
+
         self.tk.queue(Task("Laying out id %d" % (self.id,),
           {'id':self.id, 'action':'relayout', 'config':self._layout.config()}))
     

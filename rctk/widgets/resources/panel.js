@@ -4,7 +4,6 @@
  */
 Onion.widget.Panel = function(jwin, parent, controlid) {
     Onion.widget.Container.apply(this, arguments);
-    this.expand = true; // expand in layout by default
     this.name = "panel";
 }
 

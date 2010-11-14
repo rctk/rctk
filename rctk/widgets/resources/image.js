@@ -8,7 +8,12 @@ Onion.widget.Image.prototype.create = function(data) {
     var controlid = "ctrl"+this.controlid;
     this.jwin.factory.append('<img id="' + controlid + '" />');
     this.control = $("#"+controlid);
-    this.control.attr('src', 'resources/' + data.resource);
+    if('resource' in data && data.resource) {
+        this.control.attr('src', 'resources/' + data.resource);
+    }
+    if('url' in data && data.url) {
+        this.control.attr('src', data.url);
+    }
     this.control.attr('title', data.title);
     this.control.attr('alt', data.resource);
     this.set_properties(data);
@@ -19,8 +24,11 @@ Onion.widget.Image.prototype.update = function(data) {
     if ('title' in data) {
         this.control.attr('title', data.title);
     }
-    if ('resource' in data) {
+    if ('resource' in data && data.resource) {
         this.control.attr('src', 'resources/' + data.resource);
+    }
+    if ('url' in data && data.url) {
+        this.control.attr('src', data.url);
     }
     this.set_properties(data);
 }

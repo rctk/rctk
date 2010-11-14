@@ -1,3 +1,7 @@
+/*
+ * Children (info/cells) are looked up using jquery in stead of jwin.controls. Sort of 
+ * double book-keeping 
+ */
 Onion.layout.NewLayout = function(jwin, parent, config) {
     Onion.layout.Layout.apply(this, arguments);
     config = config?config:{};
@@ -84,6 +88,7 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
      *           in which case we already should have a config, and no new
      *           config will be available.
      */
+     Onion.util.log("Starting layout on", this.parent.container);
     if(config !== undefined) {
         Onion.util.log("NEWLAYOUT: relayout setting config", config);
         this.rows = config.size[0];
@@ -110,10 +115,12 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
             }
         }
 
+        // avoid duplicates
+        this.children = [];
         for(var i=0; i < config.cells.length; i++) {
             var c = config.cells[i];
             var control = $("#ctrl" + c.controlid);
-            var info = {control:control, row:c.row, column:c.column, rowspan:c.rowspan, colspan:c.colspan};
+            var info = {id:c.controlid, control:control, row:c.row, column:c.column, rowspan:c.rowspan, colspan:c.colspan};
             info.padx = 'padx' in c? c.padx: this.padx;
             info.ipadx = 'ipadx' in c? c.ipadx: this.ipadx;
             info.pady = 'pady' in c? c.pady: this.pady;
@@ -126,7 +133,7 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
         }
     }
     else {
-        Onion.util.log("NEWLAYOUT: relayout cascade");
+        Onion.util.log("NEWLAYOUT: relayout cascade -- SHOULD NOT HAPPEN ANYMORE");
     }
 
     /*
@@ -147,14 +154,18 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
      * Find the sizes of all children, possibly after recursively
      * laying them out if the child is a container with layout itself
      */
+    Onion.util.log("Children", this.children);
     for(var i=0; i<this.children.length; i++) {
         var info = this.children[i];
         var ctr = info.control;
+        var inst = this.jwin.controls[info.id];
 
-        if(ctr instanceof Onion.widget.Container) {
-            Onion.util.log("NEWLAYOUT: Recursive layout()", ctr);
-            ctr.layout.layout();
-        }
+        //Onion.util.log("Recursive check on", inst);
+        //if(inst instanceof Onion.widget.Container) {
+        //    Onion.util.log("NEWLAYOUT: Recursive layout()", inst);
+        //    inst.layout.layout();
+        //    Onion.util.log("END RECURSE");
+        //}
         /*
          * Find the size of the control, but spread it over the rows/
          * columns it has allocated.
@@ -202,17 +213,10 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
     this.layoutcontrol.css("height", this.totalheight + "px");
     this.parent.resize(this.totalwidth, this.totalheight);
     // resize this.layoutcontrol, if we still need it/have it.
-}
 
-Onion.layout.NewLayout.prototype.layout_fase2 = function() {
-    Onion.util.log("NEWLAYOUT: New layout 2");
     for(var i=0; i<this.children.length; i++) {
         var info = this.children[i];
         var ctr = info.control;
-        if(ctr instanceof Onion.widget.Container) {
-            Onion.util.log("NEWLAYOUT: Recursive layout_fase2()", ctr);
-            ctr.layout.layout_fase2();
-        }
 
         var x = this.sumwidth(0, info.column);
         var y = this.sumheight(0, info.row);

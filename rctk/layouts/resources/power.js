@@ -267,11 +267,10 @@ Onion.layout.Power.prototype.layout = function() {
     this.layoutcontrol.css("width", parentwidth + "px");
     this.layoutcontrol.css("height", parentheight + "px");
     //jQuery.log("Scaling parent to " + parentwidth + ", " + parentheight);
-}
 
-Onion.layout.Power.prototype.layout_fase2 = function() {
-    // can't think of a better name.
-    // everything has been sized. Now go scale everything that needs to be scaled.
+    // fase1 + fase2 have merged, recursion is now handled serverside
+    // not sure if this code still works as expected
+
     // shouldn't influence the sizes, so no explicit order is required
     // first layout all children so we know their proper sizes
     for(var r = 0; r < this.calculatedrows; r++) {
@@ -293,10 +292,6 @@ Onion.layout.Power.prototype.layout_fase2 = function() {
 
             var current = ctrinfo.control;
 
-            if(current instanceof Onion.widget.Container) {
-                current.layout.layout_fase2();
-                current.layout_updated();
-            }
             var selector = current.control;
 
             var x = this.sumwidth(0, c);

@@ -41,23 +41,6 @@ Onion.layout.Tabbed.prototype.append = function(control, data) {
 }
 
 Onion.layout.Tabbed.prototype.layout = function() {
-    // first layout all children so we know their proper sizes
-    for(var i = 0; i < this.controls.length; i++) {
-        var ctr = this.controls[i];
-        if(ctr.layout && ctr.layout.layout) {
-            ctr.layout.layout();
-        }
-    }
-}
-
-Onion.layout.Tabbed.prototype.layout_fase2 = function() {
-    for(var i = 0; i < this.controls.length; i++) {
-        var ctr = this.controls[i];
-        if(ctr.layout && ctr.layout.layout_fase2) {
-            ctr.layout.layout_fase2();
-        }
-    }
-
 }
 
 Onion.layout.register('tabbed', Onion.layout.Tabbed);

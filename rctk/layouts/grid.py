@@ -1,4 +1,5 @@
 from rctk.layouts.layouts import Layout, LayoutException
+import types
 import math
 
 class Cell(object):
@@ -121,7 +122,7 @@ class GridLayout(Layout):
         self.pady = pady
         self.ipadx = ipadx
         self.ipady = ipady
-        self.sticky = sticky
+        self.sticky = self.convert_sticky(sticky)
 
         self.grid = Grid(rows=rows, columns=columns)
         self.cells = []
@@ -195,6 +196,8 @@ class GridLayout(Layout):
             ipady = self.ipady
         if sticky is None:
             sticky = self.sticky
+        else:
+            sticky = self.convert_sticky(sticky)
 
         if row == -1 and column == -1:
             r, c = self.find(rowspan, colspan)
@@ -217,6 +220,34 @@ class GridLayout(Layout):
                     options=dict(padx=self.padx, pady=self.pady, ipadx=self.ipadx, ipady=self.ipady, static=self.static, sticky=self._sticky(self.sticky)),
                     cells=[c.data() for c in self.cells])
 
+    @classmethod
+    def convert_sticky(cls, s):
+        """ convert a sticky configuration in a string, e.g.
+            "EAST|WEST" to a proper integer. This is somewhat of
+            a hack but we need to be able to accept strings as stickyness
+            for xmlbuilder support
+        """
+        if not isinstance(s, types.StringTypes):
+            return s
+        parts = [p.strip() for p in s.lower().split("|")]
+        stickyness = 0
+        map = dict(center=cls.CENTER, 
+                   east=cls.EAST, 
+                   e=cls.EAST, 
+                   west=cls.WEST, 
+                   w=cls.WEST, 
+                   north=cls.NORTH, 
+                   n=cls.NORTH, 
+                   south=cls.SOUTH, 
+                   s=cls.SOUTH, 
+                   news=cls.NEWS)
+
+        for p in parts:
+            if p not in map:
+                raise LayoutException, "Invalid sticky configuration: " + s
+
+            stickyness |= map[p]
+        return stickyness
 class StaticGrid(GridLayout):
     def __init__(self, rows=None, columns=None, static=True,
                  padx=0, pady=0, ipadx=0, ipady=0, sticky=GridLayout.CENTER):

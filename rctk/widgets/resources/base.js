@@ -6,6 +6,9 @@ Onion.widget.Control = function(jwin, parent, controlid) {
     this.parent = parent;
     this.debug = false;
     this.busy = false;
+
+    this.maxwidth = 0;
+    this.maxheight = 0;
 }
 
 /* 
@@ -44,14 +47,20 @@ Onion.widget.Control.prototype.set_properties = function(data) {
         this.control.addClass(data.css_class);
     } 
     if ('width' in data && data.width) {
-        if (this.debug)
-            Onion.log('Set width to ' + data.width + ' on', this);
+        //if (this.debug)
+            Onion.util.log('Set width to ' + data.width + ' on', this);
         this.control.css("width", data.width + "px");
     }
     if ('height' in data && data.height) {
-        if (this.debug)
-            Onion.log('Set height to ' + data.height + ' on', this);
+        //if (this.debug)
+            Onion.util.log('Set height to ' + data.height + ' on', this);
         this.control.css("height", data.height + "px");
+    }
+    if ('maxwidth' in data && data.maxwidth) {
+        this.maxwidth = data.maxwidth;
+    }
+    if ('maxheight' in data && data.maxheight) {
+        this.maxheight = data.maxheight;
     }
     if ('foreground' in data && data.foreground) {
         this.control.css("color", data.foreground);
@@ -105,6 +114,14 @@ Onion.widget.Control.prototype.destroy = function() {
     this.control.remove();
 }
 
+Onion.widget.Control.prototype.max_size = function() {
+    /*
+     * return the maximum acceptable size that may be implicitly set 
+     * (i.e. not actively by the user).
+     * 0 means no restriction
+     */
+    return {width:this.maxwidth, height:this.maxheight}
+}
 /*
  * A container is a control that can contain controls, i.e. a window,
  * a layout manager. Its control may be different from its container

@@ -1,0 +1,11 @@
+layouts worden nu recursief gerenderd van bottom to top.
+stel 3 geneste panels. Laagste panel heeft width=10 nodig
+middelste pannel neemt deze width over
+buitenste pannel heeft 20px tot beschikking en is expanding WE, en schaalt
+dus naar 20px. Binnenste pannels blijven dan "klein"
+
+voor binnenste pannels is meer ruimte beschikbaar, maar omdat het resizen maar 1 niveau diep gaat (direct child), blijven ze onveranderd.
+
+Resizen moet dus ook eigenlijk recursief. Maar vervolgens moet de sub-layout de beschikbare ruimte gebruiken ipv. de benodigde ruimte.
+
+

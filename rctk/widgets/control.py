@@ -80,6 +80,8 @@ class Control(PropertyHolder):
         font=None, foreground=None, background=None,
         border=None, margin=None, padding=None,
         css_class=None,
+        maxwidth=0,
+        maxheight=0,
         debug=False
     )
 

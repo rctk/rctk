@@ -1,12 +1,31 @@
 /*
- * Children (info/cells) are looked up using jquery in stead of jwin.controls. Sort of 
- * double book-keeping 
+ * Layouts are very hard to do right. Some of the things you need to take
+ * into account:
+ * - different controls have different sizes, they need to be aligned nicely
+ *   in a grid
+ * - a layout can calculate what size it needs, or it can be instructed to use the vailable size, in which case rows/columns need to expand, somehow. Not all rows/columns may need to scale equally (or at all)
+ * - all kinds of padding, inside and between cells
+ * - the overall grid (rows, cols, spans) are calculated serverside, the
+ *   complete configuration isn't known until the actual layout() call,
+ *   and if children haven't been laid out, they can't be invoked recursively.
+ * - alignment and expanding of controls, which in turn need relayouting
+ *
+ * esp. this last part is where the current implementation fails.
+ */
+/*
+ * Thoughts on resizing, scaling:
+ * Rows and columns can have a scaling factor. 1 means no scaling
+ * (default size calulation), any other number determines how much the
+ * rows/columns will scale when extra space is available.
+ *
+ * Example: three columns, scaling factors 1,2,3
+ * available width is 100, column one takes 20px
+ * remaining size is 80, which means 32px for column 2 and 48px for 3
+ * If column 32 requires more than 32px, this space is taken from column 3.
  */
 Onion.layout.NewLayout = function(jwin, parent, config) {
     Onion.layout.Layout.apply(this, arguments);
     config = config?config:{};
-    // don't care right now, wait for the calculated data when
-    // layout() is called
 }
 
 Onion.layout.NewLayout.prototype = new Onion.layout.Layout();
@@ -34,15 +53,10 @@ Onion.layout.NewLayout.prototype.create = function() {
     this.sticky = "center"; // default stickyness
 }
 
-// move basic append, remove to base
-
 Onion.layout.NewLayout.prototype.append = function(control, data) {
     this.create();
     control.control.appendTo(this.layoutcontrol);
-}
-
-Onion.layout.NewLayout.prototype.remove = function(control, data) {
-    control.control.appendTo($("#factory"));
+    control.containingparent = this.parent;
 }
 
 Onion.layout.NewLayout.prototype.sumwidth = function(start, end) {
@@ -79,61 +93,46 @@ Onion.layout.NewLayout.prototype.sumheight = function(start, end) {
     return s;
 }
 
-Onion.layout.NewLayout.prototype.layout = function(config) {
-    /*
-     * This method can be invoked in two ways:
-     * explicit, as a result from a layout() operation in python. In this
-     *           case, we get a full grid configuration.
-     * implicit, as a result of a recursive layout() step from our parent,
-     *           in which case we already should have a config, and no new
-     *           config will be available.
-     */
-     Onion.util.log("Starting layout on", this.parent.container);
-    if(config !== undefined) {
-        Onion.util.log("NEWLAYOUT: relayout setting config", config);
-        this.rows = config.size[0];
-        this.columns = config.size[1];
-        if('options' in config) {
-            var options = config.options;
-            if('padx' in options) {
-                this.padx = options.padx;
-            }
-            if('pady' in options) {
-                this.pady = options.pady;
-            }
-            if('ipadx' in options) {
-                this.ipadx = options.ipadx;
-            }
-            if('ipady' in options) {
-                this.ipady = options.ipady;
-            }
-            if('static' in options) {
-                this.static = options.static;
-            }
-            if('sticky' in options) {
-                this.sticky = options.sticky.toLowerCase();
-            }
+Onion.layout.NewLayout.prototype.initialize = function(config) {
+    this.create();
+    this.rows = config.size[0];
+    this.columns = config.size[1];
+    if('options' in config) {
+        var options = config.options;
+        if('padx' in options) {
+            this.padx = options.padx;
         }
-
-        // avoid duplicates
-        this.children = [];
-        for(var i=0; i < config.cells.length; i++) {
-            var c = config.cells[i];
-            var control = $("#ctrl" + c.controlid);
-            var info = {id:c.controlid, control:control, row:c.row, column:c.column, rowspan:c.rowspan, colspan:c.colspan};
-            info.padx = 'padx' in c? c.padx: this.padx;
-            info.ipadx = 'ipadx' in c? c.ipadx: this.ipadx;
-            info.pady = 'pady' in c? c.pady: this.pady;
-            info.ipady = 'ipady' in c? c.ipady: this.ipady;
-            info.static = 'static' in c? c.static: this.static;
-            info.sticky = 'sticky' in c? c.sticky.toLowerCase(): this.sticky;
-
-            Onion.util.log("NEWLAYOUT: info", info);
-            this.children.push(info);
+        if('pady' in options) {
+            this.pady = options.pady;
+        }
+        if('ipadx' in options) {
+            this.ipadx = options.ipadx;
+        }
+        if('ipady' in options) {
+            this.ipady = options.ipady;
+        }
+        if('static' in options) {
+            this.static = options.static;
+        }
+        if('sticky' in options) {
+            this.sticky = options.sticky.toLowerCase();
         }
     }
-    else {
-        Onion.util.log("NEWLAYOUT: relayout cascade -- SHOULD NOT HAPPEN ANYMORE");
+
+    // avoid duplicates
+    this.children = [];
+    for(var i=0; i < config.cells.length; i++) {
+        var c = config.cells[i];
+        var control = this.jwin.controls[c.controlid];
+        var info = {id:c.controlid, control:control, row:c.row, column:c.column, rowspan:c.rowspan, colspan:c.colspan};
+        info.padx = 'padx' in c? c.padx: this.padx;
+        info.ipadx = 'ipadx' in c? c.ipadx: this.ipadx;
+        info.pady = 'pady' in c? c.pady: this.pady;
+        info.ipady = 'ipady' in c? c.ipady: this.ipady;
+        info.static = 'static' in c? c.static: this.static;
+        info.sticky = 'sticky' in c? c.sticky.toLowerCase(): this.sticky;
+
+        this.children.push(info);
     }
 
     /*
@@ -148,7 +147,12 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
     }
     this.maxcellwidth = 0;
     this.maxcellheight = 0;
+}
 
+Onion.layout.NewLayout.prototype.layout = function(config) {
+    Onion.util.log("NEWLAYOUT: relayout setting config", config);
+
+    this.initialize(config);
 
     /*
      * Find the sizes of all children, possibly after recursively
@@ -158,21 +162,16 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
     for(var i=0; i<this.children.length; i++) {
         var info = this.children[i];
         var ctr = info.control;
-        var inst = this.jwin.controls[info.id];
 
-        //Onion.util.log("Recursive check on", inst);
-        //if(inst instanceof Onion.widget.Container) {
-        //    Onion.util.log("NEWLAYOUT: Recursive layout()", inst);
-        //    inst.layout.layout();
-        //    Onion.util.log("END RECURSE");
-        //}
         /*
          * Find the size of the control, but spread it over the rows/
          * columns it has allocated.
          */
-        info.width = ctr.outerWidth(true);
-        info.height = ctr.outerHeight(true);
+        info.width = ctr.control.outerWidth(true);
+        info.height = ctr.control.outerHeight(true);
 
+        Onion.util.log("outer width", info.width);
+        Onion.util.log("css width", ctr.control.css("width"));
         /*
          * Calculate how big the cell should be, taking padding and spanning into account
          */
@@ -189,8 +188,8 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
 
         /*
          * colspans/rowspans are a bit tricky, esp. when they're empty besides
-         * the current child. Currently, the child will be spread evenly over the
-         * columns/rows
+         * the current child. Currently, the child will be spread evenly over 
+         * the columns/rows
          */
         for(var r=0; r < info.rowspan; r++) {
             this.row_sizes[info.row+r] = Math.max(this.row_sizes[info.row+r], height);
@@ -208,11 +207,16 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
      */
     this.totalwidth = this.sumwidth();
     this.totalheight = this.sumheight();
-    Onion.util.log("NEWLAYOUT container size: " + this.totalwidth + ", " + this.totalheight);
-    this.layoutcontrol.css("width", this.totalwidth + "px");
-    this.layoutcontrol.css("height", this.totalheight + "px");
-    this.parent.resize(this.totalwidth, this.totalheight);
-    // resize this.layoutcontrol, if we still need it/have it.
+    Onion.util.log("NEWLAYOUT container size: " + this.totalwidth + ", " + this.totalheight, this.parent);
+
+    var parentmax = this.parent.max_size()
+    var maxwidth = Math.min(this.totalwidth, parentmax.width) || this.totalwidth;
+    var maxheight = Math.min(this.totalheight, parentmax.height) || this.totalheight;
+
+    Onion.util.log("NEWLAYOUT max container size: " + maxwidth + ", " + maxheight);
+    this.layoutcontrol.css("width", maxwidth + "px");
+    this.layoutcontrol.css("height", maxheight + "px");
+    this.parent.resize(maxwidth, maxheight);
 
     for(var i=0; i<this.children.length; i++) {
         var info = this.children[i];
@@ -228,34 +232,44 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
          * The default behaviour is to center the control
          * in its cell
          */
-        ctr.css("position", "absolute");
-        ctr.css("top", (y+(h-info.height)/2) + "px");
-        ctr.css("left", (x+(w-info.width)/2) + "px");
+        ctr.control.css("position", "absolute");
+        ctr.control.css("top", (y+(h-info.height)/2) + "px");
+        ctr.control.css("left", (x+(w-info.width)/2) + "px");
 
         if(info.sticky != "center") {
             var N = info.sticky.indexOf('n') != -1;
             var E = info.sticky.indexOf('e') != -1;
             var S = info.sticky.indexOf('s') != -1;
             var W = info.sticky.indexOf('w') != -1;
+            var expanded = false;
+
             // handle expanding
             if(N && S) {
-                ctr.css("height", h - info.pady*2);
+                ctr.control.css("height", h - info.pady*2);
+                expanded = true;
             }
             if(E && W) {
-                ctr.css("width", w - info.padx*2);
+                Onion.util.log("****** EW expanding: ", (w-info.padx*2));
+                ctr.control.css("width", w - info.padx*2);
+                expanded = true;
             }
+            //if(expanded && (ctr instanceof Onion.widget.Container)) {
+            //    Onion.util.log("Expanding!!!!!", ctr);
+            //    ctr.relayout();
+            //    Onion.util.log("-------- DONE -------");
+            //}
             // handle positioning
             if(N) {
-                ctr.css("top", (y+info.pady) + "px");
+                ctr.control.css("top", (y+info.pady) + "px");
             }
             else if(S) {
-                ctr.css("top", (y+h-info.height-info.pady) + "px");
+                ctr.control.css("top", (y+h-info.height-info.pady) + "px");
             }
             if(W) {
-                ctr.css("left", (x+info.padx) + "px");
+                ctr.control.css("left", (x+info.padx) + "px");
             }
             else if(E) {
-                ctr.css("left", (x+w-info.width-info.padx) + "px");
+                ctr.control.css("left", (x+w-info.width-info.padx) + "px");
             }
         }
     }

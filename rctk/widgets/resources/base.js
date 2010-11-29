@@ -47,14 +47,16 @@ Onion.widget.Control.prototype.set_properties = function(data) {
         this.control.addClass(data.css_class);
     } 
     if ('width' in data && data.width) {
-        //if (this.debug)
-            Onion.util.log('Set width to ' + data.width + ' on', this);
-        this.control.css("width", data.width + "px");
+        this.width = parseInt(data.width);
+        Onion.util.log('Set width to ' + this.width + ' on', this);
+        this.control.width(this.width);
+        this.control.css("max-width", this.width + "px");
     }
     if ('height' in data && data.height) {
         //if (this.debug)
             Onion.util.log('Set height to ' + data.height + ' on', this);
         this.control.css("height", data.height + "px");
+        this.height = data.height;
     }
     if ('maxwidth' in data && data.maxwidth) {
         this.maxwidth = data.maxwidth;

@@ -56,7 +56,24 @@ Onion.widget.StaticText.prototype.create = function(data) {
 Onion.widget.StaticText.prototype.update = function(data) {
     Onion.widget.Control.prototype.update.apply(this, arguments);
     if('text' in data) {
+        Onion.util.log("########## before", this.control.outerWidth(true));
         this.control.html(data.text);
+        Onion.util.log("########## after 1", this.control.outerWidth(true));
+        // Respect width/height settings.
+        if(this.width) {
+            Onion.util.log("######## scaling to", this.width);
+            this.control.width(this.width);
+            Onion.util.log("########## after 2", this.control.outerWidth(true));
+        }
+        //else if(this.maxwidth && this.control.width() > this.maxwidth) {
+        //    this.control.width(this.maxwidth + "px"); 
+       // }
+       // if(this.height) {
+       //     this.control.height(this.height + "px");
+       // }
+       // else if(this.maxheight && this.control.height() > this.maxheight) {
+       //     this.control.height(this.maxheight + "px"); 
+       // }
     }
 }
 

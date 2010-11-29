@@ -67,12 +67,14 @@ Onion.layout.NewLayout.prototype.sumwidth = function(start, end) {
         end = this.columns;
     }
     if(this.static) {
+        Onion.util.log("+++ sumwidth: static, returing", this.maxcellwidth * (end-start));
         return this.maxcellwidth * (end-start);
     }
     var s = 0;
     for(var i = start; i < end; i++) {
         s += this.col_sizes[i];
     }
+    Onion.util.log("+++ summing", start, end, this.col_sizes, s);
     return s;
 }
 
@@ -170,8 +172,8 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
         info.width = ctr.control.outerWidth(true);
         info.height = ctr.control.outerHeight(true);
 
-        Onion.util.log("outer width", info.width);
-        Onion.util.log("css width", ctr.control.css("width"));
+        Onion.util.log("outer width", info, info.width);
+        Onion.util.log("css width", info, ctr.control.css("width"));
         /*
          * Calculate how big the cell should be, taking padding and spanning into account
          */
@@ -227,6 +229,9 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
         var w = this.sumwidth(info.column, info.column+info.colspan);
         var h = this.sumheight(info.row, info.row+info.rowspan);
 
+        Onion.util.log("**** ++ DEBUG", info.column, info.colspan);
+        Onion.util.log("**** ++ DEBUG", this.col_sizes);
+
 
         /*
          * The default behaviour is to center the control
@@ -249,7 +254,7 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
                 expanded = true;
             }
             if(E && W) {
-                Onion.util.log("****** EW expanding: ", (w-info.padx*2));
+                Onion.util.log("****** EW expanding: ", (w-info.padx*2), w, info.padx);
                 ctr.control.css("width", w - info.padx*2);
                 expanded = true;
             }

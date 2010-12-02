@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+        
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<script src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.2.min.js" type="text/javascript"></script>
+        <style type="text/css">
+        #outer {
+                display: inline-block;
+                width: 402px;
+                height: 200px;
+                border-width: 1px;
+                border-style: solid;
+                border-color: black;
+                overflow: auto;
+        }
+        #detector {
+               display: inline-block;
+               background: red;
+               width: 100%;
+        }
+        .entry {
+                display: inline-block;
+                width: 400px;
+                border-width: 1px;
+                border-style: solid;
+                border-color: green;
+        }
+        </style>
+        <script type="text/javascript">
+            $(document).ready(function() {
+               // $("body").append('<div id="bar"><div id="foo">lala</div></div>');
+               var outer = $("#outer");
+               var detector = $("#detector");
+               $("body").append('inner width: ' + outer.innerWidth(false));
+               $("body").append('outer width: ' + outer.outerWidth(false));
+               $("body").append('detector inner width: ' + detector.innerWidth(false));
+               outer.width(402 + (402 - detector.innerWidth(false)));
+               
+            });
+        </script>
+
+</head>
+<body>
+<div id="outer">
+   <div id="detector">
+   hi
+   </div>
+   <div class="entry">
+   I'm a short entry
+   </div>
+   <div class="entry">
+   I'm an entry div but I'm very, very, very, very, very, very, very, very, very, very long
+   </div>
+   <div class="entry">
+   I'm an entry div but I'm very, very, very, very, very, very, very, very, very, very long
+   I'm an entry div but I'm very, very, very, very, very, very, very, very, very, very long
+   </div>
+   <div class="entry">
+   I'm an entry div but I'm very, very, very, very, very, very, very, very, very, very long
+   </div>
+   <div class="entry">
+   I'm an entry div but I'm very, very, very, very, very, very, very, very, very, very long
+   </div>
+   <div class="entry">
+   I'm an entry div but I'm very, very, very, very, very, very, very, very, very, very long
+   </div>
+</div>
+
+</body>
+</html>

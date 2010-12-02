@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+        
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<script src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.2.min.js" type="text/javascript"></script>
+        <style type="text/css">
+        #outer {
+                width: 400px;
+                border-width: 1px;
+                border-style: solid;
+                border-color: black;
+        }
+        #default1, #default2, #default3 {
+                border-width: 1px;
+                border-style: solid;
+                border-color: green;
+        }
+        #inline1, #inline2, #inline3 {
+                display: inline;
+                border-width: 1px;
+                border-style: solid;
+                border-color: yellow;
+        }
+        #inlineblock1, #inlineblock2, #inlineblock3 {
+                display: inline-block;
+                border-width: 1px;
+                border-style: solid;
+                border-color: blue;
+        }
+        #barx {
+          display: inline-block;
+        }
+        #foo {
+          display: inline-block;
+        }
+        </style>
+        <script type="text/javascript">
+            $(document).ready(function() {
+               // $("body").append('<div id="bar"><div id="foo">lala</div></div>');
+               // var foo = $("#foo")
+               // var bar = $("#bar")
+               // //bar.width(220);
+               // //foo.width(200);
+               // foo.css("width", "200px");
+               // foo.css("border-width", "1px");
+               // foo.css("border-style", "solid");
+               // foo.css("border-color", "red");
+               // foo.html("Helloworldhow areyou thesearelonglonglonglonglong longlonglonglong wordswordswordssss.....");
+               // $("body").append('foo width: ' + foo.outerWidth(true));
+               // $("body").append('bar width: ' + bar.outerWidth(true));
+            });
+        </script>
+
+</head>
+<body>
+<div id="outer">
+ <div id="default1">
+ I'm a default div
+ </div>
+ <div id="default2">
+ I'm another default div
+ </div>
+ <div id="default3">
+ I'm another default div but I'm very, very, very, very, very, very, very, very, very, very long
+ </div>
+ <div id="inline1">
+ I'm an inline div
+ </div>
+ <div id="inline2">
+ I'm another inline div
+ </div>
+ <div id="inline3">
+ I'm another inline div but I'm very, very, very, very, very, very, very, very, very, very long
+ </div>
+ <div id="inlineblock1">
+ I'm an inlineblock div
+ </div>
+ <div id="inlineblock2">
+ I'm another inlineblock div
+ </div>
+ <div id="inlineblock3">
+ I'm a inlineblock div but I'm very, very, very, very, very, very, very, very, very, very long
+ </div>
+</div>
+
+</body>
+</html>

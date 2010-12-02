@@ -67,14 +67,12 @@ Onion.layout.NewLayout.prototype.sumwidth = function(start, end) {
         end = this.columns;
     }
     if(this.static) {
-        Onion.util.log("+++ sumwidth: static, returing", this.maxcellwidth * (end-start));
         return this.maxcellwidth * (end-start);
     }
     var s = 0;
     for(var i = start; i < end; i++) {
         s += this.col_sizes[i];
     }
-    Onion.util.log("+++ summing", start, end, this.col_sizes, s);
     return s;
 }
 
@@ -160,7 +158,6 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
      * Find the sizes of all children, possibly after recursively
      * laying them out if the child is a container with layout itself
      */
-    Onion.util.log("Children", this.children);
     for(var i=0; i<this.children.length; i++) {
         var info = this.children[i];
         var ctr = info.control;
@@ -172,15 +169,11 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
         info.width = ctr.control.outerWidth(true);
         info.height = ctr.control.outerHeight(true);
 
-        Onion.util.log("outer width", info, info.width);
-        Onion.util.log("css width", info, ctr.control.css("width"));
         /*
          * Calculate how big the cell should be, taking padding and spanning into account
          */
         var width = Math.round(info.width / info.colspan) + info.padx*2;
         var height = Math.round(info.height / info.rowspan) + info.pady*2;
-
-        Onion.util.log("NEWLAYOUT: size: " + width + ", " + height);
 
         /* 
          * Keep track of max width height, overall and per row/column
@@ -200,8 +193,6 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
             this.col_sizes[info.column+c] = Math.max(this.col_sizes[info.column+c], width);
         }
     }
-    Onion.util.log("NEWLAYOUT: rows", this.row_sizes);
-    Onion.util.log("NEWLAYOUT: cols", this.col_sizes);
 
     /*
      * resize the container we're laying out to fit all children. Whether
@@ -209,13 +200,11 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
      */
     this.totalwidth = this.sumwidth();
     this.totalheight = this.sumheight();
-    Onion.util.log("NEWLAYOUT container size: " + this.totalwidth + ", " + this.totalheight, this.parent);
 
     var parentmax = this.parent.max_size()
     var maxwidth = Math.min(this.totalwidth, parentmax.width) || this.totalwidth;
     var maxheight = Math.min(this.totalheight, parentmax.height) || this.totalheight;
 
-    Onion.util.log("NEWLAYOUT max container size: " + maxwidth + ", " + maxheight);
     this.layoutcontrol.css("width", maxwidth + "px");
     this.layoutcontrol.css("height", maxheight + "px");
     this.parent.resize(maxwidth, maxheight);
@@ -229,8 +218,6 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
         var w = this.sumwidth(info.column, info.column+info.colspan);
         var h = this.sumheight(info.row, info.row+info.rowspan);
 
-        Onion.util.log("**** ++ DEBUG", info.column, info.colspan);
-        Onion.util.log("**** ++ DEBUG", this.col_sizes);
 
 
         /*
@@ -254,7 +241,6 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
                 expanded = true;
             }
             if(E && W) {
-                Onion.util.log("****** EW expanding: ", (w-info.padx*2), w, info.padx);
                 ctr.control.css("width", w - info.padx*2);
                 expanded = true;
             }

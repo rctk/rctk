@@ -20,3 +20,8 @@ addResource(CSSFileResource('resources/jgrid/css/ui.jqgrid.css'))
 addResource(JSFileResource('resources/grid.js'))
 addResource(JSFileResource('resources/image.js'))
 addResource(JSFileResource('resources/collection.js'))
+
+## jScrollPane support
+addResource(JSFileResource("resources/jScrollPane/jScrollPane.js"))
+addResource(JSFileResource("resources/jScrollPane/jquery.mousewheel.js"))
+addResource(CSSFileResource("resources/jScrollPane/jScrollPane.css"))

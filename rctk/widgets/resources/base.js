@@ -50,7 +50,7 @@ Onion.widget.Control.prototype.set_properties = function(data) {
         this.width = parseInt(data.width);
         Onion.util.log('Set width to ' + this.width + ' on', this);
         this.control.width(this.width);
-        this.control.css("max-width", this.width + "px");
+        //this.control.css("max-width", this.width + "px");
     }
     if ('height' in data && data.height) {
         //if (this.debug)
@@ -73,7 +73,7 @@ Onion.widget.Control.prototype.set_properties = function(data) {
     if ('font' in data) {
         for (property in data.font) {
             if (property == 'size') {
-                this.control.css('font-size', data.font.size + 'px');
+                this.control.css('font-size', data.font.size);
             } else {
                 this.control.css('font-' + property, data.font[property]);
             }

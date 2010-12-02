@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+        
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<script src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.2.min.js" type="text/javascript"></script>
+        <style type="text/css">
+        #barx {
+          display: inline-block;
+        }
+        #foo {
+          display: inline-block;
+        }
+        </style>
+        <script type="text/javascript">
+            $(document).ready(function() {
+               $("body").append('<div id="bar"><div id="foo">lala</div></div>');
+               var foo = $("#foo")
+               var bar = $("#bar")
+               //bar.width(220);
+               //foo.width(200);
+               foo.css("width", "200px");
+               foo.css("border-width", "1px");
+               foo.css("border-style", "solid");
+               foo.css("border-color", "red");
+               foo.html("Helloworldhow areyou thesearelonglonglonglonglong longlonglonglong wordswordswordssss.....");
+               $("body").append('foo width: ' + foo.outerWidth(true));
+               $("body").append('bar width: ' + bar.outerWidth(true));
+            });
+        </script>
+
+</head>
+<body>
+</body>
+</html>

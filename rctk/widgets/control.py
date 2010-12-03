@@ -6,13 +6,6 @@ from rctk.task import Task
 class ControlDestroyed(Exception):
     pass
 
-
-##
-## TODO: Special storage for attributes (so you don't need to define
-## your own _foo)
-## type definitions / general enumeration of settable properties (for xml)
-## don't 'sync' properties if control is not created, when creating initialize
-
 ## "Synchronized attributes"
 
 class Attribute(object):

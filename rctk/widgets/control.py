@@ -7,8 +7,101 @@ class ControlDestroyed(Exception):
     pass
 
 
+##
+## TODO: Special storage for attributes (so you don't need to define
+## your own _foo)
+## type definitions / general enumeration of settable properties (for xml)
+## don't 'sync' properties if control is not created, when creating initialize
+
+## "Synchronized attributes"
+
+class Attribute(object):
+    """
+        The base attribute class for defining/configuring
+        attributes 
+    """
+
+    STRING = 1
+    NUMBER = 2
+
+    def __init__(self, default, type=STRING, filter=None):
+        self.default = default
+        self.type = type
+        self.filter = filter
+
+class AttributeInterceptor(object):
+    """ Intercept get/set on syncedattributes and forward them to
+        the AttributeHolder """
+    def __init__(self, name):
+        self.name = name
+
+    def __get__(self, holder, type):
+        return holder._sa_getattribute(self.name)
+
+    def __set__(self, holder, value):
+        holder._sa_setattribute(self.name, value)
+
+class AttributeMetaclass(type):
+    def __new__(meta, classname, bases, classDict):
+        newdict = {}
+        for k, v in classDict.iteritems():
+            if isinstance(v, Attribute):
+                newdict['_sa_'+k] = v
+                newdict[k] = AttributeInterceptor(k)
+            else:
+                newdict[k] = v
+
+        return type.__new__(meta, classname, bases, newdict)
+
+class AttributeHolder(object):
+    """
+        baseclass for objects (controls) that support "remote" attributes,
+        i.e. attributes that are synchronized locally/remotely, possibly
+        both ways
+    """
+    __metaclass__ = AttributeMetaclass
+
+    def __init__(self):
+        self._sa_attributes = {}
+        for k,v in self.attributes().iteritems():
+            self._sa_attributes[k] = v.default
+        self.state = 0 ## tmp hack
+
+    def attributes(self):
+        a = {}
+        for k in dir(self):
+            if k.startswith('_sa_'):
+                v = getattr(self, k)
+                if isinstance(v, Attribute):
+                    a[k[4:]] = v # strip _sa_
+        return a
+
+    def _sa_getattribute(self, name):
+        return self._sa_attributes[name]
+
+    def _sa_setattribute(self, name, value):
+        ## odd dependency...
+        if self.state == Control.DESTROYED:
+            raise ControlDestroyed
+        self._sa_attributes[name] = value
+        ## invoke sync magic, if created...
+
+    def sync_attribute(self, name):
+        if self.created:
+            self.tk.queue(Task("%s id %d attr %s update to '%s'" %
+                                  (self.name, self.id, name, value),
+                {
+                    'control':self.name,
+                    'id':self.id,
+                    'action':'update',
+                    'update':{self.name:self.filter(control, value)}
+                }
+            ))
+
+
 class remote_attribute(object):
     """
+        XXX deprecated, to be replaced/removed
         This descriptor class implements an easier way to
         sync specific attributes remotely.
 
@@ -43,6 +136,7 @@ class remote_attribute(object):
 
 
 class PropertyHolder(object):
+    #   XXX deprecated, to be replaced/removed
     properties = {}
 
     def __init__(self, **properties):

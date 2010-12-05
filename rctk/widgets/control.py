@@ -3,19 +3,53 @@ from exceptions import Exception
 from rctk.task import Task
 
 
-class ControlDestroyed(Exception):
-    pass
-
 ## "Synchronized attributes"
+##
+## Controls are represented both Client and Serverside. This means that their
+## state needs to be synchronised on both, and possibly both ways.
+## E.g. an update on a window title should actually change the title in the
+## client, and resizing a window should update the width serverside.
+##
+## This synchronization is implemented using "Synchronized" attributes which
+## need to be explicitly defined/configured on a control. Additionally, you
+## can set the type of the attribute, this will help the XMLBuilder to properly
+## parse datatypes in XML.
+##
+## In general, setting and getting attributes should be intercepted and possibly
+## result in tasks being sent (which is up to the control inheriting from the
+## AttributeHolder). It should be able to block updates (for example, on disabled
+## or destroyed controls) and install a hook when an update has been done (so
+## the Synchronized Attribute machinery doesn't need to bother about sending tasks
+##
+## Currently, which synchronization takes place is mostly up to the clientisde
+## implementation: updates are always sent from server to client, but it may make
+## sense to have specific fully serverside attributes that are not synchronized
+## (but still properly configurable from xml)
 
 class Attribute(object):
     """
-        The base attribute class for defining/configuring
-        attributes 
+        Attributes can be set on a AttributeHolder derived class. meta class
+        magic will replace them using "interceptors" (AttributeInterceptor)
+        that will catch/handle the setting/getting of the attribute.
+
+        E.g.
+
+        class MyControl(AttributeHolder):
+            title = Attribute("Default title", Attribute.STRING)
+            body = Attribute("", Attribute.STRING, filter=escape_html)
+            lines = Attribute(20, Attribute.STRING)
+
+        c = MyControl(titlte="Hello World")
+        c.text = "<b>How are you!</b>"
+
+        filtering is not actively used by the Synchronzed Attributes machinery,
+        but can be used by the callback responsible for actually synchronizing.
+        Filtering thould be two-way. Implement a class with from/to?
     """
 
     STRING = 1
     NUMBER = 2
+    BOOLEAN = 3
 
     def __init__(self, default, type=STRING, filter=None):
         self.default = default
@@ -23,8 +57,11 @@ class Attribute(object):
         self.filter = filter
 
 class AttributeInterceptor(object):
-    """ Intercept get/set on syncedattributes and forward them to
-        the AttributeHolder """
+    """
+        Attributes confgured on a class derived from AttributeHolder will be
+        replaced by AttributeInterceptors to properly handle getting/setting
+        values
+    """
     def __init__(self, name):
         self.name = name
 
@@ -35,6 +72,10 @@ class AttributeInterceptor(object):
         holder._sa_setattribute(self.name, value)
 
 class AttributeMetaclass(type):
+    """
+        Responsible from replacing Attribute declarations with an
+        AttributeInterceptor, and storing the original Attribute declarations
+    """
     def __new__(meta, classname, bases, classDict):
         newdict = {}
         for k, v in classDict.iteritems():
@@ -48,17 +89,20 @@ class AttributeMetaclass(type):
 
 class AttributeHolder(object):
     """
-        baseclass for objects (controls) that support "remote" attributes,
-        i.e. attributes that are synchronized locally/remotely, possibly
-        both ways
+        This base class is to be used by classes that want to support 
+        Synchronized Attributes. The meta class used will take care of
+        injecting the attribute machinery.
     """
     __metaclass__ = AttributeMetaclass
 
-    def __init__(self):
+    def __init__(self, **kw):
         self._sa_attributes = {}
         for k,v in self.attributes().iteritems():
-            self._sa_attributes[k] = v.default
-        self.state = 0 ## tmp hack
+            if k in kw and self.allow_update(k, kw[k]):
+                self._sa_attributes[k] = kw[k]
+                self.attribute_updated(k, kw[k])
+            else:
+                self._sa_attributes[k] = v.default
 
     def attributes(self):
         a = {}
@@ -73,13 +117,29 @@ class AttributeHolder(object):
         return self._sa_attributes[name]
 
     def _sa_setattribute(self, name, value):
-        ## odd dependency...
+        if self.allow_update(name, value):
+            self._sa_attributes[name] = value
+        self.attribute_updated(name, value)
+
+    def allow_update(self, name, value):
+        """ Allow a base class to intercept the update of an attribute.
+            Raising exceptions is allowed.
+            When returning False, updating will simply not take place, but
+            no exception will be thrown.
+        """
+        return True
+
+    def attribute_updated(self, name, value):
+        """ A hook for a baseclass to take action once an attribute
+            has been updated.
+        """
+        pass
+
+    ## move to control
+    def sync_attribute(self, name):
         if self.state == Control.DESTROYED:
             raise ControlDestroyed
-        self._sa_attributes[name] = value
-        ## invoke sync magic, if created...
 
-    def sync_attribute(self, name):
         if self.created:
             self.tk.queue(Task("%s id %d attr %s update to '%s'" %
                                   (self.name, self.id, name, value),
@@ -147,6 +207,10 @@ class PropertyHolder(object):
 
     def getproperties(self):
         return dict((k, getattr(self, k, self.properties[k])) for k in self.properties)
+
+class ControlDestroyed(Exception):
+    pass
+
 
 class Control(PropertyHolder):
     """ any control in the UI, a window, button, text, etc """

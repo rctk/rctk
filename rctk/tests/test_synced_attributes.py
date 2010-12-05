@@ -1,4 +1,5 @@
 from rctk.widgets.control import Attribute, AttributeHolder
+import py.test
 
 class TestSyncedAttributes(object):
     def test_trivial(self):
@@ -43,6 +44,108 @@ class TestSyncedAttributes(object):
         b = B()
         assert b.a == 'bb'
 
-## test not-syncing before creation, explicit syncing after creation,
-## not-syncing destroyed controls.
+    def test_initialization_simple(self):
+        class A(AttributeHolder):
+            a = Attribute('aa', Attribute.STRING)
+            b = Attribute(31337, Attribute.NUMBER)
+        t1 = A(a='bb', b=123)
+        assert t1.a == 'bb'
+        assert t1.b == 123
 
+    def test_initialization_notused(self):
+        class A(AttributeHolder):
+            a = Attribute('aa', Attribute.STRING)
+            b = Attribute(31337, Attribute.NUMBER)
+        t1 = A(c='xyz')
+        assert t1.a == 'aa'
+        assert t1.b == 31337
+        def test_c():
+                t1.c == 'xyz'
+        py.test.raises(AttributeError, test_c)
+
+    def test_block_creation(self):
+        class A(AttributeHolder):
+            a = Attribute('aa', Attribute.STRING)
+            def allow_update(self, name, value):
+                return False
+
+        ## test both methods of setting
+        t = A()
+        t.a = 'bb'
+        assert t.a == 'aa'
+
+        t2 = A(a='bb')
+        assert t.a == 'aa'
+
+    def test_block_creation_exception(self):
+        class BlockException(Exception):
+            pass
+
+        class A(AttributeHolder):
+            a = Attribute('aa', Attribute.STRING)
+            def allow_update(self, name, value):
+                raise BlockException("Don't!")
+
+        t = A()
+        def set_blocked():
+            t.a = 'bb'
+
+        ## test both methods of setting
+        py.test.raises(BlockException, set_blocked)
+        py.test.raises(BlockException, A, a='bb')
+
+    def test_block_defaults(self):
+        """ defaults are never blocked """
+        class BlockException(Exception):
+            pass
+
+        class A(AttributeHolder):
+            a = Attribute('aa', Attribute.STRING)
+            def allow_update(self, name, value):
+                raise BlockException("Don't!")
+
+        t = A()
+        assert t.a == 'aa'
+
+    def test_callback(self):
+        class A(AttributeHolder):
+            a = Attribute('aa', Attribute.STRING)
+            def __init__(self, **kw):
+                self.changed_name = None
+                self.changed_value = None
+                super(A, self).__init__(**kw)
+
+            def attribute_updated(self, name, value):
+                self.changed_name = name
+                self.changed_value = value
+
+        t = A()
+        t.a = 'bb'
+        assert t.changed_value == 'bb'
+
+        t2 = A(a='cc')
+        assert t2.changed_value == 'cc'
+
+    def test_callback_defaults(self):
+        """ the callback is not invoked when setting defaults """
+        class A(AttributeHolder):
+            a = Attribute('aa', Attribute.STRING)
+            def __init__(self, **kw):
+                self.changed_name = None
+                self.changed_value = None
+                super(A, self).__init__(**kw)
+
+            def attribute_updated(self, name, value):
+                self.changed_name = name
+                self.changed_value = value
+
+        t = A()
+        assert t.a == 'aa'
+        assert t.changed_value == None
+
+## test filtering?
+
+## To be tested in control:
+## - actual syncing (task generation)
+## - don't allow updates on destroyed controls
+## - don't generate tasks before creation

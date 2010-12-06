@@ -1,4 +1,4 @@
-from rctk.widgets.control import remote_attribute
+from rctk.widgets.control import Attribute
 from rctk.widgets.container import Container
 
 class Root(Container):
@@ -7,15 +7,9 @@ class Root(Container):
 
     containable = False
 
-    ## traditional properties don't really work
-    ## on the Root control, and they conflict
-    ## with remote_attributes with the same name.
-
-    properties = {}
-
-    title = remote_attribute("title", "RCTK")
-    width = remote_attribute("width", 0)
-    height = remote_attribute("height", 0)
+    title = Attribute("RCTK")
+    width = Attribute(0, Attribute.NUMBER)
+    height = Attribute(0, Attribute.NUMBER)
 
 
     def __init__(self, tk):

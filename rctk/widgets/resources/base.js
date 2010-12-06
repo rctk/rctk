@@ -18,11 +18,11 @@ Onion.widget.Control = function(jwin, parent, controlid) {
  * implement a sync() method for changes from the clientside
  */
 Onion.widget.Control.prototype.update = function(data) {
-    if('state' in data) {
-        if(data.state == 0) { // ENABLED
+    if('enabled' in data) {
+        if(data.enabled) { 
             this.control.removeAttr("disabled");
         }
-        else if(data.state == 1) { // DISABLE
+        else { 
             this.control.attr("disabled", "disabled");
         }
     }

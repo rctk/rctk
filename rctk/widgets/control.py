@@ -51,7 +51,7 @@ class Attribute(object):
     NUMBER = 2
     BOOLEAN = 3
 
-    def __init__(self, default, type=STRING, filter=None):
+    def __init__(self, default="", type=STRING, filter=None):
         self.default = default
         self.type = type
         self.filter = filter
@@ -113,6 +113,17 @@ class AttributeHolder(object):
                     a[k[4:]] = v # strip _sa_
         return a
 
+    def synchronize(self, **attributes):
+        """
+            Perform an update on the attributes. This is assumed to be
+            a "remote" update, which means we will not invoke a callback
+            or do any allowed checks (also to avoid sending out updates
+            again)
+        """
+        for k, v in self.attributes().iteritems():
+            if k in attributes:
+                self._sa_attributes[k] = attributes[k]
+
     def _sa_getattribute(self, name):
         return self._sa_attributes[name]
 
@@ -135,84 +146,10 @@ class AttributeHolder(object):
         """
         pass
 
-    ## move to control
-    def sync_attribute(self, name):
-        if self.state == Control.DESTROYED:
-            raise ControlDestroyed
-
-        if self.created:
-            self.tk.queue(Task("%s id %d attr %s update to '%s'" %
-                                  (self.name, self.id, name, value),
-                {
-                    'control':self.name,
-                    'id':self.id,
-                    'action':'update',
-                    'update':{self.name:self.filter(control, value)}
-                }
-            ))
-
-
-class remote_attribute(object):
-    """
-        XXX deprecated, to be replaced/removed
-        This descriptor class implements an easier way to
-        sync specific attributes remotely.
-
-        You need to pass it a name, the actual value will be
-        stored on the context object under the same name prefixed
-        with a '_'. This way you can safely bypass the descriptor
-        if you don't want any tasks to be sent.
-    """
-    def __init__(self, name, default, filter=lambda control, x: x):
-        """ setting a default does not set it remotely! """
-        self.name = name
-        self.default = default
-        self.filter = filter
-
-    def __get__(self, control, type):
-        return getattr(control, '_'+self.name, self.default)
-
-    def __set__(self, control, value):
-        if control.state == Control.DESTROYED:
-            raise ControlDestroyed
-        else:
-            setattr(control, '_'+self.name, value)
-            control.tk.queue(Task("%s id %d attr %s update to '%s'" %
-                                  (control.name, control.id, self.name, value),
-                {
-                    'control':control.name,
-                    'id':control.id,
-                    'action':'update',
-                    'update':{self.name:self.filter(control, value)}
-                }
-            ))
-
-
-class PropertyHolder(object):
-    #   XXX deprecated, to be replaced/removed
-    properties = {}
-
-    def __init__(self, **properties):
-        for (k, v) in self.properties.items():
-            setattr(self, k, properties.get(k, v))
-        for k in properties:
-            if k not in self.properties:
-                raise KeyError("Unknown property %s" % k)
-
-    @classmethod
-    def extend(cls, **update):
-        c = cls.properties.copy()
-        c.update(update)
-        return c
-
-    def getproperties(self):
-        return dict((k, getattr(self, k, self.properties[k])) for k in self.properties)
-
 class ControlDestroyed(Exception):
     pass
 
-
-class Control(PropertyHolder):
+class Control(AttributeHolder):
     """ any control in the UI, a window, button, text, etc """
     name = "base"
 
@@ -220,21 +157,26 @@ class Control(PropertyHolder):
     _id = 0
 
     # control state
-    ENABLED = 0
-    DISABLED = 1
+    INITIALIZING = 0
+    CREATED = 1
     DESTROYED = 2
+    state = INITIALIZING
 
-    state = remote_attribute("state", ENABLED)
-    visible = remote_attribute("visible", True)
-    properties = PropertyHolder.extend(
-        width=0, height=0, align=None,
-        font=None, foreground=None, background=None,
-        border=None, margin=None, padding=None,
-        css_class=None,
-        maxwidth=0,
-        maxheight=0,
-        debug=False
-    )
+    enabled = Attribute(True, Attribute.BOOLEAN)
+    visible = Attribute(True, Attribute.BOOLEAN)
+    width = Attribute(0, Attribute.NUMBER)
+    height = Attribute(0, Attribute.NUMBER)
+    align = Attribute(None)
+    font = Attribute() # actually, a dict!
+    foreground = Attribute()
+    background = Attribute()
+    border = Attribute() # ??
+    margin = Attribute() # ??
+    padding = Attribute() # ??
+    css_class = Attribute()
+    maxwidth = Attribute(0, Attribute.NUMBER)
+    maxheight = Attribute(0, Attribute.NUMBER)
+    debug = Attribute(False, Attribute.BOOLEAN)
 
     def __init__(self, tk, **properties):
         super(Control, self).__init__(**properties)
@@ -254,12 +196,45 @@ class Control(PropertyHolder):
         Control._id += 1
         return Control._id
 
+    def allow_update(self, name, value):
+        if self.state == Control.DESTROYED:
+            raise ControlDestroyed("Cannot update %s: control is destroyed" % name)
+        return True
+
+    def attribute_updated(self, name, value):
+        if self.state != Control.CREATED:
+            return # don't generate tasks before creation
+
+        ## XXX this can be done more efficiently. E.g. self.get_attribute(name)
+        attribute = self.attributes()[name]
+        filter = attribute.filter
+        if filter:
+            value = filter(value)
+        self.tk.queue(Task("%s id %d attr %s update to '%s'" %
+            (self.name, self.id, name, value),
+                {
+                    'control':self.name,
+                    'id':self.id,
+                    'action':'update',
+                    'update':{name:value}
+                }
+            ))
+
     def sync(self, **data):
         """
-            controls sometimes need synchronization, i.e. something has changed
-            on the clientside
+            Attributes have changed on the clientside; update the attributes.
         """
-        pass
+        self.synchronize(**data)
+
+    def data(self):
+        """ return synchronisable data, apply filters if necessary """
+        d = {}
+        for k, v in self.attributes().iteritems():
+            value = getattr(self, k)
+            if v.filter:
+                value = v.filter(value)
+            d[k] = value
+        return d
 
     def restore(self):
         self.create()
@@ -269,7 +244,8 @@ class Control(PropertyHolder):
             self.parent.remove(self)
         self.tk.queue(Task("Destroy %s id %d" % (self.name, self.id),
             { 'action':'destroy', 'id':self.id }))
-        self._state = Control.DESTROYED
+        ## XXX does this need to be synced? We have an explicit destroy task
+        self.state = Control.DESTROYED
 
     def __repr__(self):
         ## some state may be unitialized when crashing
@@ -278,7 +254,4 @@ class Control(PropertyHolder):
         rname = getattr(self, 'name', 'unknown')
 
         return '<%s name="%s" id=%s state=%s>' % (self.__class__.__name__, rname, rid, rstate)
-
-
-
 

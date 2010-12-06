@@ -1,4 +1,4 @@
-from rctk.widgets.control import remote_attribute
+from rctk.widgets.control import Attribute
 from rctk.widgets.dropdown import Dropdown
 from rctk.task import Task
 
@@ -8,12 +8,5 @@ class List(Dropdown): # confusing name - list vs List?
         A list is functionally the same as a Dropdown, it's just rendered
         differently and it can display a number of items at once.
     """
-    size = remote_attribute('size', 0)
-    _size = 0
+    size = Attribute(0, Attribute.NUMBER)
 
-    def __init__(self, tk, items=(), size=5, multiple=False, **properties):
-        self._size = size
-        super(List, self).__init__(tk, items, multiple, **properties)
-
-    def create(self):
-        self.tk.create_control(self, items=self._items(), size=self._size, multiple=self._multiple)

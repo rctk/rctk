@@ -4,6 +4,9 @@ from rctk.widgets import Panel, StaticText
 from rctk.layouts import VBox
 
 
+##
+## Collections have been implemented by Lindix. They are, unfortunately,
+## not properly documented or tested. Use at your own risk.
 class Collection(Panel):
     name = "collection"
 

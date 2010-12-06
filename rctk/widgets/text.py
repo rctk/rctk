@@ -1,4 +1,4 @@
-from rctk.widgets.control import Control, remote_attribute
+from rctk.widgets.control import Control, Attribute
 
 from rctk.task import Task
 from rctk.event import Changable, Submittable
@@ -6,21 +6,9 @@ from rctk.event import Changable, Submittable
 class Text(Control, Changable, Submittable):
     name = "text"
 
-    value = remote_attribute('value', "")
-
-    def __init__(self, tk, value="", rows=1, columns=20, **properties):
-        self._value = value
-        self._rows = rows
-        self._columns = columns
-        super(Text, self).__init__(tk, **properties)
-        
-    def create(self):
-        self.tk.create_control(self, value=self._value, rows=self._rows, columns=self._columns)
-
-    def sync(self, **data):
-        if 'value' in data:
-            self._value = data['value']
-    
+    value = Attribute("")
+    rows = Attribute(1, Attribute.NUMBER)
+    columns = Attribute(20, Attribute.NUMBER)
 
 class Password(Text):
     name = "password"

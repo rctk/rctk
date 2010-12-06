@@ -1,4 +1,4 @@
-from rctk.widgets.control import Control, remote_attribute
+from rctk.widgets.control import Control, Attribute
 
 from rctk.task import Task
 from rctk.event import Clickable, DoubleClickable
@@ -11,13 +11,16 @@ class Dropdown(Control, Clickable, DoubleClickable):
         type of object.
 
         The dropdown widget will uniquely enumerate the options itself, it
-        will not use the provided keys. 
+        will not use the provided keys. These enumerated indexes will be used
+        as "selection" and will have no direct meaning outside the Dropdown
 
         A Dropdown is clickable, the handler will receive the item selected
         in the eventobject as "key".
 
-        Behaviour changes if the widget is "multiple", selection will
-        return a list in stead of a single value
+        Behaviour changes if the widget is "multiple", value will
+        return a list of keys in stead of a single value. 
+
+        The default setup is no selection at all.
 
         TODO:
         - support index for insertion
@@ -27,11 +30,14 @@ class Dropdown(Control, Clickable, DoubleClickable):
     """
     name = "dropdown"
 
-    selection = remote_attribute('selection', None)
-    multiple = remote_attribute('multiple', False)
+    # selection synchronizes the selected state with the client. It's
+    # not to be accessed directly since it doesn't directly contain the
+    # items configured on the Dropdown
+    selection = Attribute([], Attribute.NUMBER) # List of Number actually
+    multiple = Attribute(False, Attribute.BOOLEAN)
 
 
-    def __init__(self, tk, items=(), multiple=False, **properties):
+    def __init__(self, tk, items=(), **properties):
         self.indexer = 0
 
         self.items = []
@@ -39,64 +45,40 @@ class Dropdown(Control, Clickable, DoubleClickable):
             self.items.append((self.indexer, (k, v)))
             self.indexer += 1
 
-        self._multiple = multiple
-        if self.items:
-            if self._multiple:
-                self._selection = []
-            else:
-                self._selection = 0
-        else:
-            self._selection = None
-
-
         super(Dropdown, self).__init__(tk, **properties)
 
     def create(self):
-        self.tk.create_control(self, items=self._items(), multiple=self._multiple)
+        self.tk.create_control(self, items=self._items())
 
     def add(self, key, value):
         """ this adds a new entry to the bottom. Removing items or selecting
             an insertion position is not yet possible """
         ## the first entry is the initial default. Check if this is the first entry
-        if not self.items:
-            if self._multiple:
-                self._selection = []
-            else:
-                self._selection = 0
-
         self.items.append((self.indexer, (key, value)))
 
-        self.tk.queue(Task("Dropdown update id %d items '%s'" % 
+        self.tk.queue(Task("Dropdown update id %d items '%s'" %
           (self.id, repr(self.items)),
-         {'control':self.name, "id":self.id, "action":"update", 
+         {'control':self.name, "id":self.id, "action":"update",
           "update":{"item":(self.indexer, value)}}))
         self.indexer += 1
-
-    def sync(self, **data):
-        if 'selection' in data:
-            if self._multiple:
-                self._selection = [int(i) for i in data['selection']]
-            else:
-                self._selection = int(data['selection'])
 
     def _items(self):
         return [(idx, label) for (idx, (k, label)) in self.items]
 
+    ## DEPRECATED XXX NEEDS WORK
     def _get_value(self):
-        if self._multiple:
-            r = []
-            for (idx, (key, value)) in self.items:
-                if idx in self._selection:
-                    r.append(key)
+        r = []
+        for (idx, (key, value)) in self.items:
+            if idx in self.selection:
+                r.append(key)
+        if self.multiple:
             return r
-        else:
-            for (idx, (key, value)) in self.items:
-                if idx == self._selection:
-                    return key
+        if r:
+            return r[0]
         return None
 
     def _set_value(self, v):
-        if self._multiple:
+        if self.multiple:
             s = []
             for (idx, (key, value)) in self.items:
                 if key in v:
@@ -106,7 +88,7 @@ class Dropdown(Control, Clickable, DoubleClickable):
         else:
             for (idx, (key, value)) in self.items:
                 if v == key:
-                    self.selection = idx
+                    self.selection = [idx]
                     return
         raise KeyError(v)
 
@@ -115,11 +97,11 @@ class Dropdown(Control, Clickable, DoubleClickable):
     def reset(self):
         """ set the selection to the first value """
         if self.items:
-            self.selection = self.items[0][0]
+            self.selection = [self.items[0][0]]
 
     def clear(self):
         self._items = []
-        self._selection = None
+        self.selection = [] # XXX this will create a redundant task
         ## no strict need to reset indexer
         self.tk.queue(Task("Dropdown cleared id %d" % self.id,
          {'control':self.name, "id":self.id, "action":"update", 

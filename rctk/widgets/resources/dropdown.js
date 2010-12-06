@@ -39,7 +39,14 @@ Onion.widget.Dropdown.prototype.append_item = function(key, label) {
 }
 
 Onion.widget.Dropdown.prototype.changed = function() {
-    this.jwin.add_task("sync", "sync", this.controlid, {'selection':this.control.val()});
+    var v = this.control.val();
+    // a non-multiselect will return a single val. We want to be consistent
+    // and always return arrays
+    if(!jQuery.isArray(v)) {
+        v = [v];
+    }
+    v = jQuery.map(v, function(v, i) { return parseInt(v); });
+    this.jwin.add_task("sync", "sync", this.controlid, {'selection':v});
     if(this.handle_click) {
         // find current selection.
         if(!this.busy) {

@@ -1,4 +1,4 @@
-from rctk.widgets.control import Control, remote_attribute
+from rctk.widgets.control import Control, Attribute
 
 from rctk.task import Task
 from rctk.event import Clickable
@@ -7,48 +7,45 @@ from rctk.event import Clickable
 class CheckBox(Control, Clickable):
     """Simple CheckBox control."""
     name = "checkbox"
-    
-    checked = remote_attribute('checked', False)
-    
-    def __init__(self, tk, value=None, group=None, checked=False, **properties):
+
+    checked = Attribute(False, Attribute.BOOLEAN)
+
+    def __init__(self, tk, value=None, group=None, **properties):
+        ## value and group are used by CheckBoxGroups
         self.value = value
         self._group = group
-        self._checked = checked
         super(CheckBox, self).__init__(tk, **properties)
         if group:
             group.add(self)
-    
+
     def create(self):
         groupid = None
         if self._group:
             groupid = self._group.id
         self.tk.create_control(self, group=groupid, defaultChecked=self.checked)
-    
-    def sync(self, **data):
-        if 'checked' in data:
-            self._checked = data['checked']
-    
+
     def toggle(self):
         self.checked = not self.checked
-    
+
     def __repr__(self):
         return '<%s name="%s" id=%d checked=%s>' % (self.__class__.__name__, self.name, self.id, self.checked)
-    
+
 
 class CheckBoxGroup(Control, Clickable):
+    ## currently broken, see issue:31
     name = "checkboxgroup"
 
     def __init__(self, tk, **properties):
         self._boxes = []
         self._checked = None
         super(CheckBoxGroup, self).__init__(tk)
-    
+
     def create(self):
         # we don't actually create a group control at the Onion side
         pass
 
     def add(self, b):
-        if not b in self._boxes:
+        if b not in self._boxes:
             self._boxes.append(b)
             if self._click_handler and not b.click:
                 b.click = self._click_handler
@@ -56,8 +53,9 @@ class CheckBoxGroup(Control, Clickable):
                 self._checked = b 
 
     def _get_value(self):
-        if self._checked:
-            return self._checked.value
+        for b in self._boxes:
+            if b.checked:
+                return b.value
         return None
 
     def _set_value(self, v):
@@ -66,15 +64,15 @@ class CheckBoxGroup(Control, Clickable):
                 b.checked = true
 
     value = property(_get_value, _set_value)
-    
+
     def _get_click(self):
         return self._click_handler
-    
+
     def _set_click(self, val):
         self._click_handler = val
         for b in self._boxes:
             if not b.click:
                 b.click = val
-    
+
     click = property(_get_click, _set_click)
     

@@ -1,4 +1,5 @@
 from rctk.task import Task
+from rctk.widgets.control import Attribute
 from rctk.widgets.container import Container
 
 
@@ -7,12 +8,13 @@ class Window(Container):
 
     containable = False
 
-    properties = Container.extend(title="Window", modal=False)
+    title = Attribute("Window", Attribute.STRING)
+    modal = Attribute(False, Attribute.BOOLEAN)
+    ## keep track of state (open/closed), both ways! So not just methods to open/close remotely
 
     def __init__(self, tk, title="", **properties):
         super(Window, self).__init__(tk, title=title, **properties)
 
-    ## keep track of state (open/closed), both ways! So not just methods to open/close remotely
 
     ## allow title to be updated
     def open(self):

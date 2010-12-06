@@ -53,7 +53,7 @@ class Container(Control):
         self._controls_args[control] = t
 
         self._layout.append(control, **args)
-    
+
     def remove(self, control):
         """ Removes a control from the window and moves it back into
             the factory.
@@ -65,12 +65,12 @@ class Container(Control):
             self.tk.queue(Task('Remove %d from %d' % (control.id, self.id), t))
             del self._controls_args[control]
             self._controls.remove(control)
-    
+
     def destroy(self):
         for c in self._controls:
             c.destroy()
         super(Container, self).destroy()
-    
+
     def restore(self):
         self.create()
         self._add_layout_task(self._layout)
@@ -81,12 +81,12 @@ class Container(Control):
 
         for c in self._controls:
             c.restore()
-            self._add_append_task(c, self._controls_args.get(c, {})) 
-    
+            self._add_append_task(c, self._controls_args.get(c, {}))
+
     def _add_layout_task(self, layout):
         self.tk.queue(Task("Set layout %s on id %d" % (layout.type, self.id),
           {'id':self.id, 'action':'layout', 'type':self._layout.type, 'config':self._layout.config()}))
-    
+
     def setLayout(self, layout):
         if self._controls_added():
             raise LayoutException("Can't change layout once controls have been added")
@@ -101,7 +101,7 @@ class Container(Control):
 
         self.tk.queue(Task("Laying out id %d" % (self.id,),
           {'id':self.id, 'action':'relayout', 'config':self._layout.config()}))
-    
+
     def _controls_added(self):
         return len(self._controls) > 0
-    
+

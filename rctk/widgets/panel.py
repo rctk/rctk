@@ -1,4 +1,5 @@
 from rctk.task import Task
+from rctk.widgets.control import Attribute
 from rctk.widgets.container import Container
 
 class Panel(Container):
@@ -7,5 +8,5 @@ class Panel(Container):
     """
     name = "panel"
 
-    properties = Container.extend(scrolling=False)
+    scrolling = Attribute(False, Attribute.BOOLEAN)
 

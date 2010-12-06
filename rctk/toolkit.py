@@ -7,7 +7,7 @@ from rctk.resourceregistry import getResourceRegistry
 
 import rctk.resources
 
-from rctk.widgets import Root
+from rctk.widgets import Root, Control
 from rctk.event import dispatcher
 from rctk.task import Task
 from rctk.util import un_unicode
@@ -122,11 +122,14 @@ class Toolkit(ResourceManager):
 
     def create_control(self, control, **extra):
         ## assert control.id in self._controls ?
+        ## XXX everything lives in the same namespace; a property with name
+        ## 'id' or 'action' will break this needlessly!
         taskdata = dict(control=control.name, id=control.id, action='create')
-        taskdata.update(control.getproperties())
+        taskdata.update(control.data())
         taskdata.update(extra)
 
         self.queue(Task("Create " + repr(control), taskdata))
+        control.state = Control.CREATED
 
     def call(self, control, method, *args):
         taskdata = dict(control=control.name, id=control.id, action="call")
@@ -159,7 +162,6 @@ class Toolkit(ResourceManager):
                                     polling=self.polling,
                                     title=self.title)
                        )
-            return {"state":"started", "config":dict(debug=self.debug)}
         if method == "task" and 'queue' in args:
             queue = json.loads(args['queue'])
             for task in queue:
@@ -173,7 +175,7 @@ class Toolkit(ResourceManager):
                         control = self._controls[id]
 
                         ## A disabled control shouldn't receive events
-                        if control.state == control.DISABLED:
+                        if not control.enabled:
                             continue
 
                         dispatcher(eventtype, control)

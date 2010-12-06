@@ -50,7 +50,7 @@ class BaseClickableTest(BaseTest):
         c = ClickCounter()
         w = self.create_widget()
         w.click = c
-        w.state = w.DISABLED
+        w.enabled = False
         assert c.count == 0
 
         ## simulate a remote click event

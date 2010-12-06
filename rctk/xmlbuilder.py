@@ -75,7 +75,7 @@ class SimpleXMLBuilder(object):
                 klass = c.attrib['class']
                 XMLControlRegistry[klass](self.tk, self.storage, 
                                           self.container, c, klass)
-        
+
 
 class ControlImporter(object):
     def __init__(self, class_or_classid):
@@ -133,7 +133,7 @@ class ControlImporter(object):
             control = self.control_class(tk, **properties)
         except TypeError, e:
             raise ParseError, "Failed to create <object class=\"%s\">: %s" % (classname, str(e))
-            
+
         if name:
             setattr(storage, name, control)
         if control.containable:

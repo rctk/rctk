@@ -18,6 +18,13 @@ Onion.widget.Control = function(jwin, parent, controlid) {
  * implement a sync() method for changes from the clientside
  */
 Onion.widget.Control.prototype.update = function(data) {
+    this.set_properties(data);
+}
+
+Onion.widget.Control.prototype.set_properties = function(data) {
+    if (data === undefined) {
+        return;
+    }
     if('enabled' in data) {
         if(data.enabled) { 
             this.control.removeAttr("disabled");
@@ -32,12 +39,6 @@ Onion.widget.Control.prototype.update = function(data) {
         } else {
             this.control.hide();
         }
-    }
-}
-
-Onion.widget.Control.prototype.set_properties = function(data) {
-    if (data === undefined) {
-        return;
     }
     // handle base properties
     if ('debug' in data && data.debug !== undefined) {

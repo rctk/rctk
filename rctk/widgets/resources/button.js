@@ -36,8 +36,8 @@ Onion.widget.Button.prototype.clicked = function() {
     }
 }
 
-Onion.widget.Button.prototype.update = function(data) {
-    Onion.widget.Control.prototype.update.apply(this, arguments);
+Onion.widget.Button.prototype.set_properties = function(data) {
+    Onion.widget.Control.prototype.set_properties.apply(this, arguments);
     if('text' in data) {
         this.control.html(data.text);
     }

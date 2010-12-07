@@ -19,8 +19,8 @@ Onion.widget.Image.prototype.create = function(data) {
     this.set_properties(data);
 }
 
-Onion.widget.Image.prototype.update = function(data) {
-    Onion.widget.Control.prototype.update.apply(this, arguments);
+Onion.widget.Image.prototype.set_properties = function(data) {
+    Onion.widget.Control.prototype.set_properties.apply(this, arguments);
     if ('title' in data) {
         this.control.attr('title', data.title);
     }
@@ -30,7 +30,6 @@ Onion.widget.Image.prototype.update = function(data) {
     if ('url' in data && data.url) {
         this.control.attr('src', data.url);
     }
-    this.set_properties(data);
 }
 
 // register

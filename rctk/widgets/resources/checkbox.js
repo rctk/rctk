@@ -42,10 +42,10 @@ Onion.widget.CheckBox.prototype.changed = function() {
     }
 }
 
-Onion.widget.CheckBox.prototype.update = function(data) {
-    Onion.widget.Control.prototype.update.apply(this, arguments);
+Onion.widget.CheckBox.prototype.set_properties = function(data) {
+    Onion.widget.Control.prototype.set_properties.apply(this, arguments);
     // use === operator because we're testing a boolean
-    if(data.checked !== undefined) {
+    if('checked' in data) {
         this.control.attr('checked', data.checked);
     }
 }

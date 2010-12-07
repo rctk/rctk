@@ -29,8 +29,8 @@ Onion.widget.List.prototype.setsize = function() {
     this.control.attr('size', this.size);
 }
 
-Onion.widget.List.prototype.update = function(data) {
-    Onion.widget.Dropdown.prototype.update.apply(this, arguments);
+Onion.widget.List.prototype.set_properties = function(data) {
+    Onion.widget.Dropdown.prototype.set_properties.apply(this, arguments);
 
     if(data.size) {
         this.size = Math.max(2, data.size);

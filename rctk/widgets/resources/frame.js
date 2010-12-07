@@ -34,8 +34,8 @@ Onion.widget.Frame.prototype.setLayout = function(type, config) {
     //this.layout.layoutcontrol.addClass("dialogInner");
 }
 
-Onion.widget.Frame.prototype.update = function(data) {
-    Onion.widget.Container.prototype.update.apply(this, arguments);
+Onion.widget.Frame.prototype.set_properties = function(data) {
+    Onion.widget.Container.prototype.set_properties.apply(this, arguments);
     if(data.state) {
         Onion.util.log("Window state update", data);
         if(data.state == "open") {

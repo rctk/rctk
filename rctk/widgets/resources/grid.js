@@ -35,8 +35,8 @@ Onion.widget.Grid.prototype.create = function(data) {
 
 }
 
-Onion.widget.Grid.prototype.update = function(data) {
-    Onion.widget.Control.prototype.update.apply(this, arguments);
+Onion.widget.Grid.prototype.set_properties = function(data) {
+    Onion.widget.Control.prototype.set_properties.apply(this, arguments);
     if(data && 'addrow' in data) {
         this.container.addRowData(data.addrow.id, data.addrow.data, data.addrow.position);
     }

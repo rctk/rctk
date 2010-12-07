@@ -78,8 +78,9 @@ Onion.widget.Text.prototype.val = function() {
     return this.control.val();
 }
 
-Onion.widget.Text.prototype.update = function(update) {
-    if(update.value != undefined) {
+Onion.widget.Text.prototype.set_properties = function(update) {
+    Onion.widget.Control.prototype.set_properties.apply(this, arguments);
+    if('value' in update) {
         this.control.val(update.value);
     }
 }

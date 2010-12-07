@@ -53,8 +53,8 @@ Onion.widget.StaticText.prototype.create = function(data) {
         
 }
 
-Onion.widget.StaticText.prototype.update = function(data) {
-    Onion.widget.Control.prototype.update.apply(this, arguments);
+Onion.widget.StaticText.prototype.set_properties = function(data) {
+    Onion.widget.Control.prototype.set_properties.apply(this, arguments);
     if('text' in data) {
         this.control.html(data.text);
         // Respect width/height settings.

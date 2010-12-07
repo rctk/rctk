@@ -71,8 +71,8 @@ Onion.widget.Dropdown.prototype.doubleclick = function() {
         }
     }
 }
-Onion.widget.Dropdown.prototype.update = function(data) {
-    Onion.widget.Control.prototype.update.apply(this, arguments);
+Onion.widget.Dropdown.prototype.set_properties = function(data) {
+    Onion.widget.Control.prototype.set_properties.apply(this, arguments);
     if(data.item) {
         this.append_item(data.item[0], data.item[1]);
     }

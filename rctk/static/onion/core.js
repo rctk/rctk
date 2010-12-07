@@ -75,7 +75,7 @@ Onion.core.JWinClient.prototype.do_work = function(data) {
     case "update":
         // update a control. Rename to sync?
         var control = this.controls[id];
-        control.update(data.update);
+        control.set_properties(data.update);
         break;
     case "call":
         // call a method with arguments on a control

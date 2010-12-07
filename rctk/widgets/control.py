@@ -248,7 +248,6 @@ class Control(AttributeHolder):
         self.state = Control.DESTROYED
 
     def __repr__(self):
-        ## some state may be unitialized when crashing
         rid = getattr(self, 'id', -1)
         rstate = getattr(self, 'state', 'unknown')
         rname = getattr(self, 'name', 'unknown')

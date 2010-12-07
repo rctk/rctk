@@ -46,6 +46,9 @@ Onion.widget.Frame.prototype.update = function(data) {
             this.container.dialog('close');
         }
     }
+    if('title' in data && data.title) {
+        this.container.dialog({title:data.title});
+    }
 }
 
 Onion.widget.Frame.prototype.resize = function(width, height) {

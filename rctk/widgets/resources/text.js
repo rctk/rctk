@@ -64,6 +64,14 @@ Onion.widget.Text.prototype.keypressed = function(e) {
             }
         }
     }
+    else if(this.handle_keypress) {
+        if(!this.busy) {
+            this.jwin.register_busy(this);
+            this.jwin.add_task("sync", "sync", this.controlid, {'value':this.control.val()});
+            this.jwin.add_task("event", "keypress", this.controlid);
+            return false;
+        }
+    }
 }
 
 Onion.widget.Text.prototype.val = function() {

@@ -24,6 +24,9 @@ class ChangeEvent(Event):
 class SubmitEvent(Event):
     pass
 
+class KeypressEvent(Event):
+    pass
+
 class Clickable(object):
     _click_handler = None
 
@@ -62,7 +65,7 @@ class Changable(object):
     def _get_change(self):
         return self._change_handler
 
-    change = property(_get_change, _set_change)    
+    change = property(_get_change, _set_change)
 
 class Submittable(object):
     """ handler to catch explicit submit actions on controls. I.e.
@@ -78,8 +81,20 @@ class Submittable(object):
     def _get_submit(self):
         return self._submit_handler
 
-    submit = property(_get_submit, _set_submit)    
+    submit = property(_get_submit, _set_submit)
 
+class Keypressable(object):
+    _keypress_handler = None
+
+    def _set_keypress(self, val):
+        self._keypress_handler = val
+        self.tk.queue(Task("KeypressHandler installed on %s %d" % (self.name, self.id),
+          {'control':self.name, "id":self.id, "action":"handler", "type":"keypress"}))
+
+    def _get_keypress(self):
+        return self._keypress_handler
+
+    keypress = property(_get_keypress, _set_keypress)
 
 class Dispatcher(object):
     events = {}
@@ -99,3 +114,4 @@ dispatcher.register('click', ClickEvent)
 dispatcher.register('doubleclick', ClickEvent)
 dispatcher.register('change', ChangeEvent)
 dispatcher.register('submit', SubmitEvent)
+dispatcher.register('keypress', KeypressEvent)

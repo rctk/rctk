@@ -28,6 +28,9 @@ Onion.widget.Root.prototype.append = function(control, data) {
 
 Onion.widget.Root.prototype.set_properties = function(data) {
     Onion.widget.Container.prototype.set_properties.apply(this, arguments);
+    if(data === undefined) {
+        return;
+    }
     if('title' in data) {
         $("title").html(data.title);
     }

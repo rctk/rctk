@@ -33,7 +33,11 @@ Onion.widget.Text.prototype.create = function(data) {
         self.changed();
         self.jwin.flush();
     });
-    this.control.keypress(function(e) {
+    /*
+     * Initially bound to keypress, but keyup might work better,
+     * hence the naming mixup
+     */
+    this.control.keyup(function(e) { 
         self.keypressed(e);
         self.jwin.flush();
     });

@@ -52,8 +52,8 @@ Onion.widget.Control.prototype.set_properties = function(data) {
         //this.control.css("max-width", this.width + "px");
     }
     if ('height' in data && data.height) {
-        this.control.css("height", data.height + "px");
-        this.height = data.height;
+        this.height = parseInt(data.height);
+        this.control.height(this.height);
     }
     if ('maxwidth' in data && data.maxwidth) {
         this.maxwidth = data.maxwidth;

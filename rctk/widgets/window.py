@@ -10,6 +10,7 @@ class Window(Container):
 
     title = Attribute("Window", Attribute.STRING)
     modal = Attribute(False, Attribute.BOOLEAN)
+    position = Attribute("top", Attribute.STRING) # can also be (x,y)
     ## keep track of state (open/closed), both ways! So not just methods to open/close remotely
 
     def __init__(self, tk, title="", **properties):

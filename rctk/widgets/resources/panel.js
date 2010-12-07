@@ -23,7 +23,6 @@ Onion.widget.Panel.prototype.create = function(data) {
     Onion.widget.Container.prototype.create.apply(this, arguments);
 
     if(data.scrolling) {
-        Onion.util.log("+__++_+_+_+_+_+_+_ scrolling", this.control);
         this.scrolling = true;
 
         this.control.jScrollPane();
@@ -33,26 +32,39 @@ Onion.widget.Panel.prototype.create = function(data) {
     else {
         this.scrolling = false;
     }
-
 }
 
 Onion.widget.Panel.prototype.update_scrolling = function() {
     if(this.scrolling) {
         this.container.jScrollPane();
-        Onion.util.log("+__++_+_+_+_+_+_+_ update", this.container, this.control);
     }
 }
 
 Onion.widget.Panel.prototype.append = function(control, data) {
     Onion.widget.Container.prototype.append.apply(this, arguments);
+    // perhaps this is also/already handled by jScrollPane
     this.control.scrollTop(this.control.attr("scrollHeight"));
     this.update_scrolling();
 }
 
 Onion.widget.Panel.prototype.layout_updated = function() {
     Onion.widget.Container.prototype.layout_updated.apply(this, arguments);
+    // perhaps this is also/already handled by jScrollPane
     this.control.scrollTop(this.control.attr("scrollHeight"));
     this.update_scrolling();
+}
+
+Onion.widget.Panel.prototype.max_size = function() {
+    /*
+     * A scolling panel has an unlimited height. If restricted,
+     * no scrollbar may appear
+     */
+    if(this.scrolling) {
+        return {width:this.maxwidth, height:0}
+    }
+    else {
+        return {width:this.maxwidth, height:this.maxheight}
+    }
 }
 
 Onion.widget.register("panel", Onion.widget.Panel);

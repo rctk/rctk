@@ -17,7 +17,7 @@ class StaticText(Control):
     italic = Attribute(False, Attribute.BOOLEAN)
     decoration = Attribute()
 
-    def __init__(self, tk, text, **attrs):
+    def __init__(self, tk, text="", **attrs):
         super(StaticText, self).__init__(tk, text=text, **attrs)
 
 def html_escape(s):

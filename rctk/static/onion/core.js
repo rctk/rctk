@@ -107,7 +107,6 @@ Onion.core.JWinClient.prototype.do_work = function(data) {
            }, data.milliseconds);
         break;
     }
-
 }
 
 Onion.core.JWinClient.prototype.handle_tasks = function (data, status) {

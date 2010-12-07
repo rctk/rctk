@@ -1,6 +1,6 @@
 import copy
 
-class Task(object):
+class Base(object):
     """ an item in the queue """
     def __init__(self, msg, task):
         self.msg = msg
@@ -23,3 +23,34 @@ class Task(object):
 
     def task(self):
         return self._task
+
+class Task(Base):
+    pass
+
+class Append(Base):
+    type = "append"
+
+class Remove(Base):
+    type = "remove"
+
+class Create(Base):
+    type = "create"
+
+class Destroy(Base):
+    type = "destroy"
+
+class Update(Base):
+    type = "update"
+
+class Call(Base):
+    type = "call"
+
+class Handler(Base):
+    type = "handler"
+
+class Relayout(Base):
+    type = "relayout"
+
+class Timer(Base):
+    type = "timer"
+

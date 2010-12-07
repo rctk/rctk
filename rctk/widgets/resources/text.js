@@ -36,6 +36,7 @@ Onion.widget.Text.prototype.create = function(data) {
     /*
      * Initially bound to keypress, but keyup might work better,
      * hence the naming mixup
+     * XXX perhaps the difference is if the entered newline is included/handled or not (in case of submit)
      */
     this.control.keyup(function(e) { 
         self.keypressed(e);

@@ -226,6 +226,7 @@ XMLControlRegistry = {}
 XMLControlRegistry["Button"] = ControlImporter("rctk.widgets.button.Button")
 XMLControlRegistry["Image"] = ControlImporter("rctk.widgets.image.Image")
 XMLControlRegistry["StaticText"] = ControlImporter("rctk.widgets.statictext.StaticText")
+XMLControlRegistry["StaticHTMLText"] = ControlImporter("rctk.widgets.statictext.StaticHTMLText")
 XMLControlRegistry["CheckBox"] = ControlImporter("rctk.widgets.checkbox.CheckBox")
 XMLControlRegistry["Text"] = ControlImporter("rctk.widgets.text.Text")
 XMLControlRegistry["Password"] = ControlImporter("rctk.widgets.text.Password")

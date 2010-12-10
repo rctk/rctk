@@ -89,9 +89,26 @@ Onion.widget.StaticHTMLText.prototype.create = function(data) {
     this.set_properties(data);
     this.control.addClass(this.name);
 
-    // we're not supporting any of the specific statictext properties
 }
 
-// register
+Onion.widget.StaticHTMLText.prototype.set_properties = function(data) {
+    Onion.widget.StaticText.prototype.set_properties.apply(this, arguments);
+    // text has been updated; update clickhandlers on a's
+    if('text' in data) {
+        this.handle_links()
+    }
+}
+
+Onion.widget.StaticHTMLText.prototype.handle_links = function() {
+    Onion.util.log("Installing clickhandler on statictext", $("#ctrl" + this.controlid + " a"));
+    var self=this;
+    $("#ctrl" + this.controlid + " a").click(function() {
+        Onion.util.log("Click!", $(this).attr('href'));
+        self.jwin.add_task("event", "click", self.controlid, {link:$(this).attr('href')});
+        self.jwin.flush();
+        return false;
+    });
+}
+
 Onion.widget.register("statictext", Onion.widget.StaticText);
 Onion.widget.register("statichtmltext", Onion.widget.StaticHTMLText);

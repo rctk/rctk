@@ -27,9 +27,10 @@ def html_escape(s):
     """
     return s
 
-class StaticHTMLText(StaticText):
-    name = "statichtmltext"
+from rctk.event import Clickable
 
+class StaticHTMLText(StaticText, Clickable):
+    name = "statichtmltext"
 
     text = Attribute(filter=html_escape)
 

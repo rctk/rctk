@@ -45,5 +45,14 @@ Onion.widget.Root.prototype.set_properties = function(data) {
         //window.resizeTo($(window).width(), data.height);
     }
 }
+
+/*
+ * rctk supports "calling" methods on controls. Root probably makes
+ * the most sense for a open_url control, but perhaps it should
+ * just be in the core.
+ */
+Onion.widget.Root.prototype.open_url = function(url) {
+    window.open(url);
+}
 Onion.widget.register("root", Onion.widget.Root);
 

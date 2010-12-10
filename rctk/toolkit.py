@@ -178,7 +178,7 @@ class Toolkit(ResourceManager):
                         if not control.enabled:
                             continue
 
-                        dispatcher(eventtype, control)
+                        dispatcher(eventtype, control, **un_unicode(task.get('data', {})))
                 elif tasktype == "sync":
                     control = self._controls[id]
                     control.sync(**un_unicode(task.get('data', {})))

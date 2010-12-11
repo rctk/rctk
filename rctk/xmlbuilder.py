@@ -176,6 +176,28 @@ class GridLayoutImporter(ControlImporter):
             klass = c.attrib['class']
             XMLControlRegistry[klass](tk, storage, parent, c, klass)
 
+class TabbedLayoutImporter(ControlImporter):
+    """
+    """
+    def __call__(self, tk, storage, parent, object, classname): 
+        properties = {}
+        sub = []
+
+        for c in object.getchildren():
+            if c.tag == NS("object"):
+                sub.append(c)
+            else:
+                pass ## tabbed layout has no configuration (yet)
+
+        layout = self.control_class(**properties)
+        parent.setLayout(layout)
+
+        ## handle subobjects. They're created on the parent,
+        ## Not on the layout!
+        for c in sub:
+            klass = c.attrib['class']
+            XMLControlRegistry[klass](tk, storage, parent, c, klass)
+
 class GridImporter(ControlImporter):
     """ 
         Grids have nested column definitions
@@ -241,6 +263,7 @@ XMLControlRegistry["GridLayout"] = GridLayoutImporter("rctk.layouts.grid.GridLay
 XMLControlRegistry["VBoxLayout"] = GridLayoutImporter("rctk.layouts.grid.VBox")
 XMLControlRegistry["HBoxLayout"] = GridLayoutImporter("rctk.layouts.grid.HBox")
 
+XMLControlRegistry["TabbedLayout"] = TabbedLayoutImporter("rctk.layouts.tabbed.TabbedLayout")
 
 if __name__ == '__main__':
     class dummy(object):

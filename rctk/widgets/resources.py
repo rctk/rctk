@@ -25,3 +25,6 @@ addResource(JSFileResource('resources/collection.js'))
 addResource(JSFileResource("resources/jScrollPane/jScrollPane.js"))
 addResource(JSFileResource("resources/jScrollPane/jquery.mousewheel.js"))
 addResource(CSSFileResource("resources/jScrollPane/jScrollPane.css"))
+
+## styling/theming
+addResource(CSSFileResource('resources/style.css'))

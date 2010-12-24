@@ -1,0 +1,66 @@
+body {
+    font-family: Verdana,"Bitstream Vera Sans","Lucida Grande",Tahoma,"Lucida Sans Unicode",Arial,sans-serif;
+    font-size: 12px;
+    line-height: 160%;
+}
+/*
+ * jQuery UI dialog fixes 
+ */
+.ui-widget {
+    font-family: Verdana,"Bitstream Vera Sans","Lucida Grande",Tahoma,"Lucida Sans Unicode",Arial,sans-serif;
+    font-size: 12px;
+    line-height: 160%;
+}
+.ui-widget-header {
+    border: 1px solid #AAAAAA;
+    color: #222222;
+    background: #999; /* for non-css3 browsers */
+
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#BBBBBB', endColorstr='#888888'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#bbb), to(#888)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #bbb,  #888); /* for firefox 3.6+ */
+}
+
+.ui-dialog .ui-dialog-title {
+    white-space: pre;
+    padding: 0px 1px 0px 5px;
+}
+.ui-dialog .ui-dialog-titlebar {
+    padding: 0px;
+    margin: 0px 0px 0px 0px;
+}
+.ui-dialog {
+    padding: 0px;
+}
+
+.ui-corner-all {
+    -moz-border-radius: 4px 4px 0px 0px;
+}
+
+.ui-dialog .ui-dialog-content {
+    padding: 0px; /* no padding, Content starts directly below title, resize handle part of content area */
+}
+/*
+ * Tab fixes
+ */
+.ui-tabs .ui-tabs-nav {
+    padding: 0px;
+} 
+.ui-tabs .ui-widget-header {
+    background: #fff;
+    border: 0px;
+    border-bottom: 1px solid #aaaaaa;
+}
+.ui-tabs {
+    padding: 0px;
+}
+.ui-tabs .ui-tabs-nav li a {
+    padding: 2px 4px;
+}
+
+/* controls */
+
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+    font-family: Verdana,"Bitstream Vera Sans","Lucida Grande",Tahoma,"Lucida Sans Unicode",Arial,sans-serif;
+    font-size: 12px;
+}

@@ -58,9 +58,3 @@ body {
     padding: 2px 4px;
 }
 
-/* controls */
-
-.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
-    font-family: Verdana,"Bitstream Vera Sans","Lucida Grande",Tahoma,"Lucida Sans Unicode",Arial,sans-serif;
-    font-size: 12px;
-}

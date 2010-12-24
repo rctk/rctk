@@ -58,3 +58,6 @@ body {
     padding: 2px 4px;
 }
 
+.ui-tabs .ui-tabs-panel {
+    padding: 0px;
+}

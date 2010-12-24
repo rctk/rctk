@@ -80,17 +80,6 @@ Onion.widget.StaticHTMLText = function(jwin, parent, controlid) {
 
 Onion.widget.StaticHTMLText.prototype = new Onion.widget.StaticText();
 
-Onion.widget.StaticHTMLText.prototype.create = function(data) {
-    var controlid = "ctrl"+this.controlid;
-    this.jwin.factory.append('<div id="' + controlid + '">' + data.text + "</div>");
-
-    this.control = $("#"+controlid);
-    this.control.addClass(this.cssclass);
-    this.set_properties(data);
-    this.control.addClass(this.name);
-
-}
-
 Onion.widget.StaticHTMLText.prototype.set_properties = function(data) {
     Onion.widget.StaticText.prototype.set_properties.apply(this, arguments);
     // text has been updated; update clickhandlers on a's

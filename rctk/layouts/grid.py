@@ -248,6 +248,7 @@ class GridLayout(Layout):
 
             stickyness |= map[p]
         return stickyness
+
 class StaticGrid(GridLayout):
     def __init__(self, rows=None, columns=None, static=True,
                  padx=0, pady=0, ipadx=0, ipady=0, sticky=GridLayout.CENTER):

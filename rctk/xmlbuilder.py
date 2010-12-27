@@ -49,6 +49,13 @@ class ParseError(Exception):
     pass
 
 class SimpleXMLBuilder(object):
+    """
+        Import an entire xml file with all contained objects, adds
+        them (as in .append()) to the supplied container.
+        References to the individual controls will be stored in 'storage'
+        under their respective names.
+        container and storage can be the same object.
+    """
     def __init__(self, container, storage=None):
         self.container = container
         self.storage = storage or container
@@ -69,13 +76,56 @@ class SimpleXMLBuilder(object):
         tree = ElementTree.parse(StringIO.StringIO(xmlstr))
         root = tree.getroot()
 
+        created = []
         ## only accept objects, for now
         for c in root.getchildren():
             if c.tag == NS("object"):
                 klass = c.attrib['class']
-                XMLControlRegistry[klass](self.tk, self.storage, 
+                o = XMLControlRegistry[klass](self.tk, self.storage, 
                                           self.container, c, klass)
+                created.append(o)
+        return created
 
+class XMLLoader(object):
+    """
+        Constructs controls entirely, not depending on a 
+        container. It's up to the caller to append the 
+        constructed control(s)
+
+        Returns a list of controls. Also, individual controls can
+        be loaded by supplying the name.
+    """
+    def __init__(self, tk):
+        self.tk = tk
+        
+    def fromPath(self, path, names=None):
+        ## some magic to allow paths relative to calling module
+        ## XXX mostly duplicated from SimpleXMLBuilder
+        if path.startswith('/'):
+            fullpath = path
+        else:
+            frame = sys._getframe(1)
+            base = os.path.dirname(frame.f_globals['__file__'])
+            fullpath = os.path.join(base, path)
+        xml = open(fullpath, "r").read()
+        return self.fromString(xml, names)
+
+    def fromString(self, xmlstr, names=None):
+        """ load controls from an xml string. Optionally filter on names,
+            only return controls that match """
+        tree = ElementTree.parse(StringIO.StringIO(xmlstr))
+        root = tree.getroot()
+
+        created = {}
+        ## only accept objects, for now
+        for c in root.getchildren():
+            if c.tag == NS("object"):
+                klass = c.attrib['class']
+                name = c.attrib['name']
+                if names is None or name in names:
+                    o = XMLControlRegistry[klass](self.tk, None, None, c, klass)
+                    created[name] = o
+        return created
 
 class ControlImporter(object):
     def __init__(self, class_or_classid):
@@ -134,15 +184,16 @@ class ControlImporter(object):
         except TypeError, e:
             raise ParseError, "Failed to create <object class=\"%s\">: %s" % (classname, str(e))
 
-        if name:
+        if name and storage:
             setattr(storage, name, control)
-        if control.containable:
+        if parent and control.containable:
             parent.append(control, **flags)
 
         ## add subobjects to it, if it has any
         for c in sub:
             klass = c.attrib['class']
-            XMLControlRegistry[klass](tk, storage, control, c, klass)
+            XMLControlRegistry[klass](tk, storage or control, control, c, klass)
+        return control
 
 class GridLayoutImporter(ControlImporter):
     """ A gridlayout isn't a new control, it's actually a pluggable
@@ -175,6 +226,7 @@ class GridLayoutImporter(ControlImporter):
         for c in sub:
             klass = c.attrib['class']
             XMLControlRegistry[klass](tk, storage, parent, c, klass)
+        return parent
 
 class TabbedLayoutImporter(ControlImporter):
     """
@@ -197,6 +249,7 @@ class TabbedLayoutImporter(ControlImporter):
         for c in sub:
             klass = c.attrib['class']
             XMLControlRegistry[klass](tk, storage, parent, c, klass)
+        return parent
 
 class GridImporter(ControlImporter):
     """ 
@@ -243,6 +296,7 @@ class GridImporter(ControlImporter):
         parent.append(control, **flags)
 
         ## we're not handling the subs, grid's don't have any
+        return parent
 
 XMLControlRegistry = {}
 XMLControlRegistry["Button"] = ControlImporter("rctk.widgets.button.Button")
@@ -265,9 +319,3 @@ XMLControlRegistry["HBoxLayout"] = GridLayoutImporter("rctk.layouts.grid.HBox")
 
 XMLControlRegistry["TabbedLayout"] = TabbedLayoutImporter("rctk.layouts.tabbed.TabbedLayout")
 
-if __name__ == '__main__':
-    class dummy(object):
-        tk = Toolkit()
-
-    s = SimpleXMLBuilder(dummy())
-    s.fromPath('/home/ivo/m3r/projects/rctk/tsjilp/tsjilp/tsjilp.xml')

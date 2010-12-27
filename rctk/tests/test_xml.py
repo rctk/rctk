@@ -220,3 +220,109 @@ class TestWindowTestXML(BaseContainerTestXML):
         assert self.tk._queue[2]._task['action'] == 'append'
         assert self.tk._queue[2]._task['id'] == container.id
         assert self.tk._queue[2]._task['child'] == button.id
+
+class TestXMLLoader(BaseTest):
+    xml = xml_skeleton % dict(xml="""
+    <object class="Panel" name="simple1">
+      <object class="Button" name="button">
+        <text>Hello</text>
+      </object>
+    </object>
+    <object class="Panel" name="simple2">
+      <object class="Button" name="button">
+        <text>Hello</text>
+      </object>
+    </object>
+    <object class="Panel" name="complex">
+      <object class="Button" name="button">
+        <text>Hello</text>
+      </object>
+      <object class="Panel" name="child1">
+       <object class="Button" name="button">
+         <text>b1</text>
+       </object>
+      </object>
+      <object class="Panel" name="child2">
+       <object class="Button" name="button1">
+         <text>b2</text>
+       </object>
+      </object>
+    </object>
+    <object class="Panel" name="layout">
+      <object class="GridLayout">
+        <rows>1</rows>
+        <object class="Button" name="button">
+          <text>Hello</text>
+        </object>
+      </object>
+    </object>
+    """)
+
+    def build_loader(self):
+        from rctk.xmlbuilder import XMLLoader
+        l = XMLLoader(self.tk)
+        return l
+
+    def test_simple_all(self):
+        """ retrieve all controls from xml """
+        l = self.build_loader()
+        res = l.fromString(self.xml)
+        assert len(res) == 4
+        assert 'simple1' in res
+        assert 'simple2' in res
+        assert 'complex' in res
+        assert 'layout' in res
+
+        from rctk.widgets import Panel
+        assert isinstance(res['simple1'], Panel)
+        assert isinstance(res['simple2'], Panel)
+        assert isinstance(res['complex'], Panel)
+        assert isinstance(res['layout'], Panel)
+
+    def test_simple_single(self):
+        """ retrieve a single (simple) control, check its children """
+        l = self.build_loader()
+        res = l.fromString(self.xml, names=['simple1'])
+
+        from rctk.widgets import Panel
+        assert len(res) == 1
+        assert 'simple1' in res
+        assert isinstance(res['simple1'], Panel)
+
+        ## check it contains the button
+        assert hasattr(res['simple1'], 'button')
+        assert res['simple1'].button.text == 'Hello'
+
+    def test_simple_complex(self):
+        """ retrieve a single (complex) control, check its children """
+        l = self.build_loader()
+        res = l.fromString(self.xml, names=['complex'])
+
+        from rctk.widgets import Panel, Button
+        ## check it contains the panels
+        assert hasattr(res['complex'], 'child1')
+        assert isinstance(res['complex'].child1, Panel)
+        assert hasattr(res['complex'], 'button')
+        assert isinstance(res['complex'].button, Button)
+        assert res['complex'].button.text == "b1"
+
+        assert hasattr(res['complex'], 'child2')
+        assert isinstance(res['complex'].child2, Panel)
+        assert hasattr(res['complex'], 'button1')
+        assert isinstance(res['complex'].button1, Button)
+        assert res['complex'].button1.text == "b2"
+
+    def test_layout(self):
+        """ verify layouts are constructed properly """
+        l = self.build_loader()
+        res = l.fromString(self.xml, names=['layout'])
+
+        from rctk.widgets import Panel, Button
+        from rctk.layouts import GridLayout
+        assert len(res) == 1
+        assert 'layout' in res
+        assert isinstance(res['layout'], Panel)
+        assert isinstance(res['layout']._layout, GridLayout)
+        assert hasattr(res['layout'], 'button')
+        assert isinstance(res['layout'].button, Button)
+

@@ -24,7 +24,8 @@ Onion.widget.Text.prototype.create = function(data) {
     this.control = $("#"+controlid);
     this.control.val(data.value);
     this.control.attr('rows', data.rows);
-    this.control.attr('cols', data.columns);
+    this.control.attr('cols', data.columns); // textarea
+    this.control.attr('size', data.columns); // input
     this.control.addClass(this.cssclass);
     this.control.addClass(this.name);
 

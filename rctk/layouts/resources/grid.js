@@ -172,8 +172,22 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
         /*
          * Calculate how big the cell should be, taking padding and spanning into account
          */
-        var width = Math.round(info.width / info.colspan) + info.padx*2;
-        var height = Math.round(info.height / info.rowspan) + info.pady*2;
+        /*
+         * Spanning cells should live with whatever space is made available. If it's really
+         * not sufficient, the next loop will fix that (in an ugly way).
+         */
+        if(info.colspan <= 1) {
+            var width = info.width + info.padx*2;
+        }
+        else {
+            var width = 1; // 1 px
+        }
+        if(info.rowspan <= 1) {
+            var height = info.height + info.pady*2;
+        }
+        else {
+            var height = 1;
+        }
 
         /* 
          * Keep track of max width height, overall and per row/column
@@ -186,13 +200,57 @@ Onion.layout.NewLayout.prototype.layout = function(config) {
          * the current child. Currently, the child will be spread evenly over 
          * the columns/rows
          */
-        for(var r=0; r < info.rowspan; r++) {
-            this.row_sizes[info.row+r] = Math.max(this.row_sizes[info.row+r], height);
+        this.row_sizes[info.row] = Math.max(this.row_sizes[info.row], height);
+        this.col_sizes[info.column] = Math.max(this.col_sizes[info.column], width);
+
+        //for(var r=0; r < info.rowspan; r++) {
+        //    this.row_sizes[info.row+r] = Math.max(this.row_sizes[info.row+r], height);
+        //}
+        //for(var c=0; c < info.colspan; c++) {
+        //    this.col_sizes[info.column+c] = Math.max(this.col_sizes[info.column+c], width);
+        //}
+    }
+
+    /*
+     * we haven't yet sized row/column-spanning cells yet (they all got a width/height of 1px). 
+     * The available space provided by other cells may be sufficient, but if it doesn't we
+     * need to enlarge some cell.
+     *
+     * This may mean resizing rows/columns. Which ones also depends on the stickyness of
+     * the control, e.g. with stickness EAST, the leftmost cell will expand first.
+     *
+     * But for now, keep things as simple as possible: Only expand the first cell to provide
+     * the necessary missing space. This can use a lot of improvement!
+     */
+    //Onion.util.log("row_sizes", this.row_sizes);
+    //Onion.util.log("col_sizes", this.col_sizes);
+    for(var i=0; i<this.children.length; i++) {
+        var info = this.children[i];
+        var ctr = info.control;
+
+        /*
+         * Calculate how big the cell should be, taking padding and spanning into account
+         */
+        var width = info.width + info.padx*2;
+        var height = info.height + info.pady*2;
+
+        // how much is already provided?
+        var available_height = this.sumheight(info.row, info.row+info.rowspan);
+        var available_width = this.sumwidth(info.column, info.column+info.colspan);
+
+        if(width > available_width) {
+            Onion.util.log("colspan does not fit: " + info.column + ", " + info.row + " colspan " + info.colspan + ", total available " + available_width + ", needed " + width);
+            this.col_sizes[info.column] = width - this.sumwidth(info.column+1, info.column+info.column);
+            this.maxcellwidth = Math.max(this.maxcellwidth, this.col_sizes[info.column]);
         }
-        for(var c=0; c < info.colspan; c++) {
-            this.col_sizes[info.column+c] = Math.max(this.col_sizes[info.column+c], width);
+        if(height > available_height) {
+            Onion.util.log("rowspan does not fit: " + info.column + ", " + info.row + " rowspan " + info.rowspan + ", total available " + available_height + ", needed " + height);
+            this.row_sizes[info.row] = height - this.sumheight(info.row+1, info.row+info.rowspan);
+            this.maxcellheight = Math.max(this.maxcellheight, this.row_sizes[info.row]);
         }
     }
+    //Onion.util.log("row_sizes", this.row_sizes);
+    //Onion.util.log("col_sizes", this.col_sizes);
 
     /*
      * resize the container we're laying out to fit all children. Whether

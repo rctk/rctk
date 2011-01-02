@@ -38,7 +38,7 @@ Onion.widget.Dropdown.prototype.append_item = function(key, label) {
     this.items.push({'key':key, 'label':label});
 }
 
-Onion.widget.Dropdown.prototype.changed = function() {
+Onion.widget.Dropdown.prototype.val = function() {
     var v = this.control.val();
     // a non-multiselect will return a single val. We want to be consistent
     // and always return arrays
@@ -46,7 +46,11 @@ Onion.widget.Dropdown.prototype.changed = function() {
         v = [v];
     }
     v = jQuery.map(v, function(v, i) { return parseInt(v); });
-    this.jwin.add_task("sync", "sync", this.controlid, {'selection':v});
+    return v;
+}
+
+Onion.widget.Dropdown.prototype.changed = function() {
+    this.jwin.add_task("sync", "sync", this.controlid, {'selection':this.val()});
     if(this.handle_click) {
         // find current selection.
         if(!this.busy) {
@@ -62,7 +66,7 @@ Onion.widget.Dropdown.prototype.changed = function() {
 }
 
 Onion.widget.Dropdown.prototype.doubleclick = function() {
-    this.jwin.add_task("sync", "sync", this.controlid, {'selection':this.control.val()});
+    this.jwin.add_task("sync", "sync", this.controlid, {'selection':this.val()});
     if(this.handle_doubleclick) {
         // find current selection.
         if(!this.busy) {

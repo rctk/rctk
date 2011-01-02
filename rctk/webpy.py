@@ -52,10 +52,14 @@ class WebPyGateway(object):
             raise web.notfound()
 
         type, result = resource
-        web.header("content-type", type)
+        web.header("Content-Type", type)
 
         ## experimental partial content support
         ## perhaps this shouldn't be enabled by default
+        # return result ## XXX partial support disabled!
+        
+        ## doesn't seem to work with chrome - works better without, actually.
+        ## Let's disable for now.
         range = web.ctx.env.get('HTTP_RANGE')
         if range is None:
             return result
@@ -71,12 +75,17 @@ class WebPyGateway(object):
         else:
             end = int(partial_end)
 
+        ## ignore "small" startrequests. Not sure why this is needed.
+        if end < 2000:
+            end = total-1
+
         chunksize = (end-start)+1
 
         web.ctx.status = "206 Partial Content"
-        web.header("Content-Range", "bytes %d-%d/%d" % (start, end, total))
         web.header("Accept-Ranges", "bytes")
-        web.header("Content-Length", chunksize)
+        web.header("Content-Length", str(chunksize))
+        web.header("Content-Range", "bytes %d-%d/%d" % (start, end, total))
+        web.header("Connection", "close")
         return result[start:end+1]        
     
     def POST(self, data):
@@ -98,7 +107,7 @@ class WebPyGateway(object):
             self.manager.cleanup_expired()
             return
 
-        web.header("content-type", "application/json")
+        web.header("Content-Type", "application/json")
         method = rest.strip()
         arguments = web.input()
 

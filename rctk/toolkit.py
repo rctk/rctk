@@ -5,8 +5,6 @@ import time
 
 from rctk.resourceregistry import getResourceRegistry
 
-import rctk.resources
-
 from rctk.widgets import Root, Control
 from rctk.event import dispatcher
 from rctk.task import Task
@@ -83,26 +81,46 @@ class TimerManager(object):
                 del self.timers[id]
             
 class ResourceManager(object):
-    def __init__(self):
+    def __init__(self, frontend):
         self.rr = getResourceRegistry()
+        self.frontend = frontend(self) ## instantiate!
 
     def serve(self, name):
         if name == "":
             ## insert RR magic
             header = self.rr.header()
 
-            tpl = open(os.path.join(os.path.dirname(__file__), 'main.html')).read()
+            tpl = self.frontend.index_html()
+            # tpl = open(os.path.join(os.path.dirname(__file__), 'main.html')).read()
+            # tpl = open("/home/ivo/m3r/projects/rctk/qx/rctk/source/index.html").read()
+            #tpl = open("/home/ivo/m3r/projects/rctk/qx/rctk/build/index-build.html").read()
             rendered = tpl.replace('<!-- rctk-header -->', header)
             return ('text/html', rendered)
         elif name.startswith('resources'):
             elements = name.split('/')
             resource = self.rr.get_resource(elements[1], elements)
             return (resource.type, resource.data)
+        #else:
+        #    dir, rest = name.split("/")
+        #    import pdb; pdb.set_trace()
+        #    if name.startswith("qooxdoo"):
+        #        data = open("/home/ivo/m3r/projects/rctk/qx/" + name).read()
+        #    else:
+        #        data = open("/home/ivo/m3r/projects/rctk/qx/rctk/source/"+name).read()
+        #    if dir in ("class", "resource", "script", "translation") or name.startswith("qooxdoo"):
+        #        type = "text/javascript"
+        #        if name.endswith(".html"):
+        #            type = "text/html"
+        #        elif name.endswith(".css"):
+        #            typer = "text/css"
+        #        return type, data
         raise KeyError(name)
 
 class Toolkit(ResourceManager):
-    def __init__(self, app, debug=False, polling=0, title="RCTK", *args, **kw):
-        super(Toolkit, self).__init__()
+
+    def __init__(self, app, frontend=None, debug=False, polling=0, 
+                 title="RCTK", *args, **kw):
+        super(Toolkit, self).__init__(frontend)
         self.app = app
         self._queue = []
         self._controls = {}
@@ -115,7 +133,6 @@ class Toolkit(ResourceManager):
         self.kw = kw
         self.timers = TimerManager(self)
         self.startupdir = os.getcwd() 
-
 
     def add_control(self, control):
         self._controls[control.id] = control
@@ -199,13 +216,14 @@ class Toolkit(ResourceManager):
         """
         return self.timers.set_timer(handler, millis)
 
-def factory(app, debug=False, polling=0, title="RCTK"):
+def factory(app, frontend=None, debug=False, polling=0, title="RCTK"):
     """ create and configure a toolkit specifically for 'app' """
 
     debug = getattr(app, 'debug', False) or debug
     polling = getattr(app, 'polling', 0) or polling
     title = getattr(app, 'title', None) or title
+    frontend = getattr(app, 'frontend', None) or frontend
 
-    return Toolkit(app, debug=debug, polling=polling, title=title)
+    return Toolkit(app, frontend=frontend, debug=debug, polling=polling, title=title)
 
 

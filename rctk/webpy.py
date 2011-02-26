@@ -146,7 +146,7 @@ class WebPyGateway(object):
 
 def app(manager, use_cookies=False):
     ## required for local static to work
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(manager.workingdir())
     gw = WebPyGateway(manager, use_cookies=use_cookies)
     return web.application(('/(.*)', 'gateway'), {'gateway':gw}, autoreload=True)
 

@@ -7,6 +7,7 @@ import subprocess
 from rctk.toolkit import factory, State, globalstate
 from rctk.util import resolveclass
 from rctk.app import check_classid
+from rctk.frontend import Loader
 
 import uuid
 import sys, cgitb
@@ -14,9 +15,13 @@ import sys, cgitb
 
 class Manager(object):
     """ session manager """
-    def __init__(self, sessionclass, classid, startupdir, debug=False, *args, **kw):
+    DEFAULT_FRONTEND = "rctk.jquery.frontend.JQueryFrontend"
+
+    def __init__(self, sessionclass, classid, frontend=None, startupdir="", 
+                 debug=False, *args, **kw):
         self.sessionclass = sessionclass
         self.classid = classid
+        self.frontend = Loader.load(frontend or self.DEFAULT_FRONTEND)
         self.startupdir = startupdir
         self.debug = debug
         self.args = args
@@ -26,6 +31,8 @@ class Manager(object):
 
         check_classid(self.classid)
 
+    def workingdir(self):
+        return self.frontend.workingdir()
 
     def cleanup_expired(self):
         expired = []
@@ -41,8 +48,11 @@ class Manager(object):
         sessionid = uuid.uuid1().hex
 
         self.sessions[sessionid] = self.sessionclass(self.classid, 
-                                      self.debug,
-                                      self.args, self.kw, self.startupdir)
+                                    frontend=self.frontend,
+                                    debug=self.debug,
+                                    args=self.args, 
+                                    kw=self.kw, 
+                                    startupdir=self.startupdir)
 
         return sessionid
 
@@ -55,16 +65,17 @@ class Session(object):
         Different requests from different browsers result in
         different sessions. Sessions can time out 
     """
-    def __init__(self, classid, debug, args, kw, startupdir):
+    def __init__(self, classid, frontend, debug, args, kw, startupdir):
         self.last_access = time.time()
         self.state = State()
         self.set_global_state()
         self.classid = classid
+        self.frontend = frontend
         self.debug = debug
         self.appclass = resolveclass(classid)
 
         self.app = self.appclass(*args, **kw)
-        self.tk = factory(self.app, debug=debug)
+        self.tk = factory(self.app, frontend=self.frontend, debug=debug)
 
         self.tk.startupdir = startupdir # ??
         self.crashed = False

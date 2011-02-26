@@ -1,9 +1,0 @@
-/*
- * Needed to be able to calculate sizes - see
- * tabs documentation
- */
-.ui-tabs .ui-tabs-hide {
-    position: absolute;
-    left: -10000px;
-    display: inline !important;
-}

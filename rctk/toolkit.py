@@ -91,29 +91,14 @@ class ResourceManager(object):
             header = self.rr.header()
 
             tpl = self.frontend.index_html()
-            # tpl = open(os.path.join(os.path.dirname(__file__), 'main.html')).read()
-            # tpl = open("/home/ivo/m3r/projects/rctk/qx/rctk/source/index.html").read()
-            #tpl = open("/home/ivo/m3r/projects/rctk/qx/rctk/build/index-build.html").read()
             rendered = tpl.replace('<!-- rctk-header -->', header)
             return ('text/html', rendered)
         elif name.startswith('resources'):
             elements = name.split('/')
             resource = self.rr.get_resource(elements[1], elements)
             return (resource.type, resource.data)
-        #else:
-        #    dir, rest = name.split("/")
-        #    import pdb; pdb.set_trace()
-        #    if name.startswith("qooxdoo"):
-        #        data = open("/home/ivo/m3r/projects/rctk/qx/" + name).read()
-        #    else:
-        #        data = open("/home/ivo/m3r/projects/rctk/qx/rctk/source/"+name).read()
-        #    if dir in ("class", "resource", "script", "translation") or name.startswith("qooxdoo"):
-        #        type = "text/javascript"
-        #        if name.endswith(".html"):
-        #            type = "text/html"
-        #        elif name.endswith(".css"):
-        #            typer = "text/css"
-        #        return type, data
+        elif name.startswith('media/'):
+            return self.frontend.serve(name)
         raise KeyError(name)
 
 class Toolkit(ResourceManager):

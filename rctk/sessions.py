@@ -31,6 +31,9 @@ class Manager(object):
 
         check_classid(self.classid)
 
+    def serve_static(self, path):
+        return self.frontend.serve(path)
+
     def workingdir(self):
         return self.frontend.workingdir()
 

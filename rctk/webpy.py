@@ -13,10 +13,26 @@ class WebPyGateway(object):
         self.use_cookies = use_cookies
 
     def GET(self, data):
+        """
+            GET serves content that's considered static and
+            cachable. But we also (ab)use it to verify / create
+            (path- or cookie-based) sessions.
+
+            Neither of these sessions work well, the session should
+            be part of the communication channel between the frontend
+            and backend. Hence some hacking in this method which will
+            have to disappear eventually
+        """
         data = data.strip()
         rest = ''
         session = None
         
+        if data.startswith("media"):
+            ## set cachanble headers?
+            type, result = self.manager.serve_static(data)
+            web.header("Content-Type", type)
+            return result
+
         ## data == '' always means a new session. When using
         if data:
             if self.use_cookies:

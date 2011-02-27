@@ -81,9 +81,9 @@ class TimerManager(object):
                 del self.timers[id]
             
 class ResourceManager(object):
-    def __init__(self, frontend):
+    def __init__(self, frontendclass):
         self.rr = getResourceRegistry()
-        self.frontend = frontend(self) ## instantiate!
+        self.frontend = frontendclass(self)
 
     def serve(self, name):
         if name == "":
@@ -103,9 +103,9 @@ class ResourceManager(object):
 
 class Toolkit(ResourceManager):
 
-    def __init__(self, app, frontend=None, debug=False, polling=0, 
+    def __init__(self, app, frontendclass=None, debug=False, polling=0, 
                  title="RCTK", *args, **kw):
-        super(Toolkit, self).__init__(frontend)
+        super(Toolkit, self).__init__(frontendclass)
         self.app = app
         self._queue = []
         self._controls = {}
@@ -201,14 +201,14 @@ class Toolkit(ResourceManager):
         """
         return self.timers.set_timer(handler, millis)
 
-def factory(app, frontend=None, debug=False, polling=0, title="RCTK"):
+def factory(app, frontendclass=None, debug=False, polling=0, title="RCTK"):
     """ create and configure a toolkit specifically for 'app' """
 
     debug = getattr(app, 'debug', False) or debug
     polling = getattr(app, 'polling', 0) or polling
     title = getattr(app, 'title', None) or title
-    frontend = getattr(app, 'frontend', None) or frontend
+    frontendclass = getattr(app, 'frontendclass', None) or frontendclass
 
-    return Toolkit(app, frontend=frontend, debug=debug, polling=polling, title=title)
+    return Toolkit(app, frontendclass=frontendclass, debug=debug, polling=polling, title=title)
 
 

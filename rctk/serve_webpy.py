@@ -48,7 +48,7 @@ serve_webpy.py --list-frontends"""
         sys.exit(-1)
 
     cwd = os.getcwd() ## cwd will be replaced by frontend package (?)
-    manager = Manager(session_class, classid, frontend=frontend, startupdir=cwd, debug=debug, **options)
+    manager = Manager(session_class, classid, frontendclass=frontend, startupdir=cwd, debug=debug, **options)
     serve(manager, use_cookies=use_cookies)
 
 if __name__ == '__main__':

@@ -86,14 +86,8 @@ class ResourceManager(object):
         self.frontend = frontendclass(self)
 
     def serve(self, name):
-        if name == "":
-            ## insert RR magic
-            header = self.rr.header()
-
-            tpl = self.frontend.index_html()
-            rendered = tpl.replace('<!-- rctk-header -->', header)
-            return ('text/html', rendered)
-        elif name.startswith('resources'):
+        ## XXX deprecated -> frontend.serve_resource (?)
+        if name.startswith('resources'):
             elements = name.split('/')
             resource = self.rr.get_resource(elements[1], elements)
             return (resource.type, resource.data)

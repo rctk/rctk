@@ -9,7 +9,6 @@ manager = None
 
 def application(environ, start_response):
     global manager
-    use_cookies = environ.get('rctk.use_cookies', "false").lower() in ("1", "true")
     if manager is None:
         classid = environ.get('rctk.classid')
         debug = environ.get('rctk.debug', "false").lower() in ("1", "true")
@@ -29,5 +28,5 @@ def application(environ, start_response):
             sessionclass = Session
 
         manager = Manager(SpawnedSession, classid, startupdir, debug, **options)
-    return app(manager, use_cookies).wsgifunc()(environ, start_response)
+    return app(manager).wsgifunc()(environ, start_response)
 

@@ -10,7 +10,7 @@ def main():
     usage = """\
 Usage: 
 
-serve_webpy.py [--frondend=frontend] [--use-cookies] [--spawned-sessions] [--debug] [key=val ..] module.class [webpy port]"
+serve_webpy.py [--frondend=frontend] [--spawned-sessions] [--debug] [key=val ..] module.class [webpy port]"
 or
 serve_webpy.py --list-frontends"""
     args = sys.argv
@@ -21,15 +21,12 @@ serve_webpy.py --list-frontends"""
     session_class = Session
 
     classid = ''
-    use_cookies = False
     debug = False
     options = {}
     frontend = None
 
     while not classid:
-        if args[1] in ('--use_cookies', '--use-cookies'):
-            use_cookies = True
-        elif args[1] == '--debug':
+        if args[1] == '--debug':
             debug = True
         elif args[1] in ('--spawned_sessions', '--spawned-sessions'):
             session_class = SpawnedSession
@@ -49,7 +46,7 @@ serve_webpy.py --list-frontends"""
 
     cwd = os.getcwd() ## cwd will be replaced by frontend package (?)
     manager = Manager(session_class, classid, frontendclass=frontend, startupdir=cwd, debug=debug, **options)
-    serve(manager, use_cookies=use_cookies)
+    serve(manager)
 
 if __name__ == '__main__':
     main()

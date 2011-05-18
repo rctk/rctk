@@ -3,65 +3,50 @@ import web
 
 import simplejson
 
-from rctk.sessions import Manager, Session, SpawnedSession
+from rctk.sessions import Manager
 
 class WebPyGateway(object):
     """ A gateway mediates between user/browser and RCTK application.
         This gateway is built on the web.py application server """
-    def __init__(self, manager, use_cookies=False):
+    def __init__(self, manager):
         self.manager = manager
-        self.use_cookies = use_cookies
 
     def GET(self, data):
         """
             GET serves content that's considered static and
-            cachable. But we also (ab)use it to verify / create
-            (path- or cookie-based) sessions.
-
-            Neither of these sessions work well, the session should
-            be part of the communication channel between the frontend
-            and backend. Hence some hacking in this method which will
-            have to disappear eventually
+            cachable. If no rctk-sid header is passed and /
+            is requested, a new session will be started
         """
         data = data.strip()
-        rest = ''
         session = None
         
+        if not data: 
+            return self.manager.index_html()
+
         if data.startswith("media"):
-            ## set cachanble headers?
+            ## set cachable headers?
             type, result = self.manager.serve_static(data)
             web.header("Content-Type", type)
             return result
 
-        ## data == '' always means a new session. When using
-        if data:
-            if self.use_cookies:
-                session = self.get_session_from_cookie()
-                rest = data
-            elif '/' in data:
-                sessionid, rest = data.split('/', 1)		
-                session = self.manager.get(sessionid)
-            else:
-                raise web.notfound()
+        if data.startswith("resources/"):
+            type, result = self.manager.serve_resource(data)
+            web.header("Content-Type", type)
+            return result
+
+        sessionid = web.ctx.environ.get('HTTP_RCTK_SID')
+        session = self.manager.get(sessionid)
         
         if session is None:
             sessionid = self.manager.create()
             session = self.manager.get(sessionid)
-            if self.use_cookies:
-                web.setcookie('rctk-sid', sessionid)
-                if data:
-                    web.seeother('/')
-                    return
-            else:
-                web.seeother('/' + sessionid + '/')		
-                return		
-        
-        if session.crashed:
+        elif session.crashed:
             self.manager.cleanup_expired()
             web.seeother('/')
             return
 
-        resource = session.serve(rest)
+        web.header('rctk-sid', sessionid)
+        resource = session.serve(data)
         self.manager.cleanup_expired()
 
         if resource is None:
@@ -105,28 +90,25 @@ class WebPyGateway(object):
         return result[start:end+1]        
     
     def POST(self, data):
+        # import pdb; pdb.set_trace()
         data = data.strip()
         session = None
         
-        if self.use_cookies:
-            session = self.get_session_from_cookie()
-            rest = data
-        else:
-            sessionid, rest = data.split('/', 1)		
-            session = self.manager.get(sessionid)
+        sessionid = web.ctx.environ.get('HTTP_RCTK_SID')
+        session = self.manager.get(sessionid)
         
         if session is None:
+            sessionid = self.manager.create()
+            session = self.manager.get(sessionid)
+        elif session.crashed:
+            self.manager.cleanup_expired()
             web.seeother('/')
             return
 
-        if session.crashed:
-            self.manager.cleanup_expired()
-            return
-
+        web.header('rctk-sid', sessionid)
         web.header("Content-Type", "application/json")
-        method = rest.strip()
+        method = data.strip()
         arguments = web.input()
-
         
         result = session.handle(method, **arguments)
 
@@ -137,20 +119,6 @@ class WebPyGateway(object):
 
         return simplejson.dumps(result)
 
-    def get_session_from_cookie(self):
-        """ Use a cookie to find out if the client already has an active session.
-            Returns the session or None if valid session is found.
-        """
-        sessionid = web.cookies().get('rctk-sid')
-        if sessionid:
-            session = self.manager.get(sessionid)
-            if session is None:
-                # user has a cookie, but no session present so delete the cookie
-                web.setcookie('rctk-sid', sessionid, expires=-84000)
-            else:
-                return session
-        return None    
-
     def __call__(self):
         """
             web.py creates new instances of the class on each 
@@ -160,13 +128,13 @@ class WebPyGateway(object):
         """
         return self
 
-def app(manager, use_cookies=False):
+def app(manager):
     ## required for local static to work
     os.chdir(manager.workingdir())
-    gw = WebPyGateway(manager, use_cookies=use_cookies)
+    gw = WebPyGateway(manager)
     return web.application(('/(.*)', 'gateway'), {'gateway':gw}, autoreload=True)
 
-def serve(manager=Manager,  use_cookies=False):
+def serve(manager=Manager):
     """ create the (webpy) app and run it """
-    app(manager, use_cookies=use_cookies).run()
+    app(manager).run()
 

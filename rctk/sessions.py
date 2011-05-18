@@ -31,6 +31,12 @@ class Manager(object):
 
         check_classid(self.classid)
 
+    def index_html(self):
+        return self.frontendclass.index_html()
+
+    def serve_resource(self, path):
+        return self.frontendclass.serve_resource(path)
+
     def serve_static(self, path):
         return self.frontendclass.serve(path)
 
@@ -105,6 +111,7 @@ class Session(object):
 
     def serve(self, name):
         """ serve means serving (static) content. Resources or html """
+        ## XXX deprecated? only resources, and they are served through manager?
         self.set_global_state()
         try:
             type, data = self.tk.serve(name)

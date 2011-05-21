@@ -3,8 +3,6 @@ from rctk.compat import json
 import os
 import time
 
-from rctk.resourceregistry import getResourceRegistry
-
 from rctk.widgets import Root, Control
 from rctk.event import dispatcher
 from rctk.task import Task
@@ -80,26 +78,11 @@ class TimerManager(object):
             if not t.continuous:
                 del self.timers[id]
             
-class ResourceManager(object):
-    def __init__(self, frontendclass):
-        self.rr = getResourceRegistry()
-        self.frontend = frontendclass(self)
+class Toolkit(object):
 
-    def serve(self, name):
-        ## XXX deprecated -> frontend.serve_resource (?)
-        if name.startswith('resources'):
-            elements = name.split('/')
-            resource = self.rr.get_resource(elements[1], elements)
-            return (resource.type, resource.data)
-        elif name.startswith('media/'):
-            return self.frontend.serve(name)
-        raise KeyError(name)
-
-class Toolkit(ResourceManager):
-
-    def __init__(self, app, frontendclass=None, debug=False, polling=0, 
+    def __init__(self, app, debug=False, polling=0, 
                  title="RCTK", *args, **kw):
-        super(Toolkit, self).__init__(frontendclass)
+        super(Toolkit, self).__init__()
         self.app = app
         self._queue = []
         self._controls = {}
@@ -195,14 +178,13 @@ class Toolkit(ResourceManager):
         """
         return self.timers.set_timer(handler, millis)
 
-def factory(app, frontendclass=None, debug=False, polling=0, title="RCTK"):
+def factory(app, debug=False, polling=0, title="RCTK"):
     """ create and configure a toolkit specifically for 'app' """
 
     debug = getattr(app, 'debug', False) or debug
     polling = getattr(app, 'polling', 0) or polling
     title = getattr(app, 'title', None) or title
-    frontendclass = getattr(app, 'frontendclass', None) or frontendclass
 
-    return Toolkit(app, frontendclass=frontendclass, debug=debug, polling=polling, title=title)
+    return Toolkit(app, debug=debug, polling=polling, title=title)
 
 

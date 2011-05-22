@@ -38,12 +38,12 @@ class WebPyGateway(object):
             web.header("Content-Type", type)
             return result
 
-        if not data.startswith("/dynamic/"):
+        if not data.startswith("dynamic/"):
             raise web.notfound()
 
         ## app instance specific dynamic data, eg images from database,
-        ## music. Requires sessionid
-        sessionid = web.ctx.environ.get('HTTP_RCTK_SID')
+        ## music. Requires sessionid, which must be passed as an argument
+        sessionid = web.input(name='sessionid')
         session = self.manager.get(sessionid)
         
         if session is None:

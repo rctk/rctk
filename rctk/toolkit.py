@@ -100,7 +100,7 @@ class Toolkit(object):
 
     def serve(self, name):
         # serve a app-specific, dynamic resource
-        if name.startswith('resources'):
+        if name.startswith('dynamic/'):
             elements = name.split('/')
             resource = getResourceRegistry().get_resource(elements[1], elements)
             return (resource.type, resource.data)

@@ -7,7 +7,7 @@ import os
 import simplejson
 from rctk.toolkit import factory
 from rctk.util import un_unicode
-import sys, cgitb
+import cgitb
 
 class ProcessWrapper(object):
     def __init__(self, klass, debug, stdin, stdout):

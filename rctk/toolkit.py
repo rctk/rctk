@@ -3,6 +3,8 @@ from rctk.compat import json
 import os
 import time
 
+from rctk.resourceregistry import getResourceRegistry
+
 from rctk.widgets import Root, Control
 from rctk.event import dispatcher
 from rctk.task import Task
@@ -95,6 +97,14 @@ class Toolkit(object):
         self.kw = kw
         self.timers = TimerManager(self)
         self.startupdir = os.getcwd() 
+
+    def serve(self, name):
+        # serve a app-specific, dynamic resource
+        if name.startswith('resources'):
+            elements = name.split('/')
+            resource = getResourceRegistry().get_resource(elements[1], elements)
+            return (resource.type, resource.data)
+        raise KeyError(name)
 
     def add_control(self, control):
         self._controls[control.id] = control

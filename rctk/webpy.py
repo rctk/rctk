@@ -14,13 +14,17 @@ class WebPyGateway(object):
     def GET(self, data):
         """
             GET serves content that's considered static and
-            cachable. If no rctk-sid header is passed and /
+            cachable, not related to a specific session 
             is requested, a new session will be started
         """
         data = data.strip()
         session = None
         
-        if not data: 
+        ## python-static stuff (not related to a session) will not work with
+        ## spawned processes. It would mean the manager is able to handle
+        ## these requests locally, without a session. This may not be the 
+        ## case for dynamic resources.
+        if not data: ## should be related to a session / create a session
             return self.manager.index_html()
 
         if data.startswith("media"):
@@ -34,12 +38,16 @@ class WebPyGateway(object):
             web.header("Content-Type", type)
             return result
 
+        if not data.startswith("/dynamic/"):
+            raise web.notfound()
+
+        ## app instance specific dynamic data, eg images from database,
+        ## music. Requires sessionid
         sessionid = web.ctx.environ.get('HTTP_RCTK_SID')
         session = self.manager.get(sessionid)
         
         if session is None:
-            sessionid = self.manager.create()
-            session = self.manager.get(sessionid)
+            raise web.notfound()
         elif session.crashed:
             self.manager.cleanup_expired()
             web.seeother('/')

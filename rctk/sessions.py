@@ -27,6 +27,10 @@ class Manager(object):
         self.args = args
         self.kw = kw
 
+        ##
+        ## import the application class. This will allow the application
+        ## to register all its non-dynamic resources
+        self.appclass = resolveclass(classid)
         self.sessions = {}
 
         check_classid(self.classid)
@@ -57,7 +61,6 @@ class Manager(object):
         sessionid = uuid.uuid1().hex
 
         self.sessions[sessionid] = self.sessionclass(self.classid, 
-                                    frontendclass=self.frontendclass,
                                     debug=self.debug,
                                     args=self.args, 
                                     kw=self.kw, 
@@ -74,12 +77,11 @@ class Session(object):
         Different requests from different browsers result in
         different sessions. Sessions can time out 
     """
-    def __init__(self, classid, frontendclass, debug, args, kw, startupdir):
+    def __init__(self, classid, debug, args, kw, startupdir):
         self.last_access = time.time()
         self.state = State()
         self.set_global_state()
         self.classid = classid
-        self.frontendclass = frontendclass
         self.debug = debug
         self.appclass = resolveclass(classid)
 
@@ -108,23 +110,14 @@ class Session(object):
                 print cgitb.text(sys.exc_info())
         return None
 
-
-    def serve(self, name):
-        """ serve means serving (static) content. Resources or html """
-        ## XXX deprecated? only resources, and they are served through manager?
-        self.set_global_state()
-        try:
-            type, data = self.tk.serve(name)
-        except KeyError, e:
-            return None
-
-        return type, data
-
     def expired(self):
         return self.crashed or (time.time() - self.last_access > (24*3600))
         
     def cleanup(self):
         pass
+
+    def serve(self, name):
+        return self.tk.serve(name)
 
 import threading
 

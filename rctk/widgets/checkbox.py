@@ -3,6 +3,10 @@ from rctk.widgets.control import Control, Attribute
 from rctk.task import Task
 from rctk.event import Clickable
 
+##
+## Checkboxes / radiogroups are currently broken. There's no sense in 
+## implementing them properly for qx until the underlying problems have been
+## solved. XXX
 
 class CheckBox(Control, Clickable):
     """Simple CheckBox control."""

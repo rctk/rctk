@@ -103,8 +103,9 @@ class ResourceRegistry(object):
         At this point, this is only an issue with jqueryui, which we'll keep 
         as a static dependency for now.
     """
-    def __init__(self):
+    def __init__(self, debug=True):
         self.resources = OrderedDict()
+        self.debug = debug
 
     def add(self, resource):
         ## avoid duplicates
@@ -152,11 +153,17 @@ class ResourceRegistry(object):
         """ return html usable for injection into <head></head> """
         res = []
         for css in self.css_resources():
-            res.append('<link type="text/css" href="resources/%s"'
-                       'rel="stylesheet" />' % css)
+            o = self.resources[css]
+            if self.debug:
+                timestamp = "?%d" % o.timestamp
+            res.append('<link type="text/css" href="resources/%s%s"'
+                       'rel="stylesheet" />' % (css, timestamp))
         for js in self.js_resources():
+            o = self.resources[js]
+            if self.debug:
+                timestamp = "?%d" % o.timestamp
             res.append('<script type="text/javascript"'
-                       'src="resources/%s"></script>' % js)
+                       'src="resources/%s%s"></script>' % (js, timestamp))
 
         return '<!-- dynamic resources -->\n%s\n<!-- end dynamic resources -->' % '\n'.join(res)
 

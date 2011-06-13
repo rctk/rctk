@@ -15,11 +15,14 @@ class BaseResource(object):
         if type is not None:
             self.type = type
 
-        self.timestamp = timestamp or time.time()
+        self._timestamp = timestamp or time.time()
         self.name = name
         if self.name is None:
             self.name = "resource%d" % BaseResource.counter
             BaseResource.counter += 1 ## class attribute!
+
+    def timestamp(self):
+        return self._timestamp
 
     def __eq__(self, other):
         ## what if timestamp differs?
@@ -27,7 +30,7 @@ class BaseResource(object):
 
     def __repr__(self):
         return '<%s name="%s" type="%s" ts="%s" len=%d bytes>' % \
-               (self.__class__.__name__, self.name, self.type, self.timestamp, 
+               (self.__class__.__name__, self.name, self.type, self.timestamp(), 
                 len(self.data))
 
 class FileResource(BaseResource):
@@ -48,6 +51,9 @@ class FileResource(BaseResource):
         timestamp = os.stat(self.path)[stat.ST_MTIME]
 
         super(FileResource, self).__init__(data, name, type, timestamp)
+
+    def timestamp(self):
+        return os.stat(self.path)[stat.ST_MTIME]
 
     def __eq__(self, other):
         if isinstance(other, FileResource):
@@ -155,13 +161,13 @@ class ResourceRegistry(object):
         for css in self.css_resources():
             o = self.resources[css]
             if self.debug:
-                timestamp = "?%d" % o.timestamp
+                timestamp = "?%d" % o.timestamp()
             res.append('<link type="text/css" href="resources/%s%s"'
                        'rel="stylesheet" />' % (css, timestamp))
         for js in self.js_resources():
             o = self.resources[js]
             if self.debug:
-                timestamp = "?%d" % o.timestamp
+                timestamp = "?%d" % o.timestamp()
             res.append('<script type="text/javascript"'
                        'src="resources/%s%s"></script>' % (js, timestamp))
 

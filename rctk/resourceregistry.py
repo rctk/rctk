@@ -11,7 +11,7 @@ class BaseResource(object):
 
     counter = 0
     def __init__(self, data, name=None, type=None, timestamp=None):
-        self.data = data
+        self._data = data
         if type is not None:
             self.type = type
 
@@ -20,6 +20,10 @@ class BaseResource(object):
         if self.name is None:
             self.name = "resource%d" % BaseResource.counter
             BaseResource.counter += 1 ## class attribute!
+
+    @property 
+    def data(self):
+        return self._data
 
     def timestamp(self):
         return self._timestamp
@@ -51,6 +55,13 @@ class FileResource(BaseResource):
         timestamp = os.stat(self.path)[stat.ST_MTIME]
 
         super(FileResource, self).__init__(data, name, type, timestamp)
+
+    @property
+    def data(self):
+        if self.debug:
+            return open(self.path, "r").read()
+        else:
+            return self._data
 
     def timestamp(self):
         return os.stat(self.path)[stat.ST_MTIME]
@@ -151,6 +162,8 @@ class ResourceRegistry(object):
         """
         r = self.resources[name]
 
+        ## XXX this is rather ugly way of passing the RR's debug setting
+        r.debug = self.debug
         if isinstance(r, DynamicResource):
             r = r(elements)
         return r

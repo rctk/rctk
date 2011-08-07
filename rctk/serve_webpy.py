@@ -10,7 +10,7 @@ def main():
     usage = """\
 Usage: 
 
-serve_webpy.py [--frondend=frontend] [--spawned-sessions] [--debug] [key=val ..] module.class [webpy port]"
+serve_webpy.py [--frontend=frontend] [--spawned-sessions] [--debug] [key=val ..] module.class [webpy port]"
 or
 serve_webpy.py --list-frontends"""
     args = sys.argv

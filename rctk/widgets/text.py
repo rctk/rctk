@@ -1,6 +1,5 @@
 from rctk.widgets.control import Control, Attribute
 
-from rctk.task import Task
 from rctk.event import Changable, Submittable, Keypressable
 
 class Text(Control, Changable, Submittable, Keypressable):

@@ -1,9 +1,9 @@
 from rctk.widgets.control import Control, Attribute
 
 from rctk.task import Task
-from rctk.event import Clickable, DoubleClickable
+from rctk.event import Clickable
 
-class Dropdown(Control, Clickable, DoubleClickable):
+class Dropdown(Control, Clickable):
     """
         Display a dropdown containing values. The caller must supply
         items as tuples (key, label), label will be used for presentation,
@@ -16,9 +16,6 @@ class Dropdown(Control, Clickable, DoubleClickable):
 
         A Dropdown is clickable, the handler will receive the item selected
         in the eventobject as "key".
-
-        Behaviour changes if the widget is "multiple", value will
-        return a list of keys in stead of a single value. 
 
         The default setup is no selection at all.
 
@@ -33,8 +30,7 @@ class Dropdown(Control, Clickable, DoubleClickable):
     # selection synchronizes the selected state with the client. It's
     # not to be accessed directly since it doesn't directly contain the
     # items configured on the Dropdown
-    selection = Attribute([], Attribute.NUMBER) # List of Number actually
-    multiple = Attribute(False, Attribute.BOOLEAN)
+    selection = Attribute(None, Attribute.NUMBER)
 
 
     def __init__(self, tk, items=(), **properties):
@@ -65,31 +61,20 @@ class Dropdown(Control, Clickable, DoubleClickable):
     def _items(self):
         return [(idx, label) for (idx, (k, label)) in self.items]
 
-    ## DEPRECATED XXX NEEDS WORK
+    ##
+    ## The value property will map the user-defined keys
+    ## to the internal indexes
     def _get_value(self):
-        r = []
         for (idx, (key, value)) in self.items:
-            if idx in self.selection:
-                r.append(key)
-        if self.multiple:
-            return r
-        if r:
-            return r[0]
+            if idx == self.selection:
+                return key
         return None
 
     def _set_value(self, v):
-        if self.multiple:
-            s = []
-            for (idx, (key, value)) in self.items:
-                if key in v:
-                    s.append(idx)
-            self.selection = s
-            return
-        else:
-            for (idx, (key, value)) in self.items:
-                if v == key:
-                    self.selection = [idx]
-                    return
+        for (idx, (key, value)) in self.items:
+            if v == key:
+                self.selection = idx
+                return
         raise KeyError(v)
 
     value = property(_get_value, _set_value)
@@ -101,11 +86,11 @@ class Dropdown(Control, Clickable, DoubleClickable):
 
     def clear(self):
         self._items = []
-        self.selection = [] # XXX this will create a redundant task
+        self.selection = None # XXX this will create a redundant task
         ## no strict need to reset indexer
         self.tk.queue(Task("Dropdown cleared id %d" % self.id,
          {'control':self.name, "id":self.id, "action":"update", 
           "update":{"clear":True}}))
 
     def __repr__(self):
-        return '<%s name="%s" id=%d multiple=%s items %s>' % (self.__class__.__name__, self.name, self.id, self.multiple, repr(self.items))
+        return '<%s name="%s" id=%d items %s>' % (self.__class__.__name__, self.name, self.id, repr(self.items))

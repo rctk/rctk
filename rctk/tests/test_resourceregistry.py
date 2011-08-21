@@ -89,7 +89,7 @@ class TestFileResource(BaseTestResource):
 
         ## a generated timestamp would be >= now
         r1 = self.factory("files/dummy.x")
-        assert r1.timestamp < now
+        assert r1.timestamp() < now
 
     def test_generated_name(self):
         r1 = self.factory("files/dummy.x")

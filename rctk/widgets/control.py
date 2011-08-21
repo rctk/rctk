@@ -39,12 +39,12 @@ class Attribute(object):
             body = Attribute("", Attribute.STRING, filter=escape_html)
             lines = Attribute(20, Attribute.STRING)
 
-        c = MyControl(titlte="Hello World")
+        c = MyControl(title="Hello World")
         c.text = "<b>How are you!</b>"
 
         filtering is not actively used by the Synchronzed Attributes machinery,
         but can be used by the callback responsible for actually synchronizing.
-        Filtering thould be two-way. Implement a class with from/to?
+        Filtering should be two-way. Implement a class with from/to?
     """
 
     STRING = 1

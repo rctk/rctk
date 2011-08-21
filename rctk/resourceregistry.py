@@ -75,7 +75,7 @@ class FileResource(BaseResource):
 
     def __repr__(self):
         return '<%s name="%s" type="%s" ts="%s" path="%s">' % \
-               (self.__class__.__name__, self.name, self.type, self.timestamp, 
+               (self.__class__.__name__, self.name, self.type, self.timestamp(), 
                 self.path)
 
 class JSResource(BaseResource):

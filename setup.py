@@ -18,7 +18,6 @@ else:
     ]
     entry_points={
         "console_scripts": [
-          "test=rctk.runtests:runall",
           "serve_webpy=rctk.serve_webpy:main",
           "serve_mozilla=rctk.serve_mozilla:main",
           "serve_process=rctk.serve_process:main"

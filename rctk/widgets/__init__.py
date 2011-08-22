@@ -1,5 +1,6 @@
 from rctk.widgets.button import Button
-from rctk.widgets.checkbox import CheckBox, CheckBoxGroup
+from rctk.widgets.checkbox import CheckBox
+from rctk.widgets.radiobutton import RadioButton, RadioGroup
 from rctk.widgets.container import Container
 from rctk.widgets.control import Control
 from rctk.widgets.date import Date

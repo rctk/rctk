@@ -3,6 +3,7 @@ from rctk.tests.base import BaseTest
 from rctk.widgets import Control
 from rctk.task import Task
 
+import py.test
 
 #
 # - test events, etc?
@@ -38,7 +39,6 @@ class BaseWidgetTest(BaseTest):
         from rctk.widgets.control import Control
         w = self.create_widget()
         assert isinstance(w, Control)
-    
     
 class BaseNonRootWidgetTest(BaseWidgetTest):
     """
@@ -93,11 +93,21 @@ class TestCheckBoxWidget(BaseNonRootWidgetTest):
 
     # test syncing value
 
-# from rctk.widgets.radiobutton import RadioButton
-# class TestRadioButtonWidget(BaseNonRootWidgetTest):
-#     widget = RadioButton
-# 
-#     # test setting group
+from rctk.widgets.image import Image
+class TestImageWidget(BaseNonRootWidgetTest):
+    widget = Image
+
+    def create_widget(self):
+        return Image(self.tk)
+
+from rctk.widgets.radiobutton import RadioButton
+class TestRadioButtonWidget(BaseNonRootWidgetTest):
+    widget = RadioButton
+
+    # test setting group
+    def test_group(self):
+        py.test.skip("Test grouped radiobuttons")
+
 
 from rctk.widgets.dropdown import Dropdown
 class TestDropdownWidget(BaseNonRootWidgetTest):
@@ -158,23 +168,13 @@ class TestRootCreate(BaseWidgetTest):
         assert self.tk._queue == []
 
     def test_id(self):
-        from rctk.widgets.root import Root
-
         root = self.create_widget()
         assert root.id == 0
 
     def test_id_zero(self):
-        from rctk.widgets.root import Root
-
         def check(r):
             assert r.id == 0
 
         for i in range(0, 5):
             root = self.create_widget()
             yield check, root
-
-import py.test
-
-class TestImage(object): 
-    def test_lies(self):
-        py.test.skip("Niet goed getest")

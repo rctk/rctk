@@ -27,6 +27,9 @@ class SubmitEvent(Event):
 class KeypressEvent(Event):
     pass
 
+class CloseEvent(Event):
+    pass
+
 class Clickable(object):
     _click_handler = None
 
@@ -96,6 +99,20 @@ class Keypressable(object):
 
     keypress = property(_get_keypress, _set_keypress)
 
+class Closable(object):
+    _close_handler = None
+
+    def _set_close(self, val):
+        self._close_handler = val
+        self.tk.queue(Task("CloseHandler installed on %s %d" % (self.name, self.id),
+          {'control':self.name, "id":self.id, "action":"handler", "type":"close"}))
+
+    def _get_close(self):
+        return self._close_handler
+
+    close = property(_get_close, _set_close)
+
+
 class Dispatcher(object):
     events = {}
 
@@ -115,3 +132,4 @@ dispatcher.register('doubleclick', ClickEvent)
 dispatcher.register('change', ChangeEvent)
 dispatcher.register('submit', SubmitEvent)
 dispatcher.register('keypress', KeypressEvent)
+dispatcher.register('close', CloseEvent)

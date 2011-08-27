@@ -1,27 +1,23 @@
-from rctk.task import Task
 from rctk.widgets.control import Attribute
 from rctk.widgets.container import Container
+from rctk.event import Closable
 
-
-class Window(Container):
+class Window(Container, Closable):
     name = "window"
 
     containable = False
 
     title = Attribute("Window", Attribute.STRING)
     modal = Attribute(False, Attribute.BOOLEAN)
+    resizable = Attribute(False, Attribute.BOOLEAN)
     position = Attribute("top", Attribute.STRING) # can also be (x,y)
-    ## keep track of state (open/closed), both ways! So not just methods to open/close remotely
+    opened = Attribute(False, Attribute.BOOLEAN)
 
     def __init__(self, tk, title="", **properties):
         super(Window, self).__init__(tk, title=title, **properties)
 
-
-    ## allow title to be updated
     def open(self):
-        self.tk.queue(Task("Window id %d opened" % self.id,
-          {'control':self.name, 'id':self.id, 'action':'update', "update":{'state':'open'}}))
+        self.opened = True
 
-    def close(self):
-        self.tk.queue(Task("Window id %d closed" % self.id,
-          {'control':self.name, 'id':self.id, 'action':'update', "update":{'state':'close'}}))
+    def shut(self):
+        self.opened = False

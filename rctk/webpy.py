@@ -25,6 +25,7 @@ class WebPyGateway(object):
         ## these requests locally, without a session. This may not be the 
         ## case for dynamic resources.
         if not data: ## should be related to a session / create a session
+            web.header("Content-Type", "text/html")
             return self.manager.index_html()
 
         if data.startswith("media"):

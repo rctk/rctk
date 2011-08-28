@@ -13,6 +13,7 @@ def application(environ, start_response):
         classid = environ.get('rctk.classid')
         debug = environ.get('rctk.debug', "false").lower() in ("1", "true")
         session = environ.get('rctk.session')
+        frontendclass = environ.get('rctk.frontend')
         
         options = {}
 
@@ -27,6 +28,6 @@ def application(environ, start_response):
         else:
             sessionclass = Session
 
-        manager = Manager(SpawnedSession, classid, startupdir, debug, **options)
+        manager = Manager(sessionclass, classid, frontendclass=frontendclass, debug=debug, **options)
     return app(manager).wsgifunc()(environ, start_response)
 

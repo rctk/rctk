@@ -206,9 +206,9 @@ class GridLayout(Layout):
               padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, sticky=self._sticky(sticky)))
             return self.cells[-1]
         elif row != -1 and column != -1:
-            r, c = self.find(rowspan, colspan)
+            # r, c = self.find(rowspan, colspan)
             self.allocate(row, column, rowspan, colspan)
-            self.cells.append(Cell(o, r, c, rowspan, colspan, 
+            self.cells.append(Cell(o, row, column, rowspan, colspan, 
               padx=padx, pady=pady, ipadx=ipadx, ipady=ipady, sticky=self._sticky(sticky)))
             return self.cells[-1]
         else:

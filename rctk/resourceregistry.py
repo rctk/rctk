@@ -126,8 +126,13 @@ class ResourceRegistry(object):
 
     def add(self, resource):
         ## avoid duplicates
+        ## XXX optimze
         if resource in self.resources.values():
-            return None
+            ## return its name nonetheless
+            for k, v in self.resources.iteritems():
+                if v == resource:
+                    return k
+            assert "This can't happen"
 
         name = resource.name
         counter = 1

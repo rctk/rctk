@@ -169,8 +169,8 @@ class ControlImporter(object):
                         items.append((key, value))
                 properties['items'] = items
             else:
-                ## again typing issue
-                properties[NONS(c.tag)] = c.text or ""
+                ## ask control to do (optional) type conversion
+                properties[NONS(c.tag)] = self.control_class.convert_from_xml(NONS(c.tag), c.text or "")
 
         name = object.attrib.get('name', None)
 

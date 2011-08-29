@@ -56,6 +56,15 @@ class Attribute(object):
         self.type = type
         self.filter = filter
 
+    def convert_from_xml(self, v):
+        """ do optional conversion from xml string """
+        if self.type == Attribute.NUMBER:
+            return int(v)
+        if self.type == Attribute.BOOLEAN:
+            return v.lower() in ("t", "true", "1")
+
+        return v
+
 class AttributeInterceptor(object):
     """
         Attributes confgured on a class derived from AttributeHolder will be
@@ -145,6 +154,12 @@ class AttributeHolder(object):
             has been updated.
         """
         pass
+
+    @classmethod
+    def convert_from_xml(cls, attr, value):
+        if hasattr(cls, "_sa_" + attr):
+            return getattr(cls, "_sa_" + attr).convert_from_xml(value)
+        return value
 
 class ControlDestroyed(Exception):
     pass

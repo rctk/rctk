@@ -143,6 +143,45 @@ class TestSyncedAttributes(object):
         assert t.a == 'aa'
         assert t.changed_value == None
 
+    def test_type_conversion_string(self):
+        class A(AttributeHolder):
+            a = Attribute("aa", Attribute.STRING)
+
+        assert A.convert_from_xml("a", "123") == "123"
+        assert A.convert_from_xml("a", "True") == "True"
+        assert A.convert_from_xml("a", "foo bar") == "foo bar"
+
+    def test_type_conversion_number(self):
+        class A(AttributeHolder):
+            a = Attribute("aa", Attribute.NUMBER)
+
+        assert A.convert_from_xml("a", "123") == 123
+
+    def test_type_conversion_boolean(self):
+        class A(AttributeHolder):
+            a = Attribute("aa", Attribute.BOOLEAN)
+
+        assert A.convert_from_xml("a", "True") == True
+        assert A.convert_from_xml("a", "true") == True
+        assert A.convert_from_xml("a", "t") == True
+        assert A.convert_from_xml("a", "1") == True
+        assert A.convert_from_xml("a", "0") == False
+        assert A.convert_from_xml("a", "false") == False
+        assert A.convert_from_xml("a", "False") == False
+
+    def test_required_attributes_none(self):
+        class A(AttributeHolder):
+            a = Attribute("aa", Attribute.BOOLEAN)
+
+        assert A.required_attributes() == []
+
+    def test_required_attributes_none(self):
+        class A(AttributeHolder):
+            a = Attribute("aa", Attribute.BOOLEAN)
+            b = Attribute("bb", Attribute.BOOLEAN, required=True)
+
+        assert A.required_attributes() == ["b"]
+
 ## test filtering?
 
 ## To be tested in control:

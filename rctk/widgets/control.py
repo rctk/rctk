@@ -51,10 +51,11 @@ class Attribute(object):
     NUMBER = 2
     BOOLEAN = 3
 
-    def __init__(self, default="", type=STRING, filter=None):
+    def __init__(self, default="", type=STRING, filter=None, required=False):
         self.default = default
         self.type = type
         self.filter = filter
+        self.required = required
 
     def convert_from_xml(self, v):
         """ do optional conversion from xml string """
@@ -113,11 +114,12 @@ class AttributeHolder(object):
             else:
                 self._sa_attributes[k] = v.default
 
-    def attributes(self):
+    @classmethod
+    def attributes(cls):
         a = {}
-        for k in dir(self):
+        for k in dir(cls):
             if k.startswith('_sa_'):
-                v = getattr(self, k)
+                v = getattr(cls, k)
                 if isinstance(v, Attribute):
                     a[k[4:]] = v # strip _sa_
         return a
@@ -160,6 +162,10 @@ class AttributeHolder(object):
         if hasattr(cls, "_sa_" + attr):
             return getattr(cls, "_sa_" + attr).convert_from_xml(value)
         return value
+
+    @classmethod
+    def required_attributes(cls):
+        return [k for (k, v) in cls.attributes().iteritems() if v.required]
 
 class ControlDestroyed(Exception):
     pass

@@ -31,6 +31,10 @@ class Manager(object):
         ## import the application class. This will allow the application
         ## to register all its non-dynamic resources
         self.appclass = resolveclass(classid)
+        app_frontend = getattr(self.appclass, 'frontend', None)
+        if app_frontend:
+            self.frontendclass = app_frontend
+
         self.sessions = {}
 
         check_classid(self.classid)
